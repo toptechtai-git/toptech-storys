@@ -18,7 +18,9 @@ const BRANCH = process.env.GITHUB_REF_NAME || "main";
 const TZ = process.env.TZ_LOCAL || "America/Belem";
 const API = "https://graph.facebook.com/v21.0";
 const DRY_RUN = process.env.DRY_RUN === "1";
-const TOLERANCIA_MIN = 59; // janela pra absorver o atraso do cron do GitHub
+// O cron do GitHub e "melhor esforco": ele descarta execucoes quando esta sobrecarregado,
+// e o intervalo real entre runs chega a passar de 1h. A janela larga evita perder o slot.
+const TOLERANCIA_MIN = Number(process.env.TOLERANCIA_MIN || 120);
 
 const IMAGENS = new Set([".jpg", ".jpeg", ".png"]);
 const VIDEOS = new Set([".mp4", ".mov"]);
