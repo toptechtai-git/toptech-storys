@@ -1,1 +1,13 @@
-{}
+{
+  "manha": {
+    "indice": 0,
+    "voltas": 0,
+    "publicados": {}
+  },
+  "tarde": {
+    "indice": 0,
+    "voltas": 0,
+    "publicados": {}
+  },
+  "_ultimosAvisos": "Pasta \"manha\" esta vazia — nada publicado as 09:00."
+}
