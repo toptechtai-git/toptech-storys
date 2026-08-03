@@ -10,6 +10,7 @@ import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { createHash } from "node:crypto";
 
 const exec = promisify(execFile);
 const AQUI = path.dirname(fileURLToPath(import.meta.url));
@@ -61,6 +62,20 @@ async function dimensoes(arq) {
   }
 }
 
+// Mesmo id que o publish.mjs usa: sha1 do conteudo. Cache por tamanho+mtime
+// para nao reler dezenas de megabytes a cada atualizacao da tela.
+const cacheId = new Map();
+async function idDoConteudo(arq, info) {
+  const chave = `${arq}|${info.size}|${info.mtimeMs}`;
+  if (cacheId.has(chave)) return cacheId.get(chave);
+  const id = createHash("sha1")
+    .update(await readFile(arq))
+    .digest("hex")
+    .slice(0, 12);
+  cacheId.set(chave, id);
+  return id;
+}
+
 async function artesDe(pasta) {
   const dir = pastaSegura(pasta);
   const itens = await readdir(dir, { withFileTypes: true });
@@ -78,6 +93,7 @@ async function artesDe(pasta) {
       const dim = EXT_IMG.has(ext) ? await dimensoes(arq) : null;
       return {
         nome,
+        id: await idDoConteudo(arq, info),
         video: EXT_VID.has(ext),
         mb: +(info.size / 1048576).toFixed(2),
         dim,
@@ -116,16 +132,17 @@ async function montarEstado() {
       }
     }
     const artes = await artesDe(nome);
-    const st = estado[nome] || { indice: 0, voltas: 0, publicados: {} };
-    const pontuais = st.pontuais || [];
+    const st = estado[nome] || { voltas: 0, publicados: {} };
+    const feitas = new Set([...(st.feitas || []), ...(st.pontuais || [])]);
 
     for (const a of artes) {
       a.marca = (cfg.artes || {})[a.nome] || null;
-      a.jaSaiu = pontuais.includes(a.nome);
+      a.jaSaiu = feitas.has(a.id);
     }
-    // Fila geral = artes sem marcacao; e dela que sai a "proxima".
+    // Fila geral = artes sem marcacao; a proxima e a primeira que ainda nao saiu.
     const geral = artes.filter((a) => !a.marca);
-    const proxima = geral.length ? geral[(st.indice || 0) % geral.length].nome : null;
+    const pendentes = geral.filter((a) => !a.jaSaiu);
+    const proxima = (pendentes[0] || geral[0])?.nome ?? null;
 
     pastas.push({
       nome,
@@ -133,10 +150,10 @@ async function montarEstado() {
       artes,
       proxima,
       naFila: geral.length,
-      // Arquivo trocado pelo Finder chega com nome solto; ai a ordem deixa de ser confiavel.
+      restantes: pendentes.length,
+      // Nome solto nao quebra mais nada: afeta so a ordem em que as artes saem.
       foraDePadrao: artes.filter((a) => !RE_NUMERADA.test(a.nome)).length,
-      posicaoInvalida: (st.indice || 0) > geral.length,
-      indice: st.indice || 0,
+      jaSaiu: artes.filter((a) => a.jaSaiu).length,
       voltas: st.voltas || 0,
       publicados: st.publicados || {},
     });
@@ -264,8 +281,9 @@ const rotas = {
     const pasta = path.basename(pastaSegura(corpo.pasta));
     const arq = path.join(REPO, "state.json");
     const estado = await lerEstado();
-    const st = (estado[pasta] ??= { indice: 0, voltas: 0, publicados: {} });
-    st.indice = 0;
+    const st = (estado[pasta] ??= { voltas: 0, publicados: {} });
+    delete st.indice;
+    st.feitas = [];
     st.voltas = 0;
     st.pontuais = [];
     st.indicesHora = {};

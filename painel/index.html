@@ -284,9 +284,13 @@
         text-align: center;
         font-variant-numeric: tabular-nums;
       }
-      .arte[data-presa="true"] img,
-      .arte[data-presa="true"] video {
-        opacity: 0.9;
+      .arte__marca--saiu {
+        background: var(--surface-2);
+        color: var(--text-muted);
+      }
+      .arte[data-saiu="true"] img,
+      .arte[data-saiu="true"] video {
+        opacity: 0.45;
       }
 
       dialog {
@@ -473,23 +477,23 @@
         // Horarios ocupados so por artes fixas nao consomem a fila geral.
         const presos = new Set(p.artes.filter((a) => a.marca && !a.marca.data).map((a) => a.marca.hora));
         const slotsLivres = p.cfg.horarios.filter((h) => !presos.has(h)).length;
-        const dias = slotsLivres ? Math.floor((p.naFila - p.indice) / slotsLivres) : 0;
+        const dias = slotsLivres ? Math.floor(p.restantes / slotsLivres) : 0;
 
         const resumo = el("p", { className: "vazio" });
         resumo.textContent = !p.artes.length
           ? "pasta vazia — nada será publicado"
           : !p.cfg.horarios.length
             ? `${p.artes.length} artes · sem horário definido`
-            : `${p.artes.length} artes · próxima da fila: ${p.proxima ?? "—"} · ` +
+            : `${p.artes.length} artes · ${p.restantes} por sair · próxima: ${p.proxima ?? "—"} · ` +
               (slotsLivres
-                ? `dura ~${dias} dia(s)${p.cfg.loop ? " e recomeça" : " e acaba"}`
+                ? `~${dias} dia(s)${p.cfg.loop ? " e recomeça" : " e acaba"}`
                 : "todos os horários estão presos a artes fixas");
 
         const corpo = el("article", { className: "cartao" }, [
           el("div", { className: "cartao__topo" }, [
             el("h2", { textContent: p.nome }),
             p.voltas ? el("span", { className: "selo", textContent: `${p.voltas}ª volta` }) : "",
-            p.indice ? botao("Recomeçar fila", "btn btn--mini", () => reiniciar(p)) : "",
+            p.jaSaiu ? botao("Recomeçar fila", "btn btn--mini", () => reiniciar(p)) : "",
             botao("Apagar pasta", "btn btn--mini btn--perigo", () => {
               if (confirm(`Apagar a pasta "${p.nome}" e todas as artes dela?`)) {
                 acao(() => api("/api/pasta/apagar", { pasta: p.nome }));
@@ -509,22 +513,20 @@
 
       /** Faixa de alerta quando o conteúdo da pasta foi trocado por fora do painel. */
       function alerta(p) {
-        if (!p.foraDePadrao && !p.posicaoInvalida) return "";
-        const texto = p.foraDePadrao
-          ? `${p.foraDePadrao} arquivo(s) com nome fora do padrão — a ordem de publicação não é confiável assim.`
-          : "A posição da fila ficou além do número de artes.";
+        if (!p.foraDePadrao) return "";
         return el("div", { className: "alerta" }, [
-          el("p", { textContent: texto }),
+          el("p", {
+            textContent:
+              `${p.foraDePadrao} arquivo(s) com nome fora do padrão. Nada quebra — ` +
+              `só a ordem fica na sorte do nome. Renumerar deixa previsível.`,
+          }),
           el("div", { className: "dlg__acoes" }, [
-            p.foraDePadrao
-              ? botao("Renumerar 001…", "btn btn--mini", () =>
-                  acao(async () => {
-                    await api("/api/ordem", { pasta: p.nome });
-                    avisar("Artes renumeradas na ordem atual.");
-                  }),
-                )
-              : "",
-            botao("Recomeçar fila", "btn btn--mini", () => reiniciar(p)),
+            botao("Renumerar 001…", "btn btn--mini", () =>
+              acao(async () => {
+                await api("/api/ordem", { pasta: p.nome });
+                avisar("Artes renumeradas na ordem atual.");
+              }),
+            ),
           ]),
         ]);
       }
@@ -638,15 +640,20 @@
           item.dataset.ok = String(a.ok);
           item.dataset.proxima = String(a.nome === p.proxima);
           item.dataset.presa = String(!!a.marca);
+          item.dataset.saiu = String(a.jaSaiu);
           return lista.append(item);
         });
 
         return lista;
       }
 
-      /** Selo sobre a miniatura quando a arte tem horário próprio. */
+      /** Selo sobre a miniatura: horário próprio, ou "já saiu". */
       function marcador(a) {
-        if (!a.marca) return "";
+        if (!a.marca) {
+          return a.jaSaiu
+            ? el("span", { className: "arte__marca arte__marca--saiu", textContent: "✓ já saiu" })
+            : "";
+        }
         const { hora, data } = a.marca;
         const rotulo = data ? `${data.slice(8, 10)}/${data.slice(5, 7)} ${hora}` : `todo dia ${hora}`;
         return el("span", {

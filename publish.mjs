@@ -6,6 +6,7 @@ import { readFile, writeFile, readdir } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { createHash } from "node:crypto";
 
 const RAIZ = path.dirname(fileURLToPath(import.meta.url));
 const DIR_STORIES = path.join(RAIZ, "stories");
@@ -106,9 +107,15 @@ function urlPublica(pasta, arquivo) {
   return `https://raw.githubusercontent.com/${REPO}/${BRANCH}/${partes}`;
 }
 
+/**
+ * Artes da pasta, cada uma com um id derivado do CONTEUDO do arquivo.
+ * E o id que diz se a arte ja foi publicada — assim renomear, reordenar ou
+ * reexportar pela pasta raiz nao faz o sistema perder o lugar.
+ */
 async function midiasDaPasta(pasta) {
-  const itens = await readdir(path.join(DIR_STORIES, pasta), { withFileTypes: true });
-  return itens
+  const dir = path.join(DIR_STORIES, pasta);
+  const itens = await readdir(dir, { withFileTypes: true });
+  const nomes = itens
     .filter((d) => d.isFile() && !d.name.startsWith("."))
     .map((d) => d.name)
     .filter((n) => {
@@ -116,6 +123,13 @@ async function midiasDaPasta(pasta) {
       return IMAGENS.has(ext) || VIDEOS.has(ext);
     })
     .sort((a, b) => a.localeCompare(b, "pt-BR", { numeric: true }));
+
+  return Promise.all(
+    nomes.map(async (nome) => ({
+      nome,
+      id: createHash("sha1").update(await readFile(path.join(dir, nome))).digest("hex").slice(0, 12),
+    })),
+  );
 }
 
 /**
@@ -125,40 +139,42 @@ async function midiasDaPasta(pasta) {
  *   3. fila     — artes sem marcacao, na ordem, com loop opcional
  * Devolve null quando nao ha nada elegivel (o motivo vai pros avisos).
  */
-function escolher(cfg, st, arquivos, hhmm, dia) {
+function escolher(cfg, st, artes, hhmm, dia) {
   const marcas = cfg.artes || {};
-  const marca = (n) => marcas[n] || {};
+  const marca = (a) => marcas[a.nome] || {};
+  st.feitas ??= [];
   st.pontuais ??= [];
   st.indicesHora ??= {};
+  const jaSaiu = (a) => st.feitas.includes(a.id) || st.pontuais.includes(a.id);
 
-  const agendadas = arquivos.filter(
-    (n) => marca(n).data === dia && marca(n).hora === hhmm && !st.pontuais.includes(n),
-  );
-  if (agendadas.length) return { arquivo: agendadas[0], tipo: "agendada" };
+  const agendadas = artes.filter((a) => marca(a).data === dia && marca(a).hora === hhmm && !jaSaiu(a));
+  if (agendadas.length) return { arte: agendadas[0], tipo: "agendada" };
 
-  const fixas = arquivos.filter((n) => !marca(n).data && marca(n).hora === hhmm);
+  const fixas = artes.filter((a) => !marca(a).data && marca(a).hora === hhmm);
   if (fixas.length) {
     const i = (st.indicesHora[hhmm] || 0) % fixas.length;
-    return { arquivo: fixas[i], tipo: "fixa" };
+    return { arte: fixas[i], tipo: "fixa" };
   }
 
-  const fila = arquivos.filter((n) => !marca(n).hora && !marca(n).data);
+  const fila = artes.filter((a) => !marca(a).hora && !marca(a).data);
   if (!fila.length) {
     avisos.push(`Nada elegivel as ${hhmm}: todas as artes da pasta estao presas a outro horario.`);
     return null;
   }
 
-  if (st.indice >= fila.length) {
+  let pendentes = fila.filter((a) => !jaSaiu(a));
+  if (!pendentes.length) {
     if (cfg.loop === false) {
-      avisos.push(`Fila acabou e o loop esta desligado — nada publicado as ${hhmm}.`);
+      avisos.push(`Todas as artes ja foram publicadas e o loop esta desligado — nada saiu as ${hhmm}.`);
       return null;
     }
-    st.indice = 0;
+    st.feitas = []; // recomeca a volta; artes novas entram naturalmente na proxima
     st.voltas = (st.voltas || 0) + 1;
+    pendentes = fila;
     avisos.push(`A fila deu a volta (${st.voltas}x) — voltou a publicar do inicio. Hora de renovar as artes.`);
   }
 
-  return { arquivo: fila[st.indice], tipo: "fila" };
+  return { arte: pendentes[0], tipo: "fila" };
 }
 
 async function main() {
@@ -180,12 +196,22 @@ async function main() {
     if (cfg.ativo === false) continue;
 
     const horarios = Array.isArray(cfg.horarios) ? cfg.horarios : [];
-    const st = (estado[pasta] ??= { indice: 0, voltas: 0, publicados: {} });
+    const st = (estado[pasta] ??= { voltas: 0, publicados: {} });
+    delete st.indice; // modelo antigo por posicao — agora o controle e por conteudo
 
-    // Agendamento que passou da data sem sair (workflow parado, arte renomeada…)
-    const presentes = new Set(await midiasDaPasta(pasta));
+    const artes = await midiasDaPasta(pasta);
+    const porNome = new Map(artes.map((a) => [a.nome, a]));
+
+    // Arte apagada some do historico — senao o registro cresceria para sempre.
+    const existentes = new Set(artes.map((a) => a.id));
+    for (const chave of ["feitas", "pontuais"]) {
+      if (st[chave]) st[chave] = st[chave].filter((id) => existentes.has(id));
+    }
+
+    // Agendamento que passou da data sem sair (workflow parado, arte trocada…)
     for (const [nome, m] of Object.entries(cfg.artes || {})) {
-      if (m.data && m.data < agora.dia && presentes.has(nome) && !(st.pontuais || []).includes(nome)) {
+      const a = porNome.get(nome);
+      if (m.data && m.data < agora.dia && a && !(st.pontuais || []).includes(a.id)) {
         avisos.push(`"${pasta}/${nome}" estava agendada para ${m.data} ${m.hora || ""} e nao foi publicada.`);
       }
     }
@@ -201,15 +227,15 @@ async function main() {
       if (atraso < 0 || atraso > TOLERANCIA_MIN) continue;
       if (st.publicados[hhmm] === agora.dia) continue; // ja saiu hoje nesse slot
 
-      const arquivos = await midiasDaPasta(pasta);
-      if (arquivos.length === 0) {
+      if (artes.length === 0) {
         avisos.push(`Pasta "${pasta}" esta vazia — nada publicado as ${hhmm}.`);
         continue;
       }
 
-      const escolha = escolher(cfg, st, arquivos, hhmm, agora.dia);
+      const escolha = escolher(cfg, st, artes, hhmm, agora.dia);
       if (!escolha) continue;
-      const { arquivo, tipo } = escolha;
+      const { arte, tipo } = escolha;
+      const arquivo = arte.nome;
       const ehVideo = VIDEOS.has(path.extname(arquivo).toLowerCase());
       const url = urlPublica(pasta, arquivo);
       log(`[${pasta} ${hhmm}] publicando ${arquivo} (${tipo})${DRY_RUN ? " — DRY RUN" : ""}`);
@@ -224,9 +250,9 @@ async function main() {
         }
       }
 
-      if (tipo === "agendada") (st.pontuais ??= []).push(arquivo);
+      if (tipo === "agendada") (st.pontuais ??= []).push(arte.id);
       else if (tipo === "fixa") st.indicesHora[hhmm] = (st.indicesHora[hhmm] || 0) + 1;
-      else st.indice += 1;
+      else (st.feitas ??= []).push(arte.id);
       st.publicados[hhmm] = agora.dia;
       st.ultimo = `${agora.dia} ${agora.hhmm} ${pasta}/${arquivo}`;
       mudou = true;
