@@ -1,20 +1,22 @@
 {
   "manha": {
-    "indice": 0,
     "voltas": 0,
     "publicados": {
       "09:00": "2026-08-03"
     }
   },
   "tarde": {
-    "indice": 0,
     "voltas": 0,
     "publicados": {
-      "12:00": "2026-08-03"
+      "12:00": "2026-08-03",
+      "15:00": "2026-08-03"
     },
-    "ultimo": "2026-08-03 12:23 tarde/001.png",
+    "ultimo": "2026-08-03 15:00 tarde/001.png",
     "pontuais": [],
-    "indicesHora": {}
+    "indicesHora": {},
+    "feitas": [
+      "1516754e89d2"
+    ]
   },
   "_ultimosAvisos": ""
 }
