@@ -311,6 +311,19 @@
         gap: var(--space-2);
       }
 
+      .alerta {
+        display: grid;
+        gap: var(--space-2);
+        padding: var(--space-3);
+        border: 1px solid var(--warn);
+        border-radius: var(--radius-md);
+        color: var(--warn);
+        font-size: var(--text-sm);
+      }
+      .alerta p {
+        margin: 0;
+      }
+
       .solta {
         display: grid;
         place-items: center;
@@ -476,6 +489,7 @@
           el("div", { className: "cartao__topo" }, [
             el("h2", { textContent: p.nome }),
             p.voltas ? el("span", { className: "selo", textContent: `${p.voltas}ª volta` }) : "",
+            p.indice ? botao("Recomeçar fila", "btn btn--mini", () => reiniciar(p)) : "",
             botao("Apagar pasta", "btn btn--mini btn--perigo", () => {
               if (confirm(`Apagar a pasta "${p.nome}" e todas as artes dela?`)) {
                 acao(() => api("/api/pasta/apagar", { pasta: p.nome }));
@@ -483,6 +497,7 @@
             }),
           ]),
           resumo,
+          alerta(p),
           opcoes(p),
           horarios(p),
           fila(p),
@@ -490,6 +505,36 @@
         ]);
         corpo.dataset.ativo = String(p.cfg.ativo);
         return corpo;
+      }
+
+      /** Faixa de alerta quando o conteúdo da pasta foi trocado por fora do painel. */
+      function alerta(p) {
+        if (!p.foraDePadrao && !p.posicaoInvalida) return "";
+        const texto = p.foraDePadrao
+          ? `${p.foraDePadrao} arquivo(s) com nome fora do padrão — a ordem de publicação não é confiável assim.`
+          : "A posição da fila ficou além do número de artes.";
+        return el("div", { className: "alerta" }, [
+          el("p", { textContent: texto }),
+          el("div", { className: "dlg__acoes" }, [
+            p.foraDePadrao
+              ? botao("Renumerar 001…", "btn btn--mini", () =>
+                  acao(async () => {
+                    await api("/api/ordem", { pasta: p.nome });
+                    avisar("Artes renumeradas na ordem atual.");
+                  }),
+                )
+              : "",
+            botao("Recomeçar fila", "btn btn--mini", () => reiniciar(p)),
+          ]),
+        ]);
+      }
+
+      function reiniciar(p) {
+        if (!confirm(`Voltar a fila de "${p.nome}" para a primeira arte?`)) return;
+        acao(async () => {
+          await api("/api/fila/reiniciar", { pasta: p.nome });
+          avisar("Fila reiniciada. O story de hoje não será repetido.");
+        });
       }
 
       function botao(texto, className, onclick, extra = {}) {

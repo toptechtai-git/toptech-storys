@@ -20,7 +20,9 @@ const PORTA = 4750;
 const EXT_IMG = new Set([".png", ".jpg", ".jpeg"]);
 const EXT_VID = new Set([".mp4", ".mov"]);
 const RE_PASTA = /^[a-z0-9][a-z0-9-]{0,31}$/;
-const RE_ARTE = /^\d{3}\.(png|jpe?g|mp4|mov)$/i;
+// Aceita qualquer nome que o Finder produza — so barra separador de caminho e ocultos.
+const RE_ARTE = /^[^/\\]+\.(png|jpe?g|mp4|mov)$/i;
+const RE_NUMERADA = /^\d{3}\.(png|jpe?g|mp4|mov)$/i;
 const TIPOS = {
   ".html": "text/html; charset=utf-8",
   ".png": "image/png",
@@ -36,8 +38,11 @@ function pastaSegura(nome) {
   return path.join(DIR_STORIES, nome);
 }
 function arteSegura(pasta, arquivo) {
-  if (!RE_ARTE.test(arquivo)) throw new Error("Nome de arquivo invalido.");
-  return path.join(pastaSegura(pasta), arquivo);
+  const nome = String(arquivo || "");
+  if (!RE_ARTE.test(nome) || nome.startsWith(".") || nome.includes("..")) {
+    throw new Error("Nome de arquivo invalido.");
+  }
+  return path.join(pastaSegura(pasta), nome);
 }
 
 async function git(...args) {
@@ -128,6 +133,9 @@ async function montarEstado() {
       artes,
       proxima,
       naFila: geral.length,
+      // Arquivo trocado pelo Finder chega com nome solto; ai a ordem deixa de ser confiavel.
+      foraDePadrao: artes.filter((a) => !RE_NUMERADA.test(a.nome)).length,
+      posicaoInvalida: (st.indice || 0) > geral.length,
       indice: st.indice || 0,
       voltas: st.voltas || 0,
       publicados: st.publicados || {},
@@ -248,6 +256,20 @@ const rotas = {
 
   "POST /api/ordem": async ({ corpo }) => {
     await renumerar(corpo.pasta, corpo.ordem);
+    return { ok: true };
+  },
+
+  // Volta a fila para o comeco. Preserva "publicados" para nao repetir o story de hoje.
+  "POST /api/fila/reiniciar": async ({ corpo }) => {
+    const pasta = path.basename(pastaSegura(corpo.pasta));
+    const arq = path.join(REPO, "state.json");
+    const estado = await lerEstado();
+    const st = (estado[pasta] ??= { indice: 0, voltas: 0, publicados: {} });
+    st.indice = 0;
+    st.voltas = 0;
+    st.pontuais = [];
+    st.indicesHora = {};
+    await writeFile(arq, JSON.stringify(estado, null, 2) + "\n");
     return { ok: true };
   },
 
