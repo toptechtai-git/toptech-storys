@@ -7,9 +7,12 @@
     }
   },
   "tarde": {
-    "indice": 0,
+    "indice": 1,
     "voltas": 0,
-    "publicados": {}
+    "publicados": {
+      "12:00": "2026-08-03"
+    },
+    "ultimo": "2026-08-03 12:23 tarde/001.png"
   },
   "_ultimosAvisos": ""
 }
