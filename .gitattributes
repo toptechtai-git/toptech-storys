@@ -1,2 +1,11 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Midia e binaria: nunca normalizar quebra de linha.
+# E NAO usar Git LFS aqui — a raw.githubusercontent devolveria o ponteiro de
+# texto no lugar da imagem e o Instagram rejeitaria a publicacao.
+*.jpg  -text
+*.jpeg -text
+*.png  -text
+*.mp4  -text
+*.mov  -text

@@ -1,0 +1,67 @@
+name: Stories Toptech
+
+on:
+  schedule:
+    - cron: "*/15 * * * *" # a cada 15 min (UTC); o script decide o que publicar no fuso local
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Simular sem publicar"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: stories
+  cancel-in-progress: false
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Publicar
+        id: pub
+        env:
+          IG_TOKEN: ${{ secrets.IG_TOKEN }}
+          IG_USER_ID: ${{ vars.IG_USER_ID }}
+          DRY_RUN: ${{ inputs.dry_run && '1' || '0' }}
+        run: node publish.mjs
+
+      - name: Salvar estado da fila
+        run: |
+          if [ -n "$(git status --porcelain state.json)" ]; then
+            git config user.name "stories-bot"
+            git config user.email "actions@github.com"
+            git add state.json
+            git commit -m "estado da fila [skip ci]"
+            git pull --rebase --autostash
+            git push
+          fi
+
+      - name: Avisar por issue
+        if: steps.pub.outputs.avisos != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          AVISOS: ${{ steps.pub.outputs.avisos }}
+        run: |
+          gh issue create \
+            --title "Stories: avisos de $(TZ=America/Belem date '+%d/%m %H:%M')" \
+            --body "$AVISOS"
+
+      - name: Avisar se o job quebrou
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh issue create \
+            --title "Stories: execucao falhou em $(TZ=America/Belem date '+%d/%m %H:%M')" \
+            --body "O workflow falhou. Log: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
