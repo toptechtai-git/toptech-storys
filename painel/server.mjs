@@ -112,7 +112,26 @@ async function montarEstado() {
     }
     const artes = await artesDe(nome);
     const st = estado[nome] || { indice: 0, voltas: 0, publicados: {} };
-    pastas.push({ nome, cfg, artes, indice: st.indice || 0, voltas: st.voltas || 0, publicados: st.publicados || {} });
+    const pontuais = st.pontuais || [];
+
+    for (const a of artes) {
+      a.marca = (cfg.artes || {})[a.nome] || null;
+      a.jaSaiu = pontuais.includes(a.nome);
+    }
+    // Fila geral = artes sem marcacao; e dela que sai a "proxima".
+    const geral = artes.filter((a) => !a.marca);
+    const proxima = geral.length ? geral[(st.indice || 0) % geral.length].nome : null;
+
+    pastas.push({
+      nome,
+      cfg,
+      artes,
+      proxima,
+      naFila: geral.length,
+      indice: st.indice || 0,
+      voltas: st.voltas || 0,
+      publicados: st.publicados || {},
+    });
   }
 
   let pendentes = [];
@@ -142,12 +161,29 @@ async function renumerar(pasta, ordem) {
   if (lista.length !== atuais.length || !lista.every((n) => atuais.includes(n))) {
     throw new Error("A ordem enviada nao corresponde aos arquivos da pasta.");
   }
+  const novoNome = new Map();
   for (const [i, nome] of lista.entries()) {
-    await rename(path.join(dir, nome), path.join(dir, `tmp_${String(i + 1).padStart(3, "0")}${path.extname(nome).toLowerCase()}`));
+    novoNome.set(nome, `${String(i + 1).padStart(3, "0")}${path.extname(nome).toLowerCase()}`);
+    await rename(path.join(dir, nome), path.join(dir, `tmp_${novoNome.get(nome)}`));
   }
   const temps = (await readdir(dir)).filter((n) => n.startsWith("tmp_")).sort();
   for (const t of temps) {
     await rename(path.join(dir, t), path.join(dir, t.slice(4)));
+  }
+
+  // As marcas de horario seguem a arte, senao apontariam para o arquivo errado.
+  const arqCfg = path.join(dir, "_config.json");
+  if (existsSync(arqCfg)) {
+    const cfg = JSON.parse(await readFile(arqCfg, "utf8"));
+    if (cfg.artes) {
+      cfg.artes = Object.fromEntries(
+        Object.entries(cfg.artes)
+          .filter(([nome]) => novoNome.has(nome))
+          .map(([nome, m]) => [novoNome.get(nome), m]),
+      );
+      if (!Object.keys(cfg.artes).length) delete cfg.artes;
+      await writeFile(arqCfg, JSON.stringify(cfg, null, 2) + "\n");
+    }
   }
 }
 
@@ -171,6 +207,31 @@ const rotas = {
     }
     const cfg = { horarios: [...new Set(horarios)].sort(), loop: !!corpo.loop, ativo: !!corpo.ativo };
     await writeFile(path.join(dir, "_config.json"), JSON.stringify(cfg, null, 2) + "\n");
+    return { ok: true };
+  },
+
+  // Prende (ou solta) uma arte num horario fixo, ou agenda numa data exata.
+  "POST /api/arte/marcar": async ({ corpo }) => {
+    const dir = pastaSegura(corpo.pasta);
+    const arquivo = path.basename(arteSegura(corpo.pasta, corpo.arquivo));
+    const arqCfg = path.join(dir, "_config.json");
+    const cfg = JSON.parse(await readFile(arqCfg, "utf8"));
+    cfg.artes ??= {};
+
+    const hora = corpo.hora ? String(corpo.hora).trim() : "";
+    const data = corpo.data ? String(corpo.data).trim() : "";
+    if (!hora && !data) {
+      delete cfg.artes[arquivo];
+    } else {
+      if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(hora)) throw new Error("Informe a hora no formato HH:MM.");
+      if (data && !/^\d{4}-\d{2}-\d{2}$/.test(data)) throw new Error("Data invalida.");
+      if (!cfg.horarios.includes(hora)) {
+        throw new Error(`A pasta nao publica as ${hora}. Adicione esse horario na pasta antes.`);
+      }
+      cfg.artes[arquivo] = data ? { data, hora } : { hora };
+    }
+    if (!Object.keys(cfg.artes).length) delete cfg.artes;
+    await writeFile(arqCfg, JSON.stringify(cfg, null, 2) + "\n");
     return { ok: true };
   },
 

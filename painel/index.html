@@ -271,6 +271,46 @@
         font-variant-numeric: tabular-nums;
       }
 
+      .arte__marca {
+        position: absolute;
+        inset-block-start: var(--space-1);
+        inset-inline: var(--space-1);
+        padding: 1px var(--space-1);
+        border-radius: var(--radius-sm);
+        background: var(--accent);
+        color: var(--accent-text);
+        font-size: 0.6875rem;
+        font-weight: 600;
+        text-align: center;
+        font-variant-numeric: tabular-nums;
+      }
+      .arte[data-presa="true"] img,
+      .arte[data-presa="true"] video {
+        opacity: 0.9;
+      }
+
+      dialog {
+        max-width: 26rem;
+        padding: var(--space-5);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        background: var(--surface);
+        color: var(--text);
+        box-shadow: var(--shadow-md);
+      }
+      dialog::backdrop {
+        background: rgb(0 0 0 / 45%);
+      }
+      dialog form {
+        display: grid;
+        gap: var(--space-4);
+      }
+      .dlg__acoes {
+        display: flex;
+        justify-content: flex-end;
+        gap: var(--space-2);
+      }
+
       .solta {
         display: grid;
         place-items: center;
@@ -324,6 +364,33 @@
     </header>
 
     <main id="pastas" aria-live="polite"></main>
+
+    <dialog id="dlg-horario">
+      <form method="dialog" id="form-horario">
+        <h2>Horário desta arte</h2>
+        <p class="vazio" id="dlg-arte"></p>
+
+        <div class="campo">
+          <label for="dlg-hora">Sai às</label>
+          <select id="dlg-hora"></select>
+        </div>
+
+        <div class="campo">
+          <label for="dlg-data">Só no dia (opcional)</label>
+          <input type="date" id="dlg-data" />
+        </div>
+
+        <p class="vazio">
+          Com data, a arte sai <strong>uma vez só</strong> nesse dia. Sem data, ela ocupa aquele horário
+          <strong>todos os dias</strong> — e se houver várias no mesmo horário, elas se revezam.
+        </p>
+
+        <div class="dlg__acoes">
+          <button type="button" class="btn" id="dlg-cancelar">Cancelar</button>
+          <button type="submit" class="btn btn--principal">Salvar</button>
+        </div>
+      </form>
+    </dialog>
 
     <p id="aviso" role="status" hidden></p>
 
@@ -390,16 +457,20 @@
       }
 
       function cartao(p) {
-        const restantes = p.artes.length - p.indice;
-        const dias = p.cfg.horarios.length ? Math.floor(restantes / p.cfg.horarios.length) : 0;
+        // Horarios ocupados so por artes fixas nao consomem a fila geral.
+        const presos = new Set(p.artes.filter((a) => a.marca && !a.marca.data).map((a) => a.marca.hora));
+        const slotsLivres = p.cfg.horarios.filter((h) => !presos.has(h)).length;
+        const dias = slotsLivres ? Math.floor((p.naFila - p.indice) / slotsLivres) : 0;
 
         const resumo = el("p", { className: "vazio" });
-        resumo.textContent = p.artes.length
-          ? `${p.artes.length} artes · próxima: ${p.artes[p.indice % p.artes.length]?.nome ?? "—"} · ` +
-            (p.cfg.horarios.length
-              ? `dura ~${dias} dia(s)${p.cfg.loop ? " e recomeça" : " e acaba"}`
-              : "sem horário definido")
-          : "pasta vazia — nada será publicado";
+        resumo.textContent = !p.artes.length
+          ? "pasta vazia — nada será publicado"
+          : !p.cfg.horarios.length
+            ? `${p.artes.length} artes · sem horário definido`
+            : `${p.artes.length} artes · próxima da fila: ${p.proxima ?? "—"} · ` +
+              (slotsLivres
+                ? `dura ~${dias} dia(s)${p.cfg.loop ? " e recomeça" : " e acaba"}`
+                : "todos os horários estão presos a artes fixas");
 
         const corpo = el("article", { className: "cartao" }, [
           el("div", { className: "cartao__topo" }, [
@@ -495,6 +566,7 @@
 
           const item = el("li", { className: "arte" }, [
             midia,
+            marcador(a),
             el("span", {
               className: "arte__rotulo",
               textContent: a.ok ? a.nome : `${a.nome} ⚠`,
@@ -503,6 +575,10 @@
             el("div", { className: "arte__acoes" }, [
               botao("↑", "btn btn--mini", () => mover(-1), { "aria-label": `Mover ${a.nome} para antes` }),
               botao("↓", "btn btn--mini", () => mover(1), { "aria-label": `Mover ${a.nome} para depois` }),
+              botao("⏰", "btn btn--mini", () => abrirHorario(p, a), {
+                "aria-label": `Definir horário de ${a.nome}`,
+                title: "Prender esta arte a um horário ou data",
+              }),
               botao(
                 "×",
                 "btn btn--mini btn--perigo",
@@ -515,12 +591,60 @@
             ]),
           ]);
           item.dataset.ok = String(a.ok);
-          item.dataset.proxima = String(i === p.indice);
+          item.dataset.proxima = String(a.nome === p.proxima);
+          item.dataset.presa = String(!!a.marca);
           return lista.append(item);
         });
 
         return lista;
       }
+
+      /** Selo sobre a miniatura quando a arte tem horário próprio. */
+      function marcador(a) {
+        if (!a.marca) return "";
+        const { hora, data } = a.marca;
+        const rotulo = data ? `${data.slice(8, 10)}/${data.slice(5, 7)} ${hora}` : `todo dia ${hora}`;
+        return el("span", {
+          className: "arte__marca",
+          textContent: a.jaSaiu ? `✓ ${rotulo}` : rotulo,
+          title: a.jaSaiu ? "Agendamento já publicado" : data ? "Sai uma vez, nesta data" : "Sai sempre neste horário",
+        });
+      }
+
+      /* === DIÁLOGO DE HORÁRIO POR ARTE === */
+      function abrirHorario(p, a) {
+        const dlg = $("#dlg-horario");
+        $("#dlg-arte").textContent = `${p.nome}/${a.nome}`;
+
+        const sel = $("#dlg-hora");
+        sel.textContent = "";
+        sel.append(el("option", { value: "", textContent: "— nenhum (fila normal) —" }));
+        for (const h of p.cfg.horarios) {
+          sel.append(el("option", { value: h, textContent: h, selected: a.marca?.hora === h }));
+        }
+        $("#dlg-data").value = a.marca?.data || "";
+        $("#dlg-data").min = app.hoje;
+
+        dlg.dataset.pasta = p.nome;
+        dlg.dataset.arquivo = a.nome;
+        dlg.showModal();
+      }
+
+      $("#form-horario").onsubmit = (e) => {
+        e.preventDefault();
+        const dlg = $("#dlg-horario");
+        const hora = $("#dlg-hora").value;
+        acao(async () => {
+          await api("/api/arte/marcar", {
+            pasta: dlg.dataset.pasta,
+            arquivo: dlg.dataset.arquivo,
+            hora,
+            data: hora ? $("#dlg-data").value : "",
+          });
+          dlg.close();
+          avisar(hora ? "Horário definido." : "Arte devolvida à fila normal.");
+        });
+      };
 
       function soltar(p) {
         const zona = el("div", { className: "solta", textContent: "Arraste artes aqui (1080×1920)" });
@@ -558,6 +682,8 @@
         const nome = prompt("Nome da pasta (letras minúsculas, números e hífen):");
         if (nome) acao(() => api("/api/pasta", { nome: nome.trim().toLowerCase() }));
       };
+
+      $("#dlg-cancelar").onclick = () => $("#dlg-horario").close();
 
       $("#btn-publicar").onclick = () =>
         acao(async () => {

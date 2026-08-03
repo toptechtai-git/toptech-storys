@@ -116,6 +116,49 @@ async function midiasDaPasta(pasta) {
     .sort((a, b) => a.localeCompare(b, "pt-BR", { numeric: true }));
 }
 
+/**
+ * Decide qual arte sai neste slot, em ordem de prioridade:
+ *   1. agendada — marcada com data + hora exatas, publica uma vez so
+ *   2. fixa     — marcada so com hora, revezando entre as marcadas na mesma hora
+ *   3. fila     — artes sem marcacao, na ordem, com loop opcional
+ * Devolve null quando nao ha nada elegivel (o motivo vai pros avisos).
+ */
+function escolher(cfg, st, arquivos, hhmm, dia) {
+  const marcas = cfg.artes || {};
+  const marca = (n) => marcas[n] || {};
+  st.pontuais ??= [];
+  st.indicesHora ??= {};
+
+  const agendadas = arquivos.filter(
+    (n) => marca(n).data === dia && marca(n).hora === hhmm && !st.pontuais.includes(n),
+  );
+  if (agendadas.length) return { arquivo: agendadas[0], tipo: "agendada" };
+
+  const fixas = arquivos.filter((n) => !marca(n).data && marca(n).hora === hhmm);
+  if (fixas.length) {
+    const i = (st.indicesHora[hhmm] || 0) % fixas.length;
+    return { arquivo: fixas[i], tipo: "fixa" };
+  }
+
+  const fila = arquivos.filter((n) => !marca(n).hora && !marca(n).data);
+  if (!fila.length) {
+    avisos.push(`Nada elegivel as ${hhmm}: todas as artes da pasta estao presas a outro horario.`);
+    return null;
+  }
+
+  if (st.indice >= fila.length) {
+    if (cfg.loop === false) {
+      avisos.push(`Fila acabou e o loop esta desligado — nada publicado as ${hhmm}.`);
+      return null;
+    }
+    st.indice = 0;
+    st.voltas = (st.voltas || 0) + 1;
+    avisos.push(`A fila deu a volta (${st.voltas}x) — voltou a publicar do inicio. Hora de renovar as artes.`);
+  }
+
+  return { arquivo: fila[st.indice], tipo: "fila" };
+}
+
 async function main() {
   const agora = agoraLocal();
   const estado = await lerJson(ARQ_ESTADO, {});
@@ -137,6 +180,14 @@ async function main() {
     const horarios = Array.isArray(cfg.horarios) ? cfg.horarios : [];
     const st = (estado[pasta] ??= { indice: 0, voltas: 0, publicados: {} });
 
+    // Agendamento que passou da data sem sair (workflow parado, arte renomeada…)
+    const presentes = new Set(await midiasDaPasta(pasta));
+    for (const [nome, m] of Object.entries(cfg.artes || {})) {
+      if (m.data && m.data < agora.dia && presentes.has(nome) && !(st.pontuais || []).includes(nome)) {
+        avisos.push(`"${pasta}/${nome}" estava agendada para ${m.data} ${m.hora || ""} e nao foi publicada.`);
+      }
+    }
+
     for (const hhmm of horarios) {
       const m = /^(\d{2}):(\d{2})$/.exec(hhmm);
       if (!m) {
@@ -154,22 +205,12 @@ async function main() {
         continue;
       }
 
-      if (st.indice >= arquivos.length) {
-        if (cfg.loop === false) {
-          avisos.push(`Fila de "${pasta}" acabou e loop esta desligado — nada publicado.`);
-          continue;
-        }
-        st.indice = 0;
-        st.voltas = (st.voltas || 0) + 1;
-        avisos.push(
-          `Fila de "${pasta}" deu a volta (${st.voltas}x) — voltou a publicar do inicio. Hora de renovar as artes.`,
-        );
-      }
-
-      const arquivo = arquivos[st.indice];
+      const escolha = escolher(cfg, st, arquivos, hhmm, agora.dia);
+      if (!escolha) continue;
+      const { arquivo, tipo } = escolha;
       const ehVideo = VIDEOS.has(path.extname(arquivo).toLowerCase());
       const url = urlPublica(pasta, arquivo);
-      log(`[${pasta} ${hhmm}] publicando ${arquivo}${DRY_RUN ? " (DRY RUN)" : ""}`);
+      log(`[${pasta} ${hhmm}] publicando ${arquivo} (${tipo})${DRY_RUN ? " — DRY RUN" : ""}`);
 
       if (!DRY_RUN) {
         try {
@@ -181,7 +222,9 @@ async function main() {
         }
       }
 
-      st.indice += 1;
+      if (tipo === "agendada") (st.pontuais ??= []).push(arquivo);
+      else if (tipo === "fixa") st.indicesHora[hhmm] = (st.indicesHora[hhmm] || 0) + 1;
+      else st.indice += 1;
       st.publicados[hhmm] = agora.dia;
       st.ultimo = `${agora.dia} ${agora.hhmm} ${pasta}/${arquivo}`;
       mudou = true;
