@@ -1,0 +1,571 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Stories Toptech — painel</title>
+    <style>
+      /* === TOKENS === */
+      :root {
+        --bg: #f6f7f9;
+        --surface: #ffffff;
+        --surface-2: #eef0f4;
+        --text: #16181d;
+        --text-muted: #626a78;
+        --border: #d9dde5;
+        --accent: #1f6feb;
+        --accent-text: #ffffff;
+        --danger: #c0392b;
+        --ok: #1a7f4b;
+        --warn: #a86400;
+
+        --space-1: 4px;
+        --space-2: 8px;
+        --space-3: 12px;
+        --space-4: 16px;
+        --space-5: 24px;
+        --space-6: 32px;
+
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 16px;
+        --shadow-sm: 0 1px 2px rgb(0 0 0 / 8%);
+        --shadow-md: 0 4px 16px rgb(0 0 0 / 10%);
+
+        --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+        --text-sm: 0.8125rem;
+        --text-base: 0.9375rem;
+        --text-lg: 1.125rem;
+        --text-xl: 1.375rem;
+
+        --z-toast: 100;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #0f1116;
+          --surface: #171a21;
+          --surface-2: #1f232c;
+          --text: #e7eaf0;
+          --text-muted: #99a1b0;
+          --border: #2c313c;
+          --accent: #4c8dff;
+          --accent-text: #08101f;
+          --danger: #ef6b5e;
+          --ok: #56d391;
+          --warn: #e0a33a;
+          --shadow-md: 0 4px 16px rgb(0 0 0 / 40%);
+        }
+      }
+
+      /* === BASE === */
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font: var(--text-base) / 1.5 var(--font-sans);
+      }
+      h1,
+      h2,
+      h3 {
+        margin: 0;
+        line-height: 1.25;
+      }
+      h1 {
+        font-size: var(--text-xl);
+      }
+      h2 {
+        font-size: var(--text-lg);
+      }
+      button {
+        font: inherit;
+        cursor: pointer;
+      }
+      :focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+
+      /* === LAYOUT === */
+      .topo {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--space-3);
+        padding: var(--space-4) var(--space-5);
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+      }
+      .topo__espaco {
+        flex: 1;
+      }
+      main {
+        display: grid;
+        gap: var(--space-5);
+        grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+        padding: var(--space-5);
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+
+      /* === COMPONENTES === */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-2);
+        padding: var(--space-2) var(--space-4);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        background: var(--surface);
+        color: var(--text);
+      }
+      .btn:hover {
+        background: var(--surface-2);
+      }
+      .btn--principal {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: var(--accent-text);
+        font-weight: 600;
+      }
+      .btn--principal:hover {
+        filter: brightness(1.08);
+        background: var(--accent);
+      }
+      .btn--perigo {
+        color: var(--danger);
+      }
+      .btn--mini {
+        padding: var(--space-1) var(--space-2);
+        font-size: var(--text-sm);
+      }
+      .btn[disabled] {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .selo {
+        padding: 2px var(--space-2);
+        border-radius: 999px;
+        font-size: var(--text-sm);
+        background: var(--surface-2);
+        color: var(--text-muted);
+      }
+      .selo--ok {
+        color: var(--ok);
+      }
+      .selo--alerta {
+        color: var(--warn);
+      }
+
+      .cartao {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-4);
+        padding: var(--space-4);
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+      }
+      .cartao[data-ativo="false"] {
+        opacity: 0.62;
+      }
+      .cartao__topo {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+      }
+      .cartao__topo h2 {
+        flex: 1;
+      }
+
+      .campo {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        font-size: var(--text-sm);
+        color: var(--text-muted);
+      }
+      .linha-opcoes {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-4);
+      }
+
+      .horarios {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-2);
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      .horario {
+        display: flex;
+        align-items: center;
+        gap: var(--space-1);
+        padding: var(--space-1) var(--space-2);
+        background: var(--surface-2);
+        border-radius: var(--radius-sm);
+        font-variant-numeric: tabular-nums;
+      }
+      .horario button {
+        border: 0;
+        background: none;
+        color: var(--text-muted);
+        padding: 0 2px;
+        line-height: 1;
+      }
+      .horario button:hover {
+        color: var(--danger);
+      }
+
+      .fila {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+        gap: var(--space-3);
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      .arte {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-1);
+        font-size: var(--text-sm);
+        color: var(--text-muted);
+      }
+      .arte img,
+      .arte video {
+        width: 100%;
+        aspect-ratio: 9 / 16;
+        object-fit: cover;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--border);
+        background: var(--surface-2);
+      }
+      .arte[data-proxima="true"] img,
+      .arte[data-proxima="true"] video {
+        border: 2px solid var(--accent);
+      }
+      .arte[data-ok="false"] img {
+        border: 2px solid var(--warn);
+      }
+      .arte__acoes {
+        display: flex;
+        gap: 2px;
+        justify-content: center;
+      }
+      .arte__rotulo {
+        text-align: center;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .solta {
+        display: grid;
+        place-items: center;
+        padding: var(--space-5);
+        border: 2px dashed var(--border);
+        border-radius: var(--radius-md);
+        color: var(--text-muted);
+        font-size: var(--text-sm);
+        text-align: center;
+      }
+      .solta[data-sobre="true"] {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+
+      .vazio {
+        color: var(--text-muted);
+        font-size: var(--text-sm);
+      }
+
+      #aviso {
+        position: fixed;
+        inset-block-end: var(--space-5);
+        inset-inline: 0;
+        z-index: var(--z-toast);
+        width: fit-content;
+        max-width: 90vw;
+        margin: 0 auto;
+        padding: var(--space-3) var(--space-5);
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-md);
+      }
+      #aviso:not([hidden]) {
+        display: block;
+      }
+      #aviso[data-tipo="erro"] {
+        border-color: var(--danger);
+        color: var(--danger);
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topo">
+      <h1>Stories Toptech</h1>
+      <span class="selo" id="selo-repo">carregando…</span>
+      <span class="topo__espaco"></span>
+      <button type="button" class="btn" id="btn-nova">Nova pasta</button>
+      <button type="button" class="btn btn--principal" id="btn-publicar">Enviar para o GitHub</button>
+    </header>
+
+    <main id="pastas" aria-live="polite"></main>
+
+    <p id="aviso" role="status" hidden></p>
+
+    <script>
+      /* === ESTADO === */
+      const app = { pastas: [], pendentes: [], hoje: "" };
+      const $ = (s) => document.querySelector(s);
+      const el = (tag, props = {}, filhos = []) => {
+        const n = Object.assign(document.createElement(tag), props);
+        for (const f of [].concat(filhos)) n.append(f);
+        return n;
+      };
+
+      let timerAviso;
+      function avisar(texto, tipo = "ok") {
+        const a = $("#aviso");
+        a.textContent = texto;
+        a.dataset.tipo = tipo;
+        a.hidden = false;
+        clearTimeout(timerAviso);
+        timerAviso = setTimeout(() => (a.hidden = true), 4000);
+      }
+
+      async function api(rota, corpo) {
+        const r = await fetch(rota, {
+          method: corpo ? "POST" : "GET",
+          headers: corpo ? { "content-type": "application/json" } : undefined,
+          body: corpo ? JSON.stringify(corpo) : undefined,
+        });
+        const dados = await r.json();
+        if (!r.ok) throw new Error(dados.erro || "Falhou.");
+        return dados;
+      }
+
+      async function carregar() {
+        try {
+          Object.assign(app, await api("/api/estado"));
+          render();
+        } catch (e) {
+          avisar(e.message, "erro");
+        }
+      }
+
+      async function acao(fn) {
+        try {
+          await fn();
+          await carregar();
+        } catch (e) {
+          avisar(e.message, "erro");
+        }
+      }
+
+      /* === RENDER === */
+      function render() {
+        const selo = $("#selo-repo");
+        const n = app.pendentes.length;
+        selo.textContent = n ? `${n} alteração(ões) por enviar` : "tudo enviado";
+        selo.className = n ? "selo selo--alerta" : "selo selo--ok";
+        $("#btn-publicar").disabled = n === 0;
+
+        const alvo = $("#pastas");
+        alvo.textContent = "";
+        for (const p of app.pastas) alvo.append(cartao(p));
+      }
+
+      function cartao(p) {
+        const restantes = p.artes.length - p.indice;
+        const dias = p.cfg.horarios.length ? Math.floor(restantes / p.cfg.horarios.length) : 0;
+
+        const resumo = el("p", { className: "vazio" });
+        resumo.textContent = p.artes.length
+          ? `${p.artes.length} artes · próxima: ${p.artes[p.indice % p.artes.length]?.nome ?? "—"} · ` +
+            (p.cfg.horarios.length
+              ? `dura ~${dias} dia(s)${p.cfg.loop ? " e recomeça" : " e acaba"}`
+              : "sem horário definido")
+          : "pasta vazia — nada será publicado";
+
+        const corpo = el("article", { className: "cartao" }, [
+          el("div", { className: "cartao__topo" }, [
+            el("h2", { textContent: p.nome }),
+            p.voltas ? el("span", { className: "selo", textContent: `${p.voltas}ª volta` }) : "",
+            botao("Apagar pasta", "btn btn--mini btn--perigo", () => {
+              if (confirm(`Apagar a pasta "${p.nome}" e todas as artes dela?`)) {
+                acao(() => api("/api/pasta/apagar", { pasta: p.nome }));
+              }
+            }),
+          ]),
+          resumo,
+          opcoes(p),
+          horarios(p),
+          fila(p),
+          soltar(p),
+        ]);
+        corpo.dataset.ativo = String(p.cfg.ativo);
+        return corpo;
+      }
+
+      function botao(texto, className, onclick, extra = {}) {
+        return el("button", { textContent: texto, className, onclick, ...extra });
+      }
+
+      function salvarCfg(p, mudanca) {
+        const cfg = { ...p.cfg, ...mudanca, pasta: p.nome };
+        return acao(() => api("/api/config", cfg));
+      }
+
+      function opcoes(p) {
+        const marca = (rotulo, chave) => {
+          const id = `${chave}-${p.nome}`;
+          const input = el("input", {
+            type: "checkbox",
+            id,
+            checked: !!p.cfg[chave],
+            onchange: (e) => salvarCfg(p, { [chave]: e.target.checked }),
+          });
+          return el("div", { className: "campo" }, [input, el("label", { htmlFor: id, textContent: rotulo })]);
+        };
+        return el("div", { className: "linha-opcoes" }, [
+          marca("Ativa", "ativo"),
+          marca("Recomeçar quando acabar", "loop"),
+        ]);
+      }
+
+      function horarios(p) {
+        const lista = el("ul", { className: "horarios" });
+        for (const h of p.cfg.horarios) {
+          lista.append(
+            el("li", { className: "horario" }, [
+              h,
+              botao("×", "", () => salvarCfg(p, { horarios: p.cfg.horarios.filter((x) => x !== h) }), {
+                "aria-label": `Remover horário ${h}`,
+              }),
+            ]),
+          );
+        }
+
+        const id = `hora-${p.nome}`;
+        const input = el("input", { type: "time", id, required: true });
+        const form = el("form", { className: "campo" }, [
+          el("label", { htmlFor: id, textContent: "Publicar às" }),
+          input,
+          botao("Adicionar", "btn btn--mini", null, { type: "submit" }),
+        ]);
+        form.onsubmit = (e) => {
+          e.preventDefault();
+          if (input.value) salvarCfg(p, { horarios: [...p.cfg.horarios, input.value] });
+        };
+
+        return el("section", {}, [lista, form]);
+      }
+
+      function fila(p) {
+        if (!p.artes.length) return el("p", { className: "vazio", textContent: "Nenhuma arte na fila." });
+        const lista = el("ul", { className: "fila" });
+
+        p.artes.forEach((a, i) => {
+          const src = `/midia?pasta=${encodeURIComponent(p.nome)}&arquivo=${encodeURIComponent(a.nome)}`;
+          const midia = a.video
+            ? el("video", { src, muted: true, playsInline: true })
+            : el("img", { src, alt: `Arte ${a.nome} da pasta ${p.nome}`, loading: "lazy" });
+
+          const mover = (delta) => {
+            const ordem = p.artes.map((x) => x.nome);
+            const j = i + delta;
+            if (j < 0 || j >= ordem.length) return;
+            [ordem[i], ordem[j]] = [ordem[j], ordem[i]];
+            acao(() => api("/api/ordem", { pasta: p.nome, ordem }));
+          };
+
+          const item = el("li", { className: "arte" }, [
+            midia,
+            el("span", {
+              className: "arte__rotulo",
+              textContent: a.ok ? a.nome : `${a.nome} ⚠`,
+              title: a.ok ? `${a.mb} MB` : `Fora do padrão: ${a.dim ? a.dim.w + "×" + a.dim.h : "?"} · ${a.mb} MB`,
+            }),
+            el("div", { className: "arte__acoes" }, [
+              botao("↑", "btn btn--mini", () => mover(-1), { "aria-label": `Mover ${a.nome} para antes` }),
+              botao("↓", "btn btn--mini", () => mover(1), { "aria-label": `Mover ${a.nome} para depois` }),
+              botao(
+                "×",
+                "btn btn--mini btn--perigo",
+                () => {
+                  if (confirm(`Apagar ${a.nome}?`))
+                    acao(() => api("/api/arte/apagar", { pasta: p.nome, arquivo: a.nome }));
+                },
+                { "aria-label": `Apagar ${a.nome}` },
+              ),
+            ]),
+          ]);
+          item.dataset.ok = String(a.ok);
+          item.dataset.proxima = String(i === p.indice);
+          return lista.append(item);
+        });
+
+        return lista;
+      }
+
+      function soltar(p) {
+        const zona = el("div", { className: "solta", textContent: "Arraste artes aqui (1080×1920)" });
+        zona.ondragover = (e) => {
+          e.preventDefault();
+          zona.dataset.sobre = "true";
+        };
+        zona.ondragleave = () => (zona.dataset.sobre = "false");
+        zona.ondrop = async (e) => {
+          e.preventDefault();
+          zona.dataset.sobre = "false";
+          const arquivos = [...e.dataTransfer.files];
+          zona.textContent = `enviando ${arquivos.length} arquivo(s)…`;
+          try {
+            for (const f of arquivos) {
+              const r = await fetch(`/api/upload?pasta=${encodeURIComponent(p.nome)}`, {
+                method: "POST",
+                headers: { "x-nome": f.name },
+                body: f,
+              });
+              const dados = await r.json();
+              if (!r.ok) throw new Error(`${f.name}: ${dados.erro}`);
+            }
+            avisar(`${arquivos.length} arte(s) adicionada(s) em ${p.nome}.`);
+          } catch (err) {
+            avisar(err.message, "erro");
+          }
+          carregar();
+        };
+        return zona;
+      }
+
+      /* === AÇÕES DO TOPO === */
+      $("#btn-nova").onclick = () => {
+        const nome = prompt("Nome da pasta (letras minúsculas, números e hífen):");
+        if (nome) acao(() => api("/api/pasta", { nome: nome.trim().toLowerCase() }));
+      };
+
+      $("#btn-publicar").onclick = () =>
+        acao(async () => {
+          const r = await api("/api/publicar", {});
+          avisar(r.msg || "Enviado.");
+        });
+
+      carregar();
+    </script>
+  </body>
+</html>
