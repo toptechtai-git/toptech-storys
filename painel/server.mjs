@@ -16,7 +16,7 @@ const exec = promisify(execFile);
 const AQUI = path.dirname(fileURLToPath(import.meta.url));
 const REPO = path.dirname(AQUI);
 const DIR_STORIES = path.join(REPO, "stories");
-const PORTA = 4750;
+const PORTA = 4751;
 
 const EXT_IMG = new Set([".png", ".jpg", ".jpeg"]);
 const EXT_VID = new Set([".mp4", ".mov"]);
