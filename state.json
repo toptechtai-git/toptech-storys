@@ -15,32 +15,30 @@
     "ultimo": "2026-08-06 08:50 manha/003.png"
   },
   "tarde": {
-    "voltas": 0,
+    "voltas": 1,
     "publicados": {
-      "12:00": "2026-08-05",
+      "12:00": "2026-08-06",
       "15:00": "2026-08-05",
       "18:00": "2026-08-04"
     },
-    "ultimo": "2026-08-05 15:00 tarde/007.png",
+    "ultimo": "2026-08-06 12:12 tarde/001.png",
     "pontuais": [],
     "indicesHora": {},
     "feitas": [
-      "1516754e89d2",
-      "2e09c67952bb",
-      "d894d7def6f7",
-      "016eef0a9276",
-      "f2f7c3639344",
-      "4b2587c1f9eb",
-      "359a13c560f3"
+      "1516754e89d2"
     ]
   },
-  "_ultimosAvisos": "",
+  "_ultimosAvisos": "A fila deu a volta (1x) — voltou a publicar do inicio. Hora de renovar as artes.",
   "produtos": {
     "voltas": 0,
-    "publicados": {},
-    "feitas": [],
+    "publicados": {
+      "11:00": "2026-08-06"
+    },
+    "feitas": [
+      "a3174a2ad35a"
+    ],
     "pontuais": [],
     "indicesHora": {},
-    "ultimo": ""
+    "ultimo": "2026-08-06 12:12 produtos/001.png"
   }
 }
