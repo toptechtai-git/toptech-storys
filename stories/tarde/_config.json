@@ -1,5 +1,9 @@
 {
-  "horarios": ["12:00", "15:00", "18:00"],
-  "loop": false,
-  "ativo": false
+  "horarios": [
+    "12:00",
+    "15:00",
+    "18:00"
+  ],
+  "loop": true,
+  "ativo": true
 }
