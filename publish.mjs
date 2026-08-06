@@ -127,7 +127,10 @@ async function midiasDaPasta(pasta) {
   return Promise.all(
     nomes.map(async (nome) => ({
       nome,
-      id: createHash("sha1").update(await readFile(path.join(dir, nome))).digest("hex").slice(0, 12),
+      id: createHash("sha1")
+        .update(await readFile(path.join(dir, nome)))
+        .digest("hex")
+        .slice(0, 12),
     })),
   );
 }
@@ -147,7 +150,9 @@ function escolher(cfg, st, artes, hhmm, dia) {
   st.indicesHora ??= {};
   const jaSaiu = (a) => st.feitas.includes(a.id) || st.pontuais.includes(a.id);
 
-  const agendadas = artes.filter((a) => marca(a).data === dia && marca(a).hora === hhmm && !jaSaiu(a));
+  const agendadas = artes.filter(
+    (a) => marca(a).data === dia && marca(a).hora === hhmm && !jaSaiu(a),
+  );
   if (agendadas.length) return { arte: agendadas[0], tipo: "agendada" };
 
   const fixas = artes.filter((a) => !marca(a).data && marca(a).hora === hhmm);
@@ -165,13 +170,17 @@ function escolher(cfg, st, artes, hhmm, dia) {
   let pendentes = fila.filter((a) => !jaSaiu(a));
   if (!pendentes.length) {
     if (cfg.loop === false) {
-      avisos.push(`Todas as artes ja foram publicadas e o loop esta desligado — nada saiu as ${hhmm}.`);
+      avisos.push(
+        `Todas as artes ja foram publicadas e o loop esta desligado — nada saiu as ${hhmm}.`,
+      );
       return null;
     }
     st.feitas = []; // recomeca a volta; artes novas entram naturalmente na proxima
     st.voltas = (st.voltas || 0) + 1;
     pendentes = fila;
-    avisos.push(`A fila deu a volta (${st.voltas}x) — voltou a publicar do inicio. Hora de renovar as artes.`);
+    avisos.push(
+      `A fila deu a volta (${st.voltas}x) — voltou a publicar do inicio. Hora de renovar as artes.`,
+    );
   }
 
   return { arte: pendentes[0], tipo: "fila" };
@@ -212,7 +221,9 @@ async function main() {
     for (const [nome, m] of Object.entries(cfg.artes || {})) {
       const a = porNome.get(nome);
       if (m.data && m.data < agora.dia && a && !(st.pontuais || []).includes(a.id)) {
-        avisos.push(`"${pasta}/${nome}" estava agendada para ${m.data} ${m.hora || ""} e nao foi publicada.`);
+        avisos.push(
+          `"${pasta}/${nome}" estava agendada para ${m.data} ${m.hora || ""} e nao foi publicada.`,
+        );
       }
     }
 
@@ -267,7 +278,8 @@ async function main() {
     mudou = true;
   }
 
-  if (mudou) await writeFile(ARQ_ESTADO, JSON.stringify(estado, null, 2) + "\n");
+  // Em simulacao nada foi publicado: gravar o estado marcaria o slot e queimaria a arte.
+  if (mudou && !DRY_RUN) await writeFile(ARQ_ESTADO, JSON.stringify(estado, null, 2) + "\n");
 
   if (avisos.length) {
     log("\nAvisos:\n" + avisos.map((a) => `- ${a}`).join("\n"));
