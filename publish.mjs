@@ -27,6 +27,7 @@ const IMAGENS = new Set([".jpg", ".jpeg", ".png"]);
 const VIDEOS = new Set([".mp4", ".mov"]);
 
 const avisos = [];
+const eventos = []; // cada tentativa de publicacao, pro relatorio por e-mail
 const log = (...a) => console.log(...a);
 
 if (!TOKEN) {
@@ -53,6 +54,17 @@ function agoraLocal() {
   };
 }
 
+/** Relogio local com segundos, pro relatorio ("enviado as 13:37:22"). */
+function horaLocal() {
+  return new Intl.DateTimeFormat("pt-BR", {
+    timeZone: TZ,
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  }).format(new Date());
+}
+
 async function lerJson(arq, padrao) {
   if (!existsSync(arq)) return padrao;
   try {
@@ -75,9 +87,30 @@ async function graph(caminho, corpo) {
   });
   const j = await r.json().catch(() => ({}));
   if (!r.ok || j.error) {
-    throw new Error(j.error?.message || `HTTP ${r.status}`);
+    const err = new Error(j.error?.message || `HTTP ${r.status}`);
+    err.code = j.error?.code;
+    err.subcode = j.error?.error_subcode;
+    throw err;
   }
   return j;
+}
+
+/** Traduz o erro da Meta para uma instrucao pratica no e-mail. */
+function explicarErro(e) {
+  const msg = String(e.message || "");
+  if (e.code === 190 || /expired|session|access token/i.test(msg)) {
+    return "O token de acesso do Instagram expirou ou foi invalidado. Gere um novo token de Usuário de Sistema no Business Manager e atualize o Secret IG_TOKEN do repositório.";
+  }
+  if (e.code === 4 || e.code === 17 || /limit/i.test(msg)) {
+    return "A Meta bloqueou por limite de publicações (são 25 stories por dia por conta). O próximo horário deve voltar ao normal.";
+  }
+  if (/media|url|download|fetch/i.test(msg)) {
+    return "A Meta não conseguiu baixar a arte pela URL do GitHub. Confira se o arquivo está commitado, se o repositório continua público e se o Git LFS não foi ativado.";
+  }
+  if (/container/i.test(msg)) {
+    return "O vídeo foi enviado mas a Meta não terminou de processar a tempo. Normalmente é arquivo pesado ou codec fora do padrão (use MP4 H.264).";
+  }
+  return "Erro não catalogado — veja a mensagem original acima e o log da execução.";
 }
 
 async function esperarContainer(id) {
@@ -186,6 +219,87 @@ function escolher(cfg, st, artes, hhmm, dia) {
   return { arte: pendentes[0], tipo: "fila" };
 }
 
+function finalizar(ev) {
+  ev.fim = horaLocal();
+  ev.segundos = Math.round((Date.now() - ev.t0) / 1000);
+  delete ev.t0;
+  return ev;
+}
+
+const ORIGEM = {
+  agendada: "agendamento com data e hora marcadas",
+  fixa: "arte presa a este horário (rodízio)",
+  fila: "fila automática, na ordem da pasta",
+};
+
+/** Corpo da issue — e portanto do e-mail que o Filipe recebe. Tudo em português. */
+function montarRelatorio(agora) {
+  const ok = eventos.filter((e) => e.ok);
+  const falhas = eventos.filter((e) => !e.ok);
+  const L = [];
+
+  L.push(`**Execução de ${agora.dia.split("-").reverse().join("/")} às ${agora.hhmm}** (horário de Belém)\n`);
+
+  if (ok.length) {
+    L.push(`## Publicado com sucesso (${ok.length})\n`);
+    for (const e of ok) {
+      L.push(`### ${e.pasta}/${e.arquivo}${e.simulado ? " — SIMULAÇÃO, nada foi publicado" : ""}`);
+      L.push(
+        `- O envio ${e.ehVideo ? "do vídeo" : "da foto"} **${e.arquivo}** foi concluído às **${e.fim}**.`,
+      );
+      L.push(`- Começou às ${e.inicio} e levou ${e.segundos} segundos.`);
+      L.push(`- Horário programado: ${e.hhmm}${e.atraso > 0 ? ` (saiu ${e.atraso} min depois, dentro da tolerância)` : ""}.`);
+      L.push(`- Pasta: \`${e.pasta}\` — escolhida por ${ORIGEM[e.tipo] || e.tipo}.`);
+      if (e.mediaId) L.push(`- ID da mídia no Instagram: \`${e.mediaId}\`.`);
+      L.push(`- Arquivo enviado: ${e.url}`);
+      L.push("");
+    }
+  }
+
+  if (falhas.length) {
+    L.push(`## Não foi publicado (${falhas.length})\n`);
+    for (const e of falhas) {
+      L.push(`### ${e.pasta}/${e.arquivo}`);
+      L.push(
+        `- A tentativa de enviar ${e.ehVideo ? "o vídeo" : "a foto"} **${e.arquivo}** começou às ${e.inicio} e falhou às **${e.fim}** (${e.segundos} s).`,
+      );
+      L.push(`- Horário programado: ${e.hhmm} — pasta \`${e.pasta}\`.`);
+      L.push(`- Mensagem da Meta: \`${e.erro}\``);
+      L.push(`- O que fazer: ${e.dica}`);
+      L.push(
+        `- A arte **não foi queimada**: ela continua na fila e o sistema tenta de novo na próxima janela (até ${TOLERANCIA_MIN} min depois do horário).`,
+      );
+      L.push("");
+    }
+  }
+
+  if (avisos.length) {
+    L.push("## Avisos\n");
+    for (const a of avisos) L.push(`- ${a}`);
+    L.push("");
+  }
+
+  if (!eventos.length && !avisos.length) return null;
+
+  L.push("---");
+  L.push(`Execução automática: ${urlDoRun() || "rodou fora do GitHub Actions"}`);
+  return L.join("\n");
+}
+
+function urlDoRun() {
+  if (!process.env.GITHUB_RUN_ID) return "";
+  const srv = process.env.GITHUB_SERVER_URL || "https://github.com";
+  return `${srv}/${REPO}/actions/runs/${process.env.GITHUB_RUN_ID}`;
+}
+
+async function saida(chave, valor) {
+  if (!process.env.GITHUB_OUTPUT) return;
+  const delim = `EOF_${Math.random().toString(36).slice(2)}`;
+  await writeFile(process.env.GITHUB_OUTPUT, `${chave}<<${delim}\n${valor}\n${delim}\n`, {
+    flag: "a",
+  });
+}
+
 async function main() {
   const agora = agoraLocal();
   const estado = await lerJson(ARQ_ESTADO, {});
@@ -251,15 +365,36 @@ async function main() {
       const url = urlPublica(pasta, arquivo);
       log(`[${pasta} ${hhmm}] publicando ${arquivo} (${tipo})${DRY_RUN ? " — DRY RUN" : ""}`);
 
+      const ev = {
+        pasta,
+        arquivo,
+        hhmm,
+        tipo,
+        url,
+        ehVideo,
+        atraso,
+        inicio: horaLocal(),
+        t0: Date.now(),
+      };
+
       if (!DRY_RUN) {
         try {
-          const id = await publicar(url, ehVideo);
-          log(`  ok — media ${id}`);
+          ev.mediaId = await publicar(url, ehVideo);
+          ev.ok = true;
+          log(`  ok — media ${ev.mediaId}`);
         } catch (e) {
+          ev.ok = false;
+          ev.erro = e.message;
+          ev.dica = explicarErro(e);
+          eventos.push(finalizar(ev));
           avisos.push(`FALHOU "${pasta}" as ${hhmm} (${arquivo}): ${e.message}`);
           continue; // nao avanca o indice: tenta de novo na proxima janela
         }
+      } else {
+        ev.ok = true;
+        ev.simulado = true;
       }
+      eventos.push(finalizar(ev));
 
       if (tipo === "agendada") (st.pontuais ??= []).push(arte.id);
       else if (tipo === "fixa") st.indicesHora[hhmm] = (st.indicesHora[hhmm] || 0) + 1;
@@ -281,19 +416,52 @@ async function main() {
   // Em simulacao nada foi publicado: gravar o estado marcaria o slot e queimaria a arte.
   if (mudou && !DRY_RUN) await writeFile(ARQ_ESTADO, JSON.stringify(estado, null, 2) + "\n");
 
-  if (avisos.length) {
-    log("\nAvisos:\n" + avisos.map((a) => `- ${a}`).join("\n"));
-    if (inedito && process.env.GITHUB_OUTPUT) {
-      await writeFile(
-        process.env.GITHUB_OUTPUT,
-        `avisos<<EOF\n${avisos.map((a) => `- ${a}`).join("\n")}\nEOF\n`,
-        { flag: "a" },
-      );
-    }
+  if (avisos.length) log("\nAvisos:\n" + avisos.map((a) => `- ${a}`).join("\n"));
+
+  // Notifica sempre que algo foi publicado ou falhou. Aviso sem publicacao so
+  // notifica quando e inedito — senao viraria um e-mail a cada 15 minutos.
+  if (!eventos.length && !inedito) return;
+
+  const falhas = eventos.filter((e) => !e.ok);
+  const ok = eventos.filter((e) => e.ok);
+  const data = agora.dia.split("-").reverse().slice(0, 2).join("/");
+  let titulo;
+  if (falhas.length) {
+    const q = [...new Set(falhas.map((e) => `${e.pasta}/${e.arquivo}`))].join(", ");
+    titulo = `FALHA ao publicar ${q} — ${data} ${agora.hhmm}`;
+    process.exitCode = 1; // deixa o job vermelho: falha silenciosa passa despercebida
+  } else if (ok.length) {
+    const q = ok.map((e) => `${e.pasta}/${e.arquivo}`).join(", ");
+    titulo = `Story publicado: ${q} — ${data} ${agora.hhmm}`;
+  } else {
+    titulo = `Avisos do agendador — ${data} ${agora.hhmm}`;
   }
+
+  await saida("titulo", titulo);
+  await saida("relatorio", montarRelatorio(agora) || "");
+  await saida("houve_falha", falhas.length ? "1" : "0");
 }
 
-main().catch((e) => {
-  console.error("Erro fatal:", e.message);
-  process.exit(1);
-});
+main()
+  .catch(async (e) => {
+    console.error("Erro fatal:", e.message);
+    const agora = agoraLocal();
+    const data = agora.dia.split("-").reverse().slice(0, 2).join("/");
+    await saida("titulo", `FALHA GERAL do agendador — ${data} ${agora.hhmm}`);
+    await saida(
+      "relatorio",
+      [
+        `**O agendador de stories parou com erro às ${horaLocal()}** (horário de Belém), em ${data}.`,
+        "",
+        `- Mensagem: \`${e.message}\``,
+        "- Nenhuma arte foi marcada como publicada; a fila continua intacta.",
+        "- O sistema tenta de novo na próxima execução (a cada 15 minutos).",
+        "",
+        "---",
+        `Log completo: ${urlDoRun() || "execução local"}`,
+      ].join("\n"),
+    );
+    await saida("houve_falha", "1");
+    process.exit(1);
+  })
+  .catch(() => process.exit(1));

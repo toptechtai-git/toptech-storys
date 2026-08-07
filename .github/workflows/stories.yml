@@ -21,6 +21,9 @@ concurrency:
 jobs:
   publicar:
     runs-on: ubuntu-latest
+    # Sem isto, um runner indisponivel (incidente do GitHub) segura o job por horas
+    # e trava o slot seguinte por causa do concurrency.
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
 
@@ -30,6 +33,7 @@ jobs:
 
       - name: Publicar
         id: pub
+        continue-on-error: true # o relatorio por e-mail sai mesmo quando a publicacao falha
         env:
           IG_TOKEN: ${{ secrets.IG_TOKEN }}
           IG_USER_ID: ${{ vars.IG_USER_ID }}
@@ -37,6 +41,7 @@ jobs:
         run: node publish.mjs
 
       - name: Salvar estado da fila
+        if: always()
         run: |
           if [ -n "$(git status --porcelain state.json)" ]; then
             git config user.name "stories-bot"
@@ -47,21 +52,41 @@ jobs:
             git push
           fi
 
-      - name: Avisar por issue
-        if: steps.pub.outputs.avisos != ''
+      - name: Enviar relatorio por e-mail (issue)
+        if: always() && steps.pub.outputs.relatorio != ''
         env:
           GH_TOKEN: ${{ github.token }}
-          AVISOS: ${{ steps.pub.outputs.avisos }}
+          TITULO: ${{ steps.pub.outputs.titulo }}
+          RELATORIO: ${{ steps.pub.outputs.relatorio }}
+          FALHOU: ${{ steps.pub.outputs.houve_falha }}
         run: |
-          gh issue create \
-            --title "Stories: avisos de $(TZ=America/Belem date '+%d/%m %H:%M')" \
-            --body "$AVISOS"
+          url=$(gh issue create --title "$TITULO" --body "$RELATORIO")
+          echo "Issue criada: $url"
+          # Sucesso vira registro fechado: o e-mail chega igual, sem encher a lista de issues.
+          if [ "$FALHOU" != "1" ]; then
+            gh issue close "$url" --reason completed
+          fi
 
-      - name: Avisar se o job quebrou
+      - name: Avisar se o proprio robo quebrou
         if: failure()
         env:
           GH_TOKEN: ${{ github.token }}
+          CORPO: |
+            **O robô que publica os stories não conseguiu terminar a execução.**
+
+            Isso é falha da própria automação (GitHub Actions), não da publicação em si:
+            nenhuma arte foi marcada como publicada e a fila continua intacta.
+
+            - A próxima tentativa acontece automaticamente em até 15 minutos.
+            - O sistema ainda publica o story atrasado por até 2 horas depois do horário marcado.
+            - Se falhar várias vezes seguidas, veja o log no link abaixo.
+
+            Log completo desta execução: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
           gh issue create \
-            --title "Stories: execucao falhou em $(TZ=America/Belem date '+%d/%m %H:%M')" \
-            --body "O workflow falhou. Log: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            --title "FALHA na execucao do agendador — $(TZ=America/Belem date '+%d/%m %H:%M')" \
+            --body "$CORPO"
+
+      - name: Refletir o resultado da publicacao no job
+        if: always() && steps.pub.outcome == 'failure'
+        run: exit 1
