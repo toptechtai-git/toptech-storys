@@ -32,13 +32,15 @@
   "produtos": {
     "voltas": 0,
     "publicados": {
-      "11:00": "2026-08-06"
+      "11:00": "2026-08-06",
+      "21:00": "2026-08-06"
     },
     "feitas": [
-      "a3174a2ad35a"
+      "a3174a2ad35a",
+      "48018166b054"
     ],
     "pontuais": [],
     "indicesHora": {},
-    "ultimo": "2026-08-06 12:12 produtos/001.png"
+    "ultimo": "2026-08-06 21:36 produtos/002.png"
   }
 }
