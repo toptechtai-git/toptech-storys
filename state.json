@@ -20,26 +20,20 @@
     "ultimo": "2026-08-11 09:00 manha/008.png"
   },
   "tarde": {
-    "voltas": 2,
+    "voltas": 3,
     "publicados": {
       "12:00": "2026-08-11",
-      "15:00": "2026-08-10",
+      "15:00": "2026-08-11",
       "18:00": "2026-08-10"
     },
-    "ultimo": "2026-08-11 12:00 tarde/007.png",
+    "ultimo": "2026-08-11 15:00 tarde/001.png",
     "pontuais": [],
     "indicesHora": {},
     "feitas": [
-      "1516754e89d2",
-      "2e09c67952bb",
-      "d894d7def6f7",
-      "016eef0a9276",
-      "f2f7c3639344",
-      "4b2587c1f9eb",
-      "359a13c560f3"
+      "1516754e89d2"
     ]
   },
-  "_ultimosAvisos": "",
+  "_ultimosAvisos": "A fila deu a volta (3x) — voltou a publicar do inicio. Hora de renovar as artes.",
   "produtos": {
     "voltas": 0,
     "publicados": {
