@@ -3,7 +3,7 @@
     "voltas": 0,
     "publicados": {
       "09:00": "2026-08-03",
-      "08:50": "2026-08-12"
+      "08:50": "2026-08-13"
     },
     "feitas": [
       "3aefc30fd1e6",
@@ -14,11 +14,12 @@
       "122d09e69b13",
       "52e467e79b06",
       "f261fa51006e",
-      "eb6a5fdf5a55"
+      "eb6a5fdf5a55",
+      "5f614dd36c20"
     ],
     "pontuais": [],
     "indicesHora": {},
-    "ultimo": "2026-08-12 08:50 manha/009.png"
+    "ultimo": "2026-08-13 08:50 manha/010.png"
   },
   "tarde": {
     "voltas": 3,
