@@ -97,7 +97,15 @@
   },
   "campanha": {
     "voltas": 0,
-    "publicados": {}
+    "publicados": {
+      "16:30": "2026-08-14"
+    },
+    "feitas": [
+      "524fca17765d"
+    ],
+    "pontuais": [],
+    "indicesHora": {},
+    "ultimo": "2026-08-14 16:56 campanha/01.png"
   },
   "feed-campanha": {
     "voltas": 0,
