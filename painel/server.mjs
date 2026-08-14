@@ -230,8 +230,22 @@ const rotas = {
     for (const h of horarios) {
       if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(h)) throw new Error(`Horario invalido: ${h}`);
     }
-    const cfg = { horarios: [...new Set(horarios)].sort(), loop: !!corpo.loop, ativo: !!corpo.ativo };
-    await writeFile(path.join(dir, "_config.json"), JSON.stringify(cfg, null, 2) + "\n");
+    // Preserva o que o painel nao edita (tipo, legendas, artes): sobrescrever o
+    // arquivo inteiro apagaria as legendas do feed no primeiro salvamento.
+    const arqCfg = path.join(dir, "_config.json");
+    let cfg = {};
+    if (existsSync(arqCfg)) {
+      try {
+        cfg = JSON.parse(await readFile(arqCfg, "utf8"));
+      } catch {
+        // Sobrescrever um arquivo quebrado apagaria legendas que dao pra recuperar.
+        throw new Error("_config.json desta pasta esta invalido — conserte o arquivo antes de salvar.");
+      }
+    }
+    cfg.horarios = [...new Set(horarios)].sort();
+    cfg.loop = !!corpo.loop;
+    cfg.ativo = !!corpo.ativo;
+    await writeFile(arqCfg, JSON.stringify(cfg, null, 2) + "\n");
     return { ok: true };
   },
 

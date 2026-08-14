@@ -8,12 +8,14 @@ Só isso: jogue as artes dentro de uma pasta de `stories/` e faça push.
 
 ```
 stories/
-  manha/          09:00 — _config.json
-    001.jpg
-    002.mp4
-  tarde/          15:00 e 19:30 — _config.json
-    001.jpg
+  manha/          08:50                        story
+  produtos/       09:30 11:00 11:30 12:00 12:30  story
+  tarde/          12:00 15:00 18:00            story
+  campanha/       10:15 13:30 16:30            story  (campanha diagnóstico, 1080x1920)
+  feed-campanha/  17:30                        FEED   (mesma campanha, 1080x1350)
 ```
+
+Todos os horários ficam dentro do comercial (nada depois das 18:00).
 
 - A ordem é **alfabética/numérica pelo nome do arquivo**. Use `001`, `002`, `003`.
 - Cada horário consome **um** arquivo e avança pro próximo.
@@ -29,6 +31,24 @@ stories/
 - `horarios`: hora local (America/Belem), formato `HH:MM`. Vários por pasta.
 - `loop: false`: para quando a fila acabar em vez de recomeçar.
 - `ativo: false`: pausa a pasta sem apagar nada.
+- `tipo: "feed"`: publica no feed em vez de story. Sem esse campo, é story.
+
+### Pasta de feed
+
+```json
+{
+  "tipo": "feed",
+  "horarios": ["17:30"],
+  "loop": false,
+  "legenda": "texto usado quando a arte não tem legenda própria",
+  "legendas": { "01.png": "legenda desta arte" }
+}
+```
+
+- **Use `loop: false` no feed.** Story some em 24h, post de feed fica — republicar a mesma arte polui o perfil.
+- `legendas` é por nome de arquivo; `legenda` é o texto de reserva. Sem nenhum dos dois, o post sai sem legenda e uma issue avisa.
+- Formato do feed: 1080x1350 (4:5), 1080x1080 ou 1080x566. Vídeo de feed vira Reels.
+- O painel local preserva `tipo` e `legendas` ao salvar horários — mas ele não edita legenda, isso é no arquivo.
 
 ### Formatos
 

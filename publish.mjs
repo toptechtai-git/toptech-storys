@@ -126,9 +126,15 @@ async function esperarContainer(id) {
   throw new Error("container nao ficou pronto em 150s");
 }
 
-async function publicar(urlMidia, ehVideo) {
+async function publicar(urlMidia, ehVideo, ehFeed, legenda) {
   const campo = ehVideo ? "video_url" : "image_url";
-  const criado = await graph(`${IG_ID}/media`, { media_type: "STORIES", [campo]: urlMidia });
+  const corpo = { [campo]: urlMidia };
+  // Story e Reels precisam declarar o tipo; foto de feed e o padrao da API.
+  if (!ehFeed) corpo.media_type = "STORIES";
+  else if (ehVideo) corpo.media_type = "REELS";
+  if (ehFeed && legenda) corpo.caption = legenda;
+
+  const criado = await graph(`${IG_ID}/media`, corpo);
   if (ehVideo) await esperarContainer(criado.id);
   else await new Promise((r) => setTimeout(r, 8000));
   const pub = await graph(`${IG_ID}/media_publish`, { creation_id: criado.id });
@@ -249,6 +255,7 @@ function montarRelatorio(agora) {
       );
       L.push(`- Começou às ${e.inicio} e levou ${e.segundos} segundos.`);
       L.push(`- Horário programado: ${e.hhmm}${e.atraso > 0 ? ` (saiu ${e.atraso} min depois, dentro da tolerância)` : ""}.`);
+      L.push(`- Destino: **${e.ehFeed ? "feed" : "story"}**.`);
       L.push(`- Pasta: \`${e.pasta}\` — escolhida por ${ORIGEM[e.tipo] || e.tipo}.`);
       if (e.mediaId) L.push(`- ID da mídia no Instagram: \`${e.mediaId}\`.`);
       L.push(`- Arquivo enviado: ${e.url}`);
@@ -362,6 +369,11 @@ async function main() {
       const { arte, tipo } = escolha;
       const arquivo = arte.nome;
       const ehVideo = VIDEOS.has(path.extname(arquivo).toLowerCase());
+      const ehFeed = cfg.tipo === "feed";
+      const legenda = cfg.legendas?.[arquivo] ?? cfg.legenda ?? "";
+      if (ehFeed && !legenda) {
+        avisos.push(`"${pasta}/${arquivo}" vai pro feed sem legenda — nenhuma marcada em _config.json.`);
+      }
       const url = urlPublica(pasta, arquivo);
       log(`[${pasta} ${hhmm}] publicando ${arquivo} (${tipo})${DRY_RUN ? " — DRY RUN" : ""}`);
 
@@ -372,6 +384,7 @@ async function main() {
         tipo,
         url,
         ehVideo,
+        ehFeed,
         atraso,
         inicio: horaLocal(),
         t0: Date.now(),
@@ -379,7 +392,7 @@ async function main() {
 
       if (!DRY_RUN) {
         try {
-          ev.mediaId = await publicar(url, ehVideo);
+          ev.mediaId = await publicar(url, ehVideo, ehFeed, legenda);
           ev.ok = true;
           log(`  ok — media ${ev.mediaId}`);
         } catch (e) {
@@ -432,7 +445,12 @@ async function main() {
     process.exitCode = 1; // deixa o job vermelho: falha silenciosa passa despercebida
   } else if (ok.length) {
     const q = ok.map((e) => `${e.pasta}/${e.arquivo}`).join(", ");
-    titulo = `Story publicado: ${q} — ${data} ${agora.hhmm}`;
+    const onde = ok.every((e) => e.ehFeed)
+      ? "Post no feed"
+      : ok.some((e) => e.ehFeed)
+        ? "Publicado"
+        : "Story publicado";
+    titulo = `${onde}: ${q} — ${data} ${agora.hhmm}`;
   } else {
     titulo = `Avisos do agendador — ${data} ${agora.hhmm}`;
   }
