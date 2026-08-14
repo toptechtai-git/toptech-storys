@@ -101,6 +101,26 @@
   },
   "feed-campanha": {
     "voltas": 0,
-    "publicados": {}
+    "publicados": {
+      "13:45": "2026-08-14"
+    },
+    "feitas": [
+      "607937d88d74"
+    ],
+    "pontuais": [],
+    "indicesHora": {},
+    "ultimo": "2026-08-14 14:24 feed-campanha/001.png"
+  },
+  "jbl-9x16": {
+    "voltas": 0,
+    "publicados": {
+      "13:00": "2026-08-14"
+    },
+    "feitas": [
+      "1c3e39bc45dc"
+    ],
+    "pontuais": [],
+    "indicesHora": {},
+    "ultimo": "2026-08-14 14:24 jbl-9x16/f01.png"
   }
 }
