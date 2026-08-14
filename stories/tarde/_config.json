@@ -4,6 +4,6 @@
     "15:00",
     "18:00"
   ],
-  "loop": true,
-  "ativo": true
+  "loop": false,
+  "ativo": false
 }

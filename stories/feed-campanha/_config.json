@@ -1,6 +1,8 @@
 {
   "tipo": "feed",
-  "horarios": ["17:30"],
+  "horarios": [
+    "08:45"
+  ],
   "loop": false,
   "ativo": true,
   "legenda": "Laboratório técnico em Tailândia, PA. Diagnóstico gratuito, inclusive para quem já ouviu que não tinha conserto.\n\n📲 Traga o seu. A gente avalia antes de qualquer coisa.\n\n#Toptech #Tailândia #Microsoldagem #AssistênciaTécnica",
