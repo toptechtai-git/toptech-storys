@@ -117,16 +117,17 @@
   "feed-campanha": {
     "voltas": 0,
     "publicados": {
-      "13:45": "2026-08-14",
+      "13:45": "2026-08-15",
       "08:45": "2026-08-15"
     },
     "feitas": [
       "607937d88d74",
-      "728f0082f977"
+      "728f0082f977",
+      "512749c2a9dd"
     ],
     "pontuais": [],
     "indicesHora": {},
-    "ultimo": "2026-08-15 08:50 feed-campanha/002.png"
+    "ultimo": "2026-08-15 13:59 feed-campanha/003.png"
   },
   "jbl-9x16": {
     "voltas": 0,
