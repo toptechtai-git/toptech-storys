@@ -104,15 +104,16 @@
   "campanha": {
     "voltas": 0,
     "publicados": {
-      "16:30": "2026-08-14",
+      "16:30": "2026-08-15",
       "10:15": "2026-08-15"
     },
     "feitas": [
-      "14ded90bcd41"
+      "14ded90bcd41",
+      "98c1fd9c3054"
     ],
     "pontuais": [],
     "indicesHora": {},
-    "ultimo": "2026-08-15 10:41 campanha/01.png"
+    "ultimo": "2026-08-15 16:36 campanha/02.png"
   },
   "feed-campanha": {
     "voltas": 0,
