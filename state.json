@@ -131,13 +131,14 @@
   "jbl-9x16": {
     "voltas": 0,
     "publicados": {
-      "13:00": "2026-08-14"
+      "13:00": "2026-08-15"
     },
     "feitas": [
-      "1c3e39bc45dc"
+      "1c3e39bc45dc",
+      "116e087240ab"
     ],
     "pontuais": [],
     "indicesHora": {},
-    "ultimo": "2026-08-14 14:24 jbl-9x16/f01.png"
+    "ultimo": "2026-08-15 13:13 jbl-9x16/f02.png"
   }
 }
