@@ -107,15 +107,14 @@
     "voltas": 0,
     "publicados": {
       "16:30": "2026-08-15",
-      "10:15": "2026-08-15"
+      "10:15": "2026-08-16"
     },
     "feitas": [
-      "14ded90bcd41",
-      "98c1fd9c3054"
+      "177aad86167e"
     ],
     "pontuais": [],
     "indicesHora": {},
-    "ultimo": "2026-08-15 16:36 campanha/02.png"
+    "ultimo": "2026-08-16 10:42 campanha/001.png"
   },
   "feed-campanha": {
     "voltas": 0,
@@ -123,12 +122,7 @@
       "13:45": "2026-08-15",
       "08:45": "2026-08-16"
     },
-    "feitas": [
-      "607937d88d74",
-      "728f0082f977",
-      "512749c2a9dd",
-      "acdcf58b6495"
-    ],
+    "feitas": [],
     "pontuais": [],
     "indicesHora": {},
     "ultimo": "2026-08-16 08:50 feed-campanha/004.png"
@@ -145,5 +139,16 @@
     "pontuais": [],
     "indicesHora": {},
     "ultimo": "2026-08-15 13:13 jbl-9x16/f02.png"
-  }
+  },
+  "_historico": [
+    {
+      "dia": "2026-08-16",
+      "hora": "10:42",
+      "slot": "10:15",
+      "pasta": "campanha",
+      "arquivo": "001.png",
+      "tipo": "fila",
+      "feed": false
+    }
+  ]
 }
