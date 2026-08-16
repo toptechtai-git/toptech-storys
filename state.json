@@ -3,7 +3,7 @@
     "voltas": 0,
     "publicados": {
       "09:00": "2026-08-03",
-      "08:50": "2026-08-15"
+      "08:50": "2026-08-16"
     },
     "feitas": [
       "3aefc30fd1e6",
@@ -17,11 +17,12 @@
       "eb6a5fdf5a55",
       "5f614dd36c20",
       "dbafe2450dd3",
-      "8a378547cb0d"
+      "8a378547cb0d",
+      "d3aa6ed346c4"
     ],
     "pontuais": [],
     "indicesHora": {},
-    "ultimo": "2026-08-15 08:50 manha/012.png"
+    "ultimo": "2026-08-16 08:50 manha/013.png"
   },
   "tarde": {
     "voltas": 4,
@@ -119,16 +120,17 @@
     "voltas": 0,
     "publicados": {
       "13:45": "2026-08-15",
-      "08:45": "2026-08-15"
+      "08:45": "2026-08-16"
     },
     "feitas": [
       "607937d88d74",
       "728f0082f977",
-      "512749c2a9dd"
+      "512749c2a9dd",
+      "acdcf58b6495"
     ],
     "pontuais": [],
     "indicesHora": {},
-    "ultimo": "2026-08-15 13:59 feed-campanha/003.png"
+    "ultimo": "2026-08-16 08:50 feed-campanha/004.png"
   },
   "jbl-9x16": {
     "voltas": 0,
