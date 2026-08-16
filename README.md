@@ -32,6 +32,25 @@ Todos os horários ficam dentro do comercial (nada depois das 18:00).
 - `loop: false`: para quando a fila acabar em vez de recomeçar.
 - `ativo: false`: pausa a pasta sem apagar nada.
 - `tipo: "feed"`: publica no feed em vez de story. Sem esse campo, é story.
+- `folgas: [0]`: dias da semana em que esta pasta não publica. `0` = domingo … `6` = sábado (também aceita `"dom"`, `"seg"`…).
+
+- `legenda` / `legendas`: texto que acompanha a publicação — `legenda` vale para a pasta inteira, `legendas: { "001.png": "…" }` sobrescreve por arte. Editável no painel.
+
+### Dias sem publicar (vale para todas as pastas)
+
+`stories/_geral.json`:
+
+```json
+{ "folgas": [0], "pausas": ["2026-12-25"], "pausarAte": "2026-08-20" }
+```
+
+- `folgas`: dias da semana, toda semana.
+- `pausas`: datas soltas (feriado, viagem).
+- `pausarAte`: para tudo até essa data, inclusive.
+
+Em dia parado o robô encerra a execução sem publicar nada e sem mandar e-mail. A folga da pasta **soma** com esta — não substitui. Tudo isso se edita no painel, no bloco "Sem publicar".
+
+Slot perdido não é recuperado: se domingo é folga, o story de domingo não sai na segunda — a fila só anda quando publica.
 
 ### Pasta de feed
 
@@ -48,7 +67,17 @@ Todos os horários ficam dentro do comercial (nada depois das 18:00).
 - **Use `loop: false` no feed.** Story some em 24h, post de feed fica — republicar a mesma arte polui o perfil.
 - `legendas` é por nome de arquivo; `legenda` é o texto de reserva. Sem nenhum dos dois, o post sai sem legenda e uma issue avisa.
 - Formato do feed: 1080x1350 (4:5), 1080x1080 ou 1080x566. Vídeo de feed vira Reels.
-- O painel local preserva `tipo` e `legendas` ao salvar horários — mas ele não edita legenda, isso é no arquivo.
+- No painel, o botão **leg** de cada arte (ou "Legenda padrão" na pasta) escreve esses campos.
+
+### Painel local
+
+`Abrir painel.command` → <http://127.0.0.1:4751>. Ele mostra:
+
+- **Hoje**: a régua do dia, com a arte prevista em cada horário e a linha do "agora". A previsão roda o mesmo algoritmo do robô (`agenda.mjs`), então bate com o que vai sair.
+- **Atenção**: pasta vazia, arte fora de formato, feed sem legenda, fila prestes a dar a volta.
+- **Sem publicar**: dias da semana, datas soltas e "parar até".
+- **Já saiu**: últimas 80 publicações, gravadas em `state.json` por `_historico`.
+- **Pastas**: horários, folga da pasta, legendas, ordem das artes e upload por arrastar.
 
 ### Formatos
 

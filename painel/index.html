@@ -3,21 +3,32 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Stories Toptech — painel</title>
+    <title>Stories Toptech — bancada</title>
     <style>
       /* === TOKENS === */
       :root {
-        --bg: #f6f7f9;
-        --surface: #ffffff;
-        --surface-2: #eef0f4;
-        --text: #16181d;
-        --text-muted: #626a78;
-        --border: #d9dde5;
-        --accent: #1f6feb;
-        --accent-text: #ffffff;
-        --danger: #c0392b;
-        --ok: #1a7f4b;
-        --warn: #a86400;
+        color-scheme: dark;
+
+        /* Grafite quente: neutro puxado para a temperatura do âmbar. */
+        --bg: #121110;
+        --surface: #1b1917;
+        --surface-2: #242120;
+        --surface-3: #2c2926;
+        --border: #35312d;
+        --border-forte: #4a443e;
+
+        --text: #efeae3;
+        --text-muted: #a39b92;
+        --text-fraco: #7c746c;
+
+        /* Único acento: a luz de bancada. Tudo que o olho deve procurar é âmbar. */
+        --accent: #f2a20c;
+        --accent-escuro: #b87905;
+        --accent-fraco: #3a2d13;
+        --sobre-accent: #171310;
+
+        --ok: #62b87a;
+        --erro: #e5675a;
 
         --space-1: 4px;
         --space-2: 8px;
@@ -25,37 +36,26 @@
         --space-4: 16px;
         --space-5: 24px;
         --space-6: 32px;
+        --space-7: 48px;
 
-        --radius-sm: 6px;
-        --radius-md: 10px;
-        --radius-lg: 16px;
-        --shadow-sm: 0 1px 2px rgb(0 0 0 / 8%);
-        --shadow-md: 0 4px 16px rgb(0 0 0 / 10%);
+        --radius-sm: 4px;
+        --radius-md: 8px;
+        --radius-lg: 14px;
+        --shadow-md: 0 10px 30px rgb(0 0 0 / 45%);
 
-        --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+        --font-sans: system-ui, -apple-system, "Segoe UI", sans-serif;
+        --font-display: "Helvetica Neue", "Arial Narrow", var(--font-sans);
+        --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
+
+        --text-xs: 0.6875rem;
         --text-sm: 0.8125rem;
         --text-base: 0.9375rem;
         --text-lg: 1.125rem;
-        --text-xl: 1.375rem;
+        --text-xl: 1.5rem;
+        --text-2xl: 2.25rem;
 
+        --z-topo: 10;
         --z-toast: 100;
-      }
-
-      @media (prefers-color-scheme: dark) {
-        :root {
-          --bg: #0f1116;
-          --surface: #171a21;
-          --surface-2: #1f232c;
-          --text: #e7eaf0;
-          --text-muted: #99a1b0;
-          --border: #2c313c;
-          --accent: #4c8dff;
-          --accent-text: #08101f;
-          --danger: #ef6b5e;
-          --ok: #56d391;
-          --warn: #e0a33a;
-          --shadow-md: 0 4px 16px rgb(0 0 0 / 40%);
-        }
       }
 
       /* === BASE === */
@@ -74,13 +74,10 @@
       h2,
       h3 {
         margin: 0;
-        line-height: 1.25;
+        line-height: 1.15;
       }
-      h1 {
-        font-size: var(--text-xl);
-      }
-      h2 {
-        font-size: var(--text-lg);
+      p {
+        margin: 0;
       }
       button {
         font: inherit;
@@ -90,102 +87,423 @@
         outline: 2px solid var(--accent);
         outline-offset: 2px;
       }
+      ul,
+      ol {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
 
-      /* === LAYOUT === */
+      /* Rótulo de estrutura: condensado, caixa alta, entrelinha curta. */
+      .rotulo {
+        font-family: var(--font-display);
+        font-stretch: 87.5%;
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--text-fraco);
+      }
+      .dado {
+        font-family: var(--font-mono);
+        font-variant-numeric: tabular-nums;
+      }
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+      }
+
+      /* === TOPO === */
       .topo {
         position: sticky;
         top: 0;
-        z-index: 10;
+        z-index: var(--z-topo);
         display: flex;
         flex-wrap: wrap;
         align-items: center;
-        gap: var(--space-3);
-        padding: var(--space-4) var(--space-5);
-        background: var(--surface);
+        gap: var(--space-4);
+        padding: var(--space-3) var(--space-5);
+        background: color-mix(in srgb, var(--bg) 88%, transparent);
+        backdrop-filter: blur(8px);
         border-bottom: 1px solid var(--border);
+      }
+      .marca {
+        display: flex;
+        align-items: baseline;
+        gap: var(--space-3);
+      }
+      .marca h1 {
+        font-family: var(--font-display);
+        font-stretch: 87.5%;
+        font-size: var(--text-lg);
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+      .relogio {
+        font-family: var(--font-mono);
+        font-size: var(--text-sm);
+        color: var(--text-muted);
+        font-variant-numeric: tabular-nums;
       }
       .topo__espaco {
         flex: 1;
       }
-      main {
-        display: grid;
-        gap: var(--space-5);
-        grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-        padding: var(--space-5);
-        max-width: 1400px;
-        margin: 0 auto;
-      }
 
-      /* === COMPONENTES === */
+      /* === BOTÕES === */
       .btn {
         display: inline-flex;
         align-items: center;
         gap: var(--space-2);
         padding: var(--space-2) var(--space-4);
-        border: 1px solid var(--border);
+        border: 1px solid var(--border-forte);
         border-radius: var(--radius-sm);
-        background: var(--surface);
+        background: var(--surface-2);
         color: var(--text);
+        font-size: var(--text-sm);
       }
       .btn:hover {
-        background: var(--surface-2);
+        background: var(--surface-3);
+        border-color: var(--text-fraco);
       }
       .btn--principal {
         background: var(--accent);
         border-color: var(--accent);
-        color: var(--accent-text);
+        color: var(--sobre-accent);
         font-weight: 600;
       }
       .btn--principal:hover {
-        filter: brightness(1.08);
-        background: var(--accent);
+        background: #ffb527;
+        border-color: #ffb527;
       }
-      .btn--perigo {
-        color: var(--danger);
+      .btn--perigo:hover {
+        border-color: var(--erro);
+        color: var(--erro);
       }
       .btn--mini {
-        padding: var(--space-1) var(--space-2);
-        font-size: var(--text-sm);
+        padding: 2px var(--space-2);
+        font-size: var(--text-xs);
+      }
+      .btn--fantasma {
+        background: none;
+        border-color: transparent;
+        color: var(--text-muted);
       }
       .btn[disabled] {
-        opacity: 0.5;
+        opacity: 0.4;
         cursor: not-allowed;
       }
 
       .selo {
         padding: 2px var(--space-2);
+        border: 1px solid var(--border);
         border-radius: 999px;
-        font-size: var(--text-sm);
-        background: var(--surface-2);
+        font-family: var(--font-mono);
+        font-size: var(--text-xs);
         color: var(--text-muted);
       }
+      .selo--alerta {
+        border-color: var(--accent-escuro);
+        color: var(--accent);
+      }
       .selo--ok {
+        border-color: color-mix(in srgb, var(--ok) 45%, transparent);
         color: var(--ok);
       }
-      .selo--alerta {
-        color: var(--warn);
+
+      /* === LAYOUT === */
+      .painel {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 22rem;
+        align-items: start;
+        gap: var(--space-6);
+        max-width: 1360px;
+        margin: 0 auto;
+        padding: var(--space-6) var(--space-5) var(--space-7);
+      }
+      .painel > .largo {
+        grid-column: 1 / -1;
+      }
+      @media (max-width: 60rem) {
+        .painel {
+          grid-template-columns: minmax(0, 1fr);
+          gap: var(--space-5);
+          padding: var(--space-4);
+        }
       }
 
-      .cartao {
-        display: flex;
-        flex-direction: column;
+      .bloco {
+        display: grid;
         gap: var(--space-4);
+      }
+      .bloco__cabeca {
+        display: flex;
+        align-items: baseline;
+        gap: var(--space-3);
+        padding-bottom: var(--space-2);
+        border-bottom: 1px solid var(--border);
+      }
+      .bloco__cabeca h2 {
+        font-family: var(--font-display);
+        font-stretch: 87.5%;
+        font-size: var(--text-xl);
+        letter-spacing: 0.02em;
+      }
+      .lado {
+        display: grid;
+        gap: var(--space-6);
+      }
+      .cartao {
         padding: var(--space-4);
         background: var(--surface);
         border: 1px solid var(--border);
         border-radius: var(--radius-lg);
-        box-shadow: var(--shadow-sm);
       }
-      .cartao[data-ativo="false"] {
-        opacity: 0.62;
+
+      /* === RÉGUA DO DIA (elemento-assinatura) === */
+      .regua {
+        display: grid;
+        gap: var(--space-2);
       }
-      .cartao__topo {
+      .slot {
+        position: relative;
+        display: grid;
+        grid-template-columns: 4.5rem 2.75rem minmax(0, 1fr) auto;
+        align-items: center;
+        gap: var(--space-4);
+        padding: var(--space-2) var(--space-4) var(--space-2) 0;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-left: 3px solid var(--border-forte);
+        border-radius: var(--radius-md);
+      }
+      .slot__hora {
+        padding-left: var(--space-4);
+        font-family: var(--font-mono);
+        font-size: var(--text-lg);
+        font-variant-numeric: tabular-nums;
+        color: var(--text);
+      }
+      .slot__mini {
+        width: 100%;
+        aspect-ratio: 9 / 16;
+        object-fit: cover;
+        border-radius: var(--radius-sm);
+        background: var(--surface-2);
+        border: 1px solid var(--border);
+      }
+      .slot__mini--feed {
+        aspect-ratio: 4 / 5;
+      }
+      .slot__arte {
+        font-family: var(--font-mono);
+        font-size: var(--text-sm);
+        overflow-wrap: anywhere;
+      }
+      .slot__meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-2);
+        font-size: var(--text-xs);
+        color: var(--text-muted);
+      }
+      .slot__acoes {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+      }
+      .slot[data-estado="saiu"] {
+        border-left-color: var(--ok);
+      }
+      .slot[data-estado="saiu"] .slot__mini {
+        opacity: 0.45;
+      }
+      .slot[data-estado="saiu"] .slot__hora {
+        color: var(--text-fraco);
+      }
+      .slot[data-estado="proximo"] {
+        border-left-color: var(--accent);
+        background: linear-gradient(90deg, var(--accent-fraco), var(--surface) 45%);
+      }
+      .slot[data-estado="falhou"] {
+        border-left-color: var(--erro);
+      }
+
+      /* Linha do agora: corta a régua onde o relógio está. */
+      .agora {
         display: flex;
         align-items: center;
         gap: var(--space-3);
+        margin: var(--space-1) 0;
+        color: var(--accent);
+        font-family: var(--font-mono);
+        font-size: var(--text-xs);
       }
-      .cartao__topo h2 {
+      .agora::after {
+        content: "";
         flex: 1;
+        height: 1px;
+        background: linear-gradient(90deg, var(--accent), transparent);
+      }
+
+      .parado {
+        display: grid;
+        gap: var(--space-2);
+        padding: var(--space-5);
+        border: 1px dashed var(--border-forte);
+        border-radius: var(--radius-lg);
+        background: var(--surface);
+      }
+      .parado strong {
+        font-family: var(--font-display);
+        font-stretch: 87.5%;
+        font-size: var(--text-2xl);
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+        color: var(--accent);
+      }
+
+      /* === PRÓXIMOS DIAS === */
+      .semana {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
+        gap: var(--space-2);
+      }
+      .dia {
+        display: grid;
+        gap: var(--space-1);
+        padding: var(--space-3);
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+      }
+      .dia__n {
+        font-family: var(--font-mono);
+        font-size: var(--text-lg);
+      }
+      .dia__conta {
+        font-size: var(--text-xs);
+        color: var(--text-muted);
+      }
+      .dia[data-parado="true"] {
+        background: repeating-linear-gradient(
+          -45deg,
+          var(--surface),
+          var(--surface) 6px,
+          var(--surface-2) 6px,
+          var(--surface-2) 12px
+        );
+      }
+      .dia[data-parado="true"] .dia__n {
+        color: var(--text-fraco);
+      }
+
+      /* === SAÚDE, PAUSAS, HISTÓRICO === */
+      .lista {
+        display: grid;
+        gap: var(--space-3);
+      }
+      .item {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        gap: var(--space-3);
+        font-size: var(--text-sm);
+        color: var(--text-muted);
+      }
+      .item::before {
+        content: "";
+        width: 6px;
+        height: 6px;
+        margin-top: 0.5em;
+        border-radius: 50%;
+        background: var(--text-fraco);
+      }
+      .item[data-nivel="erro"]::before {
+        background: var(--erro);
+      }
+      .item[data-nivel="alerta"]::before {
+        background: var(--accent);
+      }
+      .item[data-nivel="erro"],
+      .item[data-nivel="alerta"] {
+        color: var(--text);
+      }
+
+      .dias-semana {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-1);
+        border: 0;
+        margin: 0;
+        padding: 0;
+      }
+      .dias-semana legend {
+        padding: 0;
+        margin-bottom: var(--space-2);
+      }
+      .dia-caixa {
+        position: relative;
+      }
+      .dia-caixa input {
+        position: absolute;
+        opacity: 0;
+        inset: 0;
+        margin: 0;
+        cursor: pointer;
+      }
+      .dia-caixa label {
+        display: block;
+        min-width: 2.5rem;
+        padding: var(--space-2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        font-family: var(--font-mono);
+        font-size: var(--text-xs);
+        text-align: center;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        cursor: pointer;
+      }
+      .dia-caixa input:checked + label {
+        background: var(--accent-fraco);
+        border-color: var(--accent-escuro);
+        color: var(--accent);
+      }
+      .dia-caixa input:focus-visible + label {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--space-2);
+      }
+      .chip {
+        display: flex;
+        align-items: center;
+        gap: var(--space-1);
+        padding: 2px var(--space-2);
+        background: var(--surface-2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        font-family: var(--font-mono);
+        font-size: var(--text-xs);
+      }
+      .chip button {
+        padding: 0 2px;
+        border: 0;
+        background: none;
+        color: var(--text-fraco);
+        line-height: 1;
+      }
+      .chip button:hover {
+        color: var(--erro);
       }
 
       .campo {
@@ -195,54 +513,112 @@
         font-size: var(--text-sm);
         color: var(--text-muted);
       }
-      .linha-opcoes {
-        display: flex;
-        flex-wrap: wrap;
-        gap: var(--space-4);
+      .campo--empilha {
+        display: grid;
+        gap: var(--space-2);
+      }
+      input[type="date"],
+      input[type="time"],
+      select,
+      textarea {
+        padding: var(--space-2);
+        background: var(--surface-2);
+        color: var(--text);
+        border: 1px solid var(--border-forte);
+        border-radius: var(--radius-sm);
+        font: var(--text-sm) / 1.4 var(--font-mono);
+      }
+      textarea {
+        min-height: 9rem;
+        font-family: var(--font-sans);
+        font-size: var(--text-base);
+        resize: vertical;
       }
 
-      .horarios {
+      .historico li {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        gap: var(--space-3);
+        padding: var(--space-1) 0;
+        border-bottom: 1px solid var(--border);
+        font-family: var(--font-mono);
+        font-size: var(--text-xs);
+        color: var(--text-muted);
+      }
+      .historico li[data-erro="true"] {
+        color: var(--erro);
+      }
+
+      /* === PASTAS === */
+      .pastas {
+        display: grid;
+        gap: var(--space-3);
+      }
+      details.pasta {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+      }
+      details.pasta[open] {
+        border-color: var(--border-forte);
+      }
+      .pasta > summary {
         display: flex;
         flex-wrap: wrap;
-        gap: var(--space-2);
-        list-style: none;
-        margin: 0;
-        padding: 0;
-      }
-      .horario {
-        display: flex;
         align-items: center;
-        gap: var(--space-1);
-        padding: var(--space-1) var(--space-2);
-        background: var(--surface-2);
-        border-radius: var(--radius-sm);
-        font-variant-numeric: tabular-nums;
+        gap: var(--space-3);
+        padding: var(--space-4);
+        list-style: none;
+        cursor: pointer;
       }
-      .horario button {
-        border: 0;
-        background: none;
+      .pasta > summary::-webkit-details-marker {
+        display: none;
+      }
+      .pasta > summary::before {
+        content: "▸";
+        color: var(--text-fraco);
+      }
+      .pasta[open] > summary::before {
+        content: "▾";
+        color: var(--accent);
+      }
+      .pasta h3 {
+        font-family: var(--font-display);
+        font-stretch: 87.5%;
+        font-size: var(--text-lg);
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+      .pasta[data-ativo="false"] h3 {
+        color: var(--text-fraco);
+        text-decoration: line-through;
+      }
+      .pasta__corpo {
+        display: grid;
+        gap: var(--space-5);
+        padding: 0 var(--space-4) var(--space-4);
+      }
+      .pasta__resumo {
+        font-size: var(--text-sm);
         color: var(--text-muted);
-        padding: 0 2px;
-        line-height: 1;
       }
-      .horario button:hover {
-        color: var(--danger);
+      .linha {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--space-4);
       }
 
       .fila {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(6rem, 1fr));
         gap: var(--space-3);
-        list-style: none;
-        margin: 0;
-        padding: 0;
       }
       .arte {
         position: relative;
-        display: flex;
-        flex-direction: column;
+        display: grid;
         gap: var(--space-1);
-        font-size: var(--text-sm);
+        font-size: var(--text-xs);
         color: var(--text-muted);
       }
       .arte img,
@@ -250,91 +626,57 @@
         width: 100%;
         aspect-ratio: 9 / 16;
         object-fit: cover;
-        border-radius: var(--radius-sm);
         border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
         background: var(--surface-2);
       }
       .arte[data-proxima="true"] img,
       .arte[data-proxima="true"] video {
-        border: 2px solid var(--accent);
+        border-color: var(--accent);
+        box-shadow: 0 0 0 2px var(--accent-fraco);
       }
       .arte[data-ok="false"] img {
-        border: 2px solid var(--warn);
+        border-color: var(--erro);
+      }
+      .arte[data-saiu="true"] img,
+      .arte[data-saiu="true"] video {
+        opacity: 0.4;
+      }
+      .arte__rotulo {
+        font-family: var(--font-mono);
+        text-align: center;
       }
       .arte__acoes {
         display: flex;
-        gap: 2px;
+        flex-wrap: wrap;
         justify-content: center;
+        gap: 2px;
       }
-      .arte__rotulo {
-        text-align: center;
-        font-variant-numeric: tabular-nums;
-      }
-
       .arte__marca {
         position: absolute;
         inset-block-start: var(--space-1);
         inset-inline: var(--space-1);
-        padding: 1px var(--space-1);
+        padding: 1px 2px;
         border-radius: var(--radius-sm);
         background: var(--accent);
-        color: var(--accent-text);
-        font-size: 0.6875rem;
-        font-weight: 600;
+        color: var(--sobre-accent);
+        font-family: var(--font-mono);
+        font-size: 0.625rem;
+        font-weight: 700;
         text-align: center;
-        font-variant-numeric: tabular-nums;
       }
       .arte__marca--saiu {
-        background: var(--surface-2);
+        background: var(--surface-3);
         color: var(--text-muted);
-      }
-      .arte[data-saiu="true"] img,
-      .arte[data-saiu="true"] video {
-        opacity: 0.45;
-      }
-
-      dialog {
-        max-width: 26rem;
-        padding: var(--space-5);
-        border: 1px solid var(--border);
-        border-radius: var(--radius-lg);
-        background: var(--surface);
-        color: var(--text);
-        box-shadow: var(--shadow-md);
-      }
-      dialog::backdrop {
-        background: rgb(0 0 0 / 45%);
-      }
-      dialog form {
-        display: grid;
-        gap: var(--space-4);
-      }
-      .dlg__acoes {
-        display: flex;
-        justify-content: flex-end;
-        gap: var(--space-2);
-      }
-
-      .alerta {
-        display: grid;
-        gap: var(--space-2);
-        padding: var(--space-3);
-        border: 1px solid var(--warn);
-        border-radius: var(--radius-md);
-        color: var(--warn);
-        font-size: var(--text-sm);
-      }
-      .alerta p {
-        margin: 0;
       }
 
       .solta {
         display: grid;
         place-items: center;
         padding: var(--space-5);
-        border: 2px dashed var(--border);
+        border: 1px dashed var(--border-forte);
         border-radius: var(--radius-md);
-        color: var(--text-muted);
+        color: var(--text-fraco);
         font-size: var(--text-sm);
         text-align: center;
       }
@@ -344,8 +686,37 @@
       }
 
       .vazio {
-        color: var(--text-muted);
+        color: var(--text-fraco);
         font-size: var(--text-sm);
+      }
+
+      /* === DIÁLOGOS E AVISO === */
+      dialog {
+        width: min(32rem, 92vw);
+        padding: var(--space-5);
+        background: var(--surface);
+        color: var(--text);
+        border: 1px solid var(--border-forte);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+      }
+      dialog::backdrop {
+        background: rgb(0 0 0 / 60%);
+      }
+      dialog form {
+        display: grid;
+        gap: var(--space-4);
+      }
+      dialog h2 {
+        font-family: var(--font-display);
+        font-stretch: 87.5%;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+      .dlg__acoes {
+        display: flex;
+        justify-content: flex-end;
+        gap: var(--space-2);
       }
 
       #aviso {
@@ -357,35 +728,103 @@
         max-width: 90vw;
         margin: 0 auto;
         padding: var(--space-3) var(--space-5);
-        background: var(--surface);
-        border: 1px solid var(--border);
+        background: var(--surface-3);
+        border: 1px solid var(--border-forte);
         border-radius: var(--radius-md);
         box-shadow: var(--shadow-md);
+        font-size: var(--text-sm);
       }
       #aviso:not([hidden]) {
         display: block;
       }
       #aviso[data-tipo="erro"] {
-        border-color: var(--danger);
-        color: var(--danger);
+        border-color: var(--erro);
+        color: var(--erro);
+      }
+
+      @media (prefers-reduced-motion: no-preference) {
+        .slot[data-estado="proximo"] .slot__hora {
+          animation: pulso 2.4s ease-in-out infinite;
+        }
+        @keyframes pulso {
+          50% {
+            color: var(--accent);
+          }
+        }
       }
     </style>
   </head>
   <body>
     <header class="topo">
-      <h1>Stories Toptech</h1>
-      <span class="selo" id="selo-repo">carregando…</span>
+      <div class="marca">
+        <h1>Stories Toptech</h1>
+        <span class="relogio" id="relogio">carregando…</span>
+      </div>
       <span class="topo__espaco"></span>
+      <span class="selo" id="selo-repo">—</span>
       <button type="button" class="btn" id="btn-nova">Nova pasta</button>
       <button type="button" class="btn btn--principal" id="btn-publicar">Enviar para o GitHub</button>
     </header>
 
-    <main id="pastas" aria-live="polite"></main>
+    <main class="painel">
+      <section class="bloco" aria-labelledby="t-hoje">
+        <div class="bloco__cabeca">
+          <h2 id="t-hoje">Hoje</h2>
+          <p class="rotulo" id="hoje-data"></p>
+        </div>
+        <div id="hoje"></div>
+
+        <h3 class="rotulo">Próximos dias</h3>
+        <ol class="semana" id="semana"></ol>
+      </section>
+
+      <aside class="lado">
+        <section class="bloco" aria-labelledby="t-saude">
+          <div class="bloco__cabeca"><h2 id="t-saude">Atenção</h2></div>
+          <ul class="lista" id="saude"></ul>
+        </section>
+
+        <section class="bloco" aria-labelledby="t-pausas">
+          <div class="bloco__cabeca"><h2 id="t-pausas">Sem publicar</h2></div>
+          <div class="cartao lista">
+            <fieldset class="dias-semana" id="dias-geral">
+              <legend class="rotulo">Toda semana</legend>
+            </fieldset>
+
+            <form class="campo" id="form-pausa">
+              <label class="rotulo" for="pausa-data">Nesses dias</label>
+              <input type="date" id="pausa-data" required />
+              <button type="submit" class="btn btn--mini">Marcar</button>
+            </form>
+            <ul class="chips" id="pausas"></ul>
+
+            <form class="campo" id="form-ate">
+              <label class="rotulo" for="pausa-ate">Parar até</label>
+              <input type="date" id="pausa-ate" />
+              <button type="submit" class="btn btn--mini">Salvar</button>
+            </form>
+          </div>
+        </section>
+
+        <section class="bloco" aria-labelledby="t-historico">
+          <div class="bloco__cabeca"><h2 id="t-historico">Já saiu</h2></div>
+          <ul class="lista historico" id="historico"></ul>
+        </section>
+      </aside>
+
+      <section class="bloco largo" aria-labelledby="t-pastas">
+        <div class="bloco__cabeca">
+          <h2 id="t-pastas">Pastas</h2>
+          <p class="rotulo">horários, artes e legendas</p>
+        </div>
+        <div class="pastas" id="pastas"></div>
+      </section>
+    </main>
 
     <dialog id="dlg-horario">
       <form method="dialog" id="form-horario">
         <h2>Horário desta arte</h2>
-        <p class="vazio" id="dlg-arte"></p>
+        <p class="vazio dado" id="dlg-arte"></p>
 
         <div class="campo">
           <label for="dlg-hora">Sai às</label>
@@ -409,17 +848,83 @@
       </form>
     </dialog>
 
+    <dialog id="dlg-legenda">
+      <form method="dialog" id="form-legenda">
+        <h2>Legenda</h2>
+        <p class="vazio dado" id="leg-alvo"></p>
+        <div class="campo campo--empilha">
+          <label for="leg-texto">Texto que vai junto com a publicação</label>
+          <textarea id="leg-texto" maxlength="2200"></textarea>
+          <output class="vazio dado" id="leg-conta" for="leg-texto"></output>
+        </div>
+        <div class="dlg__acoes">
+          <button type="button" class="btn" id="leg-cancelar">Cancelar</button>
+          <button type="submit" class="btn btn--principal">Salvar legenda</button>
+        </div>
+      </form>
+    </dialog>
+
     <p id="aviso" role="status" hidden></p>
 
     <script>
       /* === ESTADO === */
-      const app = { pastas: [], pendentes: [], hoje: "" };
+      const app = {
+        pastas: [],
+        pendentes: [],
+        dias: [],
+        historico: [],
+        saude: [],
+        geral: { folgas: [], pausas: [], pausarAte: "" },
+        hoje: "",
+        agora: "00:00",
+      };
       const $ = (s) => document.querySelector(s);
       const el = (tag, props = {}, filhos = []) => {
         const n = Object.assign(document.createElement(tag), props);
-        for (const f of [].concat(filhos)) n.append(f);
+        for (const f of [].concat(filhos)) if (f) n.append(f);
         return n;
       };
+      const trocar = (alvo, filhos) => {
+        alvo.textContent = "";
+        for (const f of [].concat(filhos)) if (f) alvo.append(f);
+      };
+
+      const DIAS_CURTO = ["dom", "seg", "ter", "qua", "qui", "sex", "sáb"];
+      const DIAS_LONGO = [
+        "domingo",
+        "segunda-feira",
+        "terça-feira",
+        "quarta-feira",
+        "quinta-feira",
+        "sexta-feira",
+        "sábado",
+      ];
+      const MESES = [
+        "janeiro",
+        "fevereiro",
+        "março",
+        "abril",
+        "maio",
+        "junho",
+        "julho",
+        "agosto",
+        "setembro",
+        "outubro",
+        "novembro",
+        "dezembro",
+      ];
+      const ORIGEM = {
+        agendada: "agendada para hoje",
+        fixa: "presa neste horário",
+        fila: "próxima da fila",
+      };
+
+      const curta = (iso) => `${iso.slice(8, 10)}/${iso.slice(5, 7)}`;
+      const porExtenso = (iso, semana) =>
+        `${DIAS_LONGO[semana]}, ${Number(iso.slice(8, 10))} de ${MESES[Number(iso.slice(5, 7)) - 1]}`;
+      const minutos = (hhmm) => Number(hhmm.slice(0, 2)) * 60 + Number(hhmm.slice(3, 5));
+      const midia = (pasta, arquivo) =>
+        `/midia?pasta=${encodeURIComponent(pasta)}&arquivo=${encodeURIComponent(arquivo)}`;
 
       let timerAviso;
       function avisar(texto, tipo = "ok") {
@@ -460,116 +965,325 @@
         }
       }
 
+      function botao(texto, className, onclick, extra = {}) {
+        return el("button", { type: "button", textContent: texto, className, onclick, ...extra });
+      }
+
       /* === RENDER === */
       function render() {
-        const selo = $("#selo-repo");
+        const hoje = app.dias[0] || { dia: app.hoje, semana: 0, slots: [], pausa: null };
+        $("#relogio").textContent = `${DIAS_CURTO[hoje.semana]} ${curta(app.hoje)} · ${app.agora}`;
+        $("#hoje-data").textContent = porExtenso(app.hoje, hoje.semana);
+
         const n = app.pendentes.length;
-        selo.textContent = n ? `${n} alteração(ões) por enviar` : "tudo enviado";
+        const selo = $("#selo-repo");
+        selo.textContent = n ? `${n} por enviar` : "tudo enviado";
         selo.className = n ? "selo selo--alerta" : "selo selo--ok";
         $("#btn-publicar").disabled = n === 0;
 
-        const alvo = $("#pastas");
-        alvo.textContent = "";
-        for (const p of app.pastas) alvo.append(cartao(p));
+        trocar($("#hoje"), diaDeHoje(hoje));
+        trocar($("#semana"), app.dias.slice(1).map(cartaoDia));
+        trocar($("#saude"), listaSaude());
+        trocar($("#historico"), listaHistorico());
+        trocar($("#pastas"), app.pastas.map(pasta));
+        semPublicar();
       }
 
-      function cartao(p) {
-        // Horarios ocupados so por artes fixas nao consomem a fila geral.
-        const presos = new Set(p.artes.filter((a) => a.marca && !a.marca.data).map((a) => a.marca.hora));
-        const slotsLivres = p.cfg.horarios.filter((h) => !presos.has(h)).length;
-        const dias = slotsLivres ? Math.floor(p.restantes / slotsLivres) : 0;
-
-        const resumo = el("p", { className: "vazio" });
-        resumo.textContent = !p.artes.length
-          ? "pasta vazia — nada será publicado"
-          : !p.cfg.horarios.length
-            ? `${p.artes.length} artes · sem horário definido`
-            : `${p.artes.length} artes · ${p.restantes} por sair · próxima: ${p.proxima ?? "—"} · ` +
-              (slotsLivres
-                ? `~${dias} dia(s)${p.cfg.loop ? " e recomeça" : " e acaba"}`
-                : "todos os horários estão presos a artes fixas");
-
-        const corpo = el("article", { className: "cartao" }, [
-          el("div", { className: "cartao__topo" }, [
-            el("h2", { textContent: p.nome }),
-            p.voltas ? el("span", { className: "selo", textContent: `${p.voltas}ª volta` }) : "",
-            p.jaSaiu ? botao("Recomeçar fila", "btn btn--mini", () => reiniciar(p)) : "",
-            botao("Apagar pasta", "btn btn--mini btn--perigo", () => {
-              if (confirm(`Apagar a pasta "${p.nome}" e todas as artes dela?`)) {
-                acao(() => api("/api/pasta/apagar", { pasta: p.nome }));
-              }
+      /** A régua: cada publicação do dia ancorada na hora, com a linha do agora. */
+      function diaDeHoje(hoje) {
+        if (hoje.pausa) {
+          return el("div", { className: "parado" }, [
+            el("strong", { textContent: "Parado" }),
+            el("p", { className: "vazio", textContent: `Motivo: ${hoje.pausa}.` }),
+            el("p", {
+              className: "vazio",
+              textContent: "Nada é publicado hoje. A fila continua onde parou.",
             }),
-          ]),
-          resumo,
-          alerta(p),
-          opcoes(p),
-          horarios(p),
-          fila(p),
-          soltar(p),
-        ]);
-        corpo.dataset.ativo = String(p.cfg.ativo);
-        return corpo;
+          ]);
+        }
+        if (!hoje.slots.length) {
+          return el("p", { className: "vazio", textContent: "Nenhum horário programado para hoje." });
+        }
+
+        const lista = el("ol", { className: "regua" });
+        const agora = minutos(app.agora);
+        let marcou = false;
+
+        for (const s of hoje.slots) {
+          const futuro = minutos(s.hora) > agora;
+          if (!marcou && futuro) {
+            lista.append(el("li", { className: "agora", textContent: `agora ${app.agora}` }));
+            marcou = true;
+            // Só o primeiro depois do agora recebe o âmbar: com todos destacados,
+            // o acento vira fundo e some a hierarquia.
+            lista.append(slot(s, true));
+            continue;
+          }
+          lista.append(slot(s, false));
+        }
+        if (!marcou) {
+          lista.append(el("li", { className: "agora", textContent: `agora ${app.agora}` }));
+        }
+        return lista;
       }
 
-      /** Faixa de alerta quando o conteúdo da pasta foi trocado por fora do painel. */
-      function alerta(p) {
-        if (!p.foraDePadrao) return "";
-        return el("div", { className: "alerta" }, [
+      function slot(s, ehProximo = false) {
+        const p = app.pastas.find((x) => x.nome === s.pasta);
+        const arte = p?.artes.find((a) => a.nome === s.arquivo);
+
+        const capa = arte
+          ? el("img", {
+              className: s.feed ? "slot__mini slot__mini--feed" : "slot__mini",
+              src: midia(s.pasta, s.arquivo),
+              alt: "",
+              loading: "lazy",
+            })
+          : el("div", { className: "slot__mini" });
+
+        const li = el("li", { className: "slot" }, [
+          el("time", { className: "slot__hora", textContent: s.hora }),
+          capa,
+          el("div", {}, [
+            el("p", { className: "slot__arte", textContent: `${s.pasta}/${s.arquivo}` }),
+            el("p", { className: "slot__meta" }, [
+              el("span", { textContent: s.feed ? "post no feed" : "story" }),
+              // "próxima da fila" é o caso normal: repetir em toda linha vira ruído.
+              s.tipo === "fila" ? "" : el("span", { textContent: ORIGEM[s.tipo] || s.tipo }),
+              s.feed && !s.legenda ? el("span", { textContent: "sem legenda" }) : "",
+            ]),
+          ]),
+          el("div", { className: "slot__acoes" }, [
+            el("span", {
+              className: "selo",
+              textContent: estadoDoSlot(s, ehProximo),
+              title: s.erro || "",
+            }),
+            p && arte ? botao("Legenda", "btn btn--mini btn--fantasma", () => abrirLegenda(p, arte)) : "",
+          ]),
+        ]);
+        li.dataset.estado = s.erro
+          ? "falhou"
+          : s.publicado
+            ? "saiu"
+            : ehProximo
+              ? "proximo"
+              : "espera";
+        return li;
+      }
+
+      /**
+       * O robô ainda tenta publicar até 2h depois do horário; passou disso,
+       * o slot de hoje não sai mais.
+       */
+      function estadoDoSlot(s, ehProximo) {
+        if (s.erro) return "falhou";
+        if (s.publicado) return "publicado";
+        if (ehProximo) return "próximo";
+        if (minutos(app.agora) - minutos(s.hora) > 120) return "passou da hora";
+        return "na fila";
+      }
+
+      function cartaoDia(d) {
+        const stories = d.slots.filter((s) => !s.feed).length;
+        const feed = d.slots.filter((s) => s.feed).length;
+        const partes = [];
+        if (stories) partes.push(`${stories} ${stories > 1 ? "stories" : "story"}`);
+        if (feed) partes.push(`${feed} feed`);
+
+        const li = el("li", { className: "dia" }, [
+          el("p", { className: "rotulo", textContent: DIAS_CURTO[d.semana] }),
+          el("p", { className: "dia__n", textContent: curta(d.dia) }),
           el("p", {
-            textContent:
-              `${p.foraDePadrao} arquivo(s) com nome fora do padrão. Nada quebra — ` +
-              `só a ordem fica na sorte do nome. Renumerar deixa previsível.`,
+            className: "dia__conta",
+            textContent: d.pausa || partes.join(" · ") || "nada programado",
           }),
-          el("div", { className: "dlg__acoes" }, [
-            botao("Renumerar 001…", "btn btn--mini", () =>
-              acao(async () => {
-                await api("/api/ordem", { pasta: p.nome });
-                avisar("Artes renumeradas na ordem atual.");
-              }),
-            ),
-          ]),
         ]);
+        li.dataset.parado = String(!!d.pausa);
+        return li;
       }
 
-      function reiniciar(p) {
-        if (!confirm(`Voltar a fila de "${p.nome}" para a primeira arte?`)) return;
-        acao(async () => {
-          await api("/api/fila/reiniciar", { pasta: p.nome });
-          avisar("Fila reiniciada. O story de hoje não será repetido.");
+      function listaSaude() {
+        if (!app.saude.length) {
+          return el("li", { className: "item", textContent: "Nada a corrigir por aqui." });
+        }
+        return app.saude.map((s) => {
+          const li = el("li", { className: "item", textContent: s.texto });
+          li.dataset.nivel = s.nivel;
+          return li;
         });
       }
 
-      function botao(texto, className, onclick, extra = {}) {
-        return el("button", { textContent: texto, className, onclick, ...extra });
+      function listaHistorico() {
+        if (!app.historico.length) {
+          return el("li", {
+            className: "vazio",
+            textContent: "Ainda sem registro — ele começa na próxima publicação.",
+          });
+        }
+        return app.historico.map((h) => {
+          const li = el("li", {}, [
+            el("span", { textContent: `${curta(h.dia)} ${h.hora}` }),
+            el("span", { textContent: `${h.pasta}/${h.arquivo}${h.erro ? " · falhou" : ""}` }),
+          ]);
+          li.dataset.erro = String(!!h.erro);
+          li.title = h.erro || "";
+          return li;
+        });
       }
+
+      /* === SEM PUBLICAR === */
+      function semPublicar() {
+        trocar($("#dias-geral"), [
+          el("legend", { className: "rotulo", textContent: "Toda semana" }),
+          ...caixasDeDia("geral", app.geral.folgas, (folgas) =>
+            acao(async () => {
+              await api("/api/folgas", { folgas });
+              avisar("Dias da semana salvos.");
+            }),
+          ),
+        ]);
+
+        const datas = app.geral.pausas || [];
+        trocar(
+          $("#pausas"),
+          datas.length
+            ? datas.map((d) =>
+                el("li", { className: "chip" }, [
+                  curta(d),
+                  botao("×", "", () => salvarPausas(datas.filter((x) => x !== d)), {
+                    "aria-label": `Voltar a publicar em ${curta(d)}`,
+                  }),
+                ]),
+              )
+            : el("li", { className: "vazio", textContent: "nenhuma data marcada" }),
+        );
+
+        $("#pausa-data").min = app.hoje;
+        $("#pausa-ate").min = app.hoje;
+        $("#pausa-ate").value = app.geral.pausarAte || "";
+      }
+
+      /** Sete caixas de dia da semana; `marcados` são os dias em que NÃO se publica. */
+      function caixasDeDia(prefixo, marcados, onSalvar) {
+        const atual = new Set(marcados || []);
+        return DIAS_CURTO.map((nome, i) => {
+          const id = `folga-${prefixo}-${i}`;
+          const input = el("input", {
+            type: "checkbox",
+            id,
+            checked: atual.has(i),
+            onchange: (e) => {
+              e.target.checked ? atual.add(i) : atual.delete(i);
+              onSalvar([...atual].sort());
+            },
+          });
+          return el("div", { className: "dia-caixa" }, [input, el("label", { htmlFor: id, textContent: nome })]);
+        });
+      }
+
+      function salvarPausas(datas, ate = app.geral.pausarAte) {
+        return acao(async () => {
+          await api("/api/pausas", { pausas: datas, pausarAte: ate || "" });
+          avisar("Datas atualizadas.");
+        });
+      }
+
+      $("#form-pausa").onsubmit = (e) => {
+        e.preventDefault();
+        const d = $("#pausa-data").value;
+        if (d) salvarPausas([...(app.geral.pausas || []), d]);
+      };
+
+      $("#form-ate").onsubmit = (e) => {
+        e.preventDefault();
+        salvarPausas(app.geral.pausas || [], $("#pausa-ate").value);
+      };
+
+      /* === PASTAS === */
+      const abertas = new Set();
 
       function salvarCfg(p, mudanca) {
         const cfg = { ...p.cfg, ...mudanca, pasta: p.nome };
         return acao(() => api("/api/config", cfg));
       }
 
+      function pasta(p) {
+        const slots = (p.cfg.horarios || []).length;
+        const diasDeFila = slots ? Math.floor(p.restantes / slots) : 0;
+        const resumo = !p.artes.length
+          ? "pasta vazia — nada será publicado"
+          : !slots
+            ? `${p.artes.length} artes · sem horário definido`
+            : `${p.artes.length} artes · ${p.restantes} por sair · dá para ${diasDeFila} dia(s)` +
+              (p.cfg.loop === false ? ", depois acaba" : ", depois recomeça");
+
+        const d = el("details", { className: "pasta" }, [
+          el("summary", {}, [
+            el("h3", { textContent: p.nome }),
+            el("span", { className: "selo", textContent: p.cfg.tipo === "feed" ? "feed" : "story" }),
+            p.voltas ? el("span", { className: "selo", textContent: `${p.voltas}ª volta` }) : "",
+            el("span", { className: "pasta__resumo", textContent: resumo }),
+          ]),
+          el("div", { className: "pasta__corpo" }, [
+            opcoes(p),
+            horarios(p),
+            p.cfg.tipo === "feed" ? legendaPadrao(p) : "",
+            fila(p),
+            soltar(p),
+            el("div", { className: "linha" }, [
+              p.jaSaiu ? botao("Recomeçar fila", "btn btn--mini", () => reiniciar(p)) : "",
+              p.foraDePadrao
+                ? botao("Renumerar 001…", "btn btn--mini", () =>
+                    acao(async () => {
+                      await api("/api/ordem", { pasta: p.nome });
+                      avisar("Artes renumeradas na ordem atual.");
+                    }),
+                  )
+                : "",
+              botao("Apagar pasta", "btn btn--mini btn--perigo", () => {
+                if (confirm(`Apagar a pasta "${p.nome}" e todas as artes dela?`)) {
+                  acao(() => api("/api/pasta/apagar", { pasta: p.nome }));
+                }
+              }),
+            ]),
+          ]),
+        ]);
+        d.dataset.ativo = String(p.cfg.ativo !== false);
+        // A tela recarrega sozinha a cada minuto: sem isto, a pasta que você
+        // acabou de abrir fecharia no meio da edição.
+        d.open = abertas.has(p.nome);
+        d.ontoggle = () => (d.open ? abertas.add(p.nome) : abertas.delete(p.nome));
+        return d;
+      }
+
       function opcoes(p) {
         const marca = (rotulo, chave) => {
           const id = `${chave}-${p.nome}`;
-          const input = el("input", {
-            type: "checkbox",
-            id,
-            checked: !!p.cfg[chave],
-            onchange: (e) => salvarCfg(p, { [chave]: e.target.checked }),
-          });
-          return el("div", { className: "campo" }, [input, el("label", { htmlFor: id, textContent: rotulo })]);
+          return el("div", { className: "campo" }, [
+            el("input", {
+              type: "checkbox",
+              id,
+              checked: !!p.cfg[chave],
+              onchange: (e) => salvarCfg(p, { [chave]: e.target.checked }),
+            }),
+            el("label", { htmlFor: id, textContent: rotulo }),
+          ]);
         };
-        return el("div", { className: "linha-opcoes" }, [
-          marca("Ativa", "ativo"),
+        return el("div", { className: "linha" }, [
+          marca("Publicando", "ativo"),
           marca("Recomeçar quando acabar", "loop"),
+          el("fieldset", { className: "dias-semana" }, [
+            el("legend", { className: "rotulo", textContent: "Folga só desta pasta" }),
+            ...caixasDeDia(p.nome, p.cfg.folgas, (folgas) => salvarCfg(p, { folgas })),
+          ]),
         ]);
       }
 
       function horarios(p) {
-        const lista = el("ul", { className: "horarios" });
-        for (const h of p.cfg.horarios) {
+        const lista = el("ul", { className: "chips" });
+        for (const h of p.cfg.horarios || []) {
           lista.append(
-            el("li", { className: "horario" }, [
+            el("li", { className: "chip" }, [
               h,
               botao("×", "", () => salvarCfg(p, { horarios: p.cfg.horarios.filter((x) => x !== h) }), {
                 "aria-label": `Remover horário ${h}`,
@@ -581,38 +1295,50 @@
         const id = `hora-${p.nome}`;
         const input = el("input", { type: "time", id, required: true });
         const form = el("form", { className: "campo" }, [
-          el("label", { htmlFor: id, textContent: "Publicar às" }),
+          el("label", { className: "rotulo", htmlFor: id, textContent: "Publicar às" }),
           input,
           botao("Adicionar", "btn btn--mini", null, { type: "submit" }),
         ]);
         form.onsubmit = (e) => {
           e.preventDefault();
-          if (input.value) salvarCfg(p, { horarios: [...p.cfg.horarios, input.value] });
+          if (input.value) salvarCfg(p, { horarios: [...(p.cfg.horarios || []), input.value] });
         };
 
-        return el("section", {}, [lista, form]);
+        return el("div", { className: "linha" }, [lista, form]);
+      }
+
+      function legendaPadrao(p) {
+        const texto = p.cfg.legenda || "";
+        return el("div", { className: "campo" }, [
+          el("span", { className: "rotulo", textContent: "Legenda padrão" }),
+          el("span", {
+            className: "vazio",
+            textContent: texto ? texto.slice(0, 60) + (texto.length > 60 ? "…" : "") : "nenhuma",
+          }),
+          botao("Editar", "btn btn--mini", () => abrirLegenda(p, null)),
+        ]);
       }
 
       function fila(p) {
-        if (!p.artes.length) return el("p", { className: "vazio", textContent: "Nenhuma arte na fila." });
+        if (!p.artes.length) {
+          return el("p", { className: "vazio", textContent: "Nenhuma arte nesta pasta." });
+        }
         const lista = el("ul", { className: "fila" });
-
         p.artes.forEach((a, i) => {
-          const src = `/midia?pasta=${encodeURIComponent(p.nome)}&arquivo=${encodeURIComponent(a.nome)}`;
-          const midia = a.video
-            ? el("video", { src, muted: true, playsInline: true })
-            : el("img", { src, alt: `Arte ${a.nome} da pasta ${p.nome}`, loading: "lazy" });
-
-          const mover = (delta) => {
+          const mover = (passo) => {
             const ordem = p.artes.map((x) => x.nome);
-            const j = i + delta;
-            if (j < 0 || j >= ordem.length) return;
-            [ordem[i], ordem[j]] = [ordem[j], ordem[i]];
+            const alvo = i + passo;
+            if (alvo < 0 || alvo >= ordem.length) return;
+            [ordem[i], ordem[alvo]] = [ordem[alvo], ordem[i]];
             acao(() => api("/api/ordem", { pasta: p.nome, ordem }));
           };
 
+          const capa = a.video
+            ? el("video", { src: midia(p.nome, a.nome), muted: true })
+            : el("img", { src: midia(p.nome, a.nome), alt: a.nome, loading: "lazy" });
+
           const item = el("li", { className: "arte" }, [
-            midia,
+            capa,
             marcador(a),
             el("span", {
               className: "arte__rotulo",
@@ -620,18 +1346,27 @@
               title: a.ok ? `${a.mb} MB` : `Fora do padrão: ${a.dim ? a.dim.w + "×" + a.dim.h : "?"} · ${a.mb} MB`,
             }),
             el("div", { className: "arte__acoes" }, [
-              botao("↑", "btn btn--mini", () => mover(-1), { "aria-label": `Mover ${a.nome} para antes` }),
-              botao("↓", "btn btn--mini", () => mover(1), { "aria-label": `Mover ${a.nome} para depois` }),
-              botao("⏰", "btn btn--mini", () => abrirHorario(p, a), {
+              botao("↑", "btn btn--mini", () => mover(-1), {
+                "aria-label": `Mover ${a.nome} para antes`,
+              }),
+              botao("↓", "btn btn--mini", () => mover(1), {
+                "aria-label": `Mover ${a.nome} para depois`,
+              }),
+              botao("hora", "btn btn--mini", () => abrirHorario(p, a), {
                 "aria-label": `Definir horário de ${a.nome}`,
                 title: "Prender esta arte a um horário ou data",
+              }),
+              botao("leg", "btn btn--mini", () => abrirLegenda(p, a), {
+                "aria-label": `Escrever legenda de ${a.nome}`,
+                title: a.legenda || "Escrever legenda desta arte",
               }),
               botao(
                 "×",
                 "btn btn--mini btn--perigo",
                 () => {
-                  if (confirm(`Apagar ${a.nome}?`))
+                  if (confirm(`Apagar ${a.nome}?`)) {
                     acao(() => api("/api/arte/apagar", { pasta: p.nome, arquivo: a.nome }));
+                  }
                 },
                 { "aria-label": `Apagar ${a.nome}` },
               ),
@@ -639,23 +1374,19 @@
           ]);
           item.dataset.ok = String(a.ok);
           item.dataset.proxima = String(a.nome === p.proxima);
-          item.dataset.presa = String(!!a.marca);
           item.dataset.saiu = String(a.jaSaiu);
-          return lista.append(item);
+          lista.append(item);
         });
-
         return lista;
       }
 
       /** Selo sobre a miniatura: horário próprio, ou "já saiu". */
       function marcador(a) {
         if (!a.marca) {
-          return a.jaSaiu
-            ? el("span", { className: "arte__marca arte__marca--saiu", textContent: "✓ já saiu" })
-            : "";
+          return a.jaSaiu ? el("span", { className: "arte__marca arte__marca--saiu", textContent: "já saiu" }) : "";
         }
         const { hora, data } = a.marca;
-        const rotulo = data ? `${data.slice(8, 10)}/${data.slice(5, 7)} ${hora}` : `todo dia ${hora}`;
+        const rotulo = data ? `${curta(data)} ${hora}` : `todo dia ${hora}`;
         return el("span", {
           className: "arte__marca",
           textContent: a.jaSaiu ? `✓ ${rotulo}` : rotulo,
@@ -663,15 +1394,22 @@
         });
       }
 
-      /* === DIÁLOGO DE HORÁRIO POR ARTE === */
+      function reiniciar(p) {
+        if (!confirm(`Voltar a fila de "${p.nome}" para a primeira arte?`)) return;
+        acao(async () => {
+          await api("/api/fila/reiniciar", { pasta: p.nome });
+          avisar("Fila reiniciada. O story de hoje não será repetido.");
+        });
+      }
+
+      /* === DIÁLOGO: HORÁRIO DA ARTE === */
       function abrirHorario(p, a) {
         const dlg = $("#dlg-horario");
         $("#dlg-arte").textContent = `${p.nome}/${a.nome}`;
 
         const sel = $("#dlg-hora");
-        sel.textContent = "";
-        sel.append(el("option", { value: "", textContent: "— nenhum (fila normal) —" }));
-        for (const h of p.cfg.horarios) {
+        trocar(sel, el("option", { value: "", textContent: "— nenhum (fila normal) —" }));
+        for (const h of p.cfg.horarios || []) {
           sel.append(el("option", { value: h, textContent: h, selected: a.marca?.hora === h }));
         }
         $("#dlg-data").value = a.marca?.data || "";
@@ -698,8 +1436,43 @@
         });
       };
 
+      $("#dlg-cancelar").onclick = () => $("#dlg-horario").close();
+
+      /* === DIÁLOGO: LEGENDA === */
+      function abrirLegenda(p, a) {
+        const dlg = $("#dlg-legenda");
+        $("#leg-alvo").textContent = a ? `${p.nome}/${a.nome}` : `${p.nome} — todas as artes`;
+        $("#leg-texto").value = (a ? a.legenda : p.cfg.legenda) || "";
+        contarLegenda();
+        dlg.dataset.pasta = p.nome;
+        dlg.dataset.arquivo = a ? a.nome : "";
+        dlg.showModal();
+      }
+
+      function contarLegenda() {
+        $("#leg-conta").textContent = `${$("#leg-texto").value.length}/2200 caracteres`;
+      }
+      $("#leg-texto").oninput = contarLegenda;
+      $("#leg-cancelar").onclick = () => $("#dlg-legenda").close();
+
+      $("#form-legenda").onsubmit = (e) => {
+        e.preventDefault();
+        const dlg = $("#dlg-legenda");
+        acao(async () => {
+          await api("/api/legenda", {
+            pasta: dlg.dataset.pasta,
+            arquivo: dlg.dataset.arquivo,
+            texto: $("#leg-texto").value,
+          });
+          dlg.close();
+          avisar("Legenda salva.");
+        });
+      };
+
+      /* === UPLOAD === */
       function soltar(p) {
-        const zona = el("div", { className: "solta", textContent: "Arraste artes aqui (1080×1920)" });
+        const alvo = p.cfg.tipo === "feed" ? "1080×1350 ou 1080×1080" : "1080×1920";
+        const zona = el("div", { className: "solta", textContent: `Arraste artes aqui (${alvo})` });
         zona.ondragover = (e) => {
           e.preventDefault();
           zona.dataset.sobre = "true";
@@ -735,8 +1508,6 @@
         if (nome) acao(() => api("/api/pasta", { nome: nome.trim().toLowerCase() }));
       };
 
-      $("#dlg-cancelar").onclick = () => $("#dlg-horario").close();
-
       $("#btn-publicar").onclick = () =>
         acao(async () => {
           const r = await api("/api/publicar", {});
@@ -744,6 +1515,8 @@
         });
 
       carregar();
+      // A régua fica errada se a aba passa a manhã aberta: recarrega a cada minuto.
+      setInterval(carregar, 60000);
     </script>
   </body>
 </html>

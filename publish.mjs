@@ -7,6 +7,13 @@ import { existsSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { createHash } from "node:crypto";
+import {
+  DIA_POR_EXTENSO,
+  diasDeFolga,
+  escolher,
+  marcarPublicada,
+  pausaDoDia,
+} from "./agenda.mjs";
 
 const RAIZ = path.dirname(fileURLToPath(import.meta.url));
 const DIR_STORIES = path.join(RAIZ, "stories");
@@ -44,6 +51,7 @@ function agoraLocal() {
     day: "2-digit",
     hour: "2-digit",
     minute: "2-digit",
+    weekday: "short",
     hour12: false,
   });
   const p = Object.fromEntries(fmt.formatToParts(new Date()).map((x) => [x.type, x.value]));
@@ -51,6 +59,8 @@ function agoraLocal() {
     dia: `${p.year}-${p.month}-${p.day}`,
     minutos: Number(p.hour) * 60 + Number(p.minute),
     hhmm: `${p.hour}:${p.minute}`,
+    // 0 = domingo … 6 = sabado, ja no fuso local (nao no do runner)
+    semana: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].indexOf(p.weekday),
   };
 }
 
@@ -174,55 +184,13 @@ async function midiasDaPasta(pasta) {
   );
 }
 
-/**
- * Decide qual arte sai neste slot, em ordem de prioridade:
- *   1. agendada — marcada com data + hora exatas, publica uma vez so
- *   2. fixa     — marcada so com hora, revezando entre as marcadas na mesma hora
- *   3. fila     — artes sem marcacao, na ordem, com loop opcional
- * Devolve null quando nao ha nada elegivel (o motivo vai pros avisos).
- */
-function escolher(cfg, st, artes, hhmm, dia) {
-  const marcas = cfg.artes || {};
-  const marca = (a) => marcas[a.nome] || {};
-  st.feitas ??= [];
-  st.pontuais ??= [];
-  st.indicesHora ??= {};
-  const jaSaiu = (a) => st.feitas.includes(a.id) || st.pontuais.includes(a.id);
+const LIMITE_HISTORICO = 80;
 
-  const agendadas = artes.filter(
-    (a) => marca(a).data === dia && marca(a).hora === hhmm && !jaSaiu(a),
-  );
-  if (agendadas.length) return { arte: agendadas[0], tipo: "agendada" };
-
-  const fixas = artes.filter((a) => !marca(a).data && marca(a).hora === hhmm);
-  if (fixas.length) {
-    const i = (st.indicesHora[hhmm] || 0) % fixas.length;
-    return { arte: fixas[i], tipo: "fixa" };
-  }
-
-  const fila = artes.filter((a) => !marca(a).hora && !marca(a).data);
-  if (!fila.length) {
-    avisos.push(`Nada elegivel as ${hhmm}: todas as artes da pasta estao presas a outro horario.`);
-    return null;
-  }
-
-  let pendentes = fila.filter((a) => !jaSaiu(a));
-  if (!pendentes.length) {
-    if (cfg.loop === false) {
-      avisos.push(
-        `Todas as artes ja foram publicadas e o loop esta desligado — nada saiu as ${hhmm}.`,
-      );
-      return null;
-    }
-    st.feitas = []; // recomeca a volta; artes novas entram naturalmente na proxima
-    st.voltas = (st.voltas || 0) + 1;
-    pendentes = fila;
-    avisos.push(
-      `A fila deu a volta (${st.voltas}x) — voltou a publicar do inicio. Hora de renovar as artes.`,
-    );
-  }
-
-  return { arte: pendentes[0], tipo: "fila" };
+/** Guarda o que saiu (e o que falhou) para o painel mostrar o histórico. */
+function registrar(estado, item) {
+  const h = (estado._historico ??= []);
+  h.unshift(item);
+  h.length = Math.min(h.length, LIMITE_HISTORICO);
 }
 
 function finalizar(ev) {
@@ -314,8 +282,17 @@ async function main() {
     .filter((d) => d.isDirectory())
     .map((d) => d.name);
 
+  // Pausa geral: vale para todas as pastas. Cada pasta pode ter as suas folgas.
+  const geral = await lerJson(path.join(DIR_STORIES, "_geral.json"), {});
+  const pausa = pausaDoDia(geral, agora.dia, agora.semana, avisos);
+
   let mudou = false;
   log(`Agora ${agora.dia} ${agora.hhmm} (${TZ}) — ${pastas.length} pasta(s)`);
+
+  if (pausa) {
+    log(`Hoje está parado (${pausa}) — nada será publicado.`);
+    return; // sem eventos e sem avisos: nenhuma issue, nenhum e-mail
+  }
 
   for (const pasta of pastas) {
     const cfg = await lerJson(path.join(DIR_STORIES, pasta, "_config.json"), null);
@@ -324,6 +301,10 @@ async function main() {
       continue;
     }
     if (cfg.ativo === false) continue;
+    if (diasDeFolga(cfg.folgas, avisos).has(agora.semana)) {
+      log(`[${pasta}] folga de ${DIA_POR_EXTENSO[agora.semana]} — pulada.`);
+      continue;
+    }
 
     const horarios = Array.isArray(cfg.horarios) ? cfg.horarios : [];
     const st = (estado[pasta] ??= { voltas: 0, publicados: {} });
@@ -364,7 +345,7 @@ async function main() {
         continue;
       }
 
-      const escolha = escolher(cfg, st, artes, hhmm, agora.dia);
+      const escolha = escolher(cfg, st, artes, hhmm, agora.dia, avisos);
       if (!escolha) continue;
       const { arte, tipo } = escolha;
       const arquivo = arte.nome;
@@ -400,6 +381,17 @@ async function main() {
           ev.erro = e.message;
           ev.dica = explicarErro(e);
           eventos.push(finalizar(ev));
+          registrar(estado, {
+            dia: agora.dia,
+            hora: agora.hhmm,
+            slot: hhmm,
+            pasta,
+            arquivo,
+            tipo,
+            feed: ehFeed,
+            erro: e.message,
+          });
+          mudou = true; // o historico registra a falha mesmo sem a arte ter saido
           avisos.push(`FALHOU "${pasta}" as ${hhmm} (${arquivo}): ${e.message}`);
           continue; // nao avanca o indice: tenta de novo na proxima janela
         }
@@ -409,11 +401,17 @@ async function main() {
       }
       eventos.push(finalizar(ev));
 
-      if (tipo === "agendada") (st.pontuais ??= []).push(arte.id);
-      else if (tipo === "fixa") st.indicesHora[hhmm] = (st.indicesHora[hhmm] || 0) + 1;
-      else (st.feitas ??= []).push(arte.id);
-      st.publicados[hhmm] = agora.dia;
+      marcarPublicada(st, arte, tipo, hhmm, agora.dia);
       st.ultimo = `${agora.dia} ${agora.hhmm} ${pasta}/${arquivo}`;
+      registrar(estado, {
+        dia: agora.dia,
+        hora: agora.hhmm,
+        slot: hhmm,
+        pasta,
+        arquivo,
+        tipo,
+        feed: ehFeed,
+      });
       mudou = true;
     }
   }

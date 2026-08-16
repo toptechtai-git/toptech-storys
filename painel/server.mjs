@@ -11,6 +11,14 @@ import { promisify } from "node:util";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { createHash } from "node:crypto";
+import {
+  diasDeFolga,
+  escolher,
+  marcarPublicada,
+  pausaDoDia,
+  semanaDe,
+  somarDias,
+} from "../agenda.mjs";
 
 const exec = promisify(execFile);
 const AQUI = path.dirname(fileURLToPath(import.meta.url));
@@ -122,7 +130,7 @@ async function montarEstado() {
 
   const pastas = [];
   for (const nome of dirs) {
-    let cfg = { horarios: [], loop: true, ativo: true };
+    let cfg = { horarios: [], loop: true, ativo: true, folgas: [] };
     const arqCfg = path.join(DIR_STORIES, nome, "_config.json");
     if (existsSync(arqCfg)) {
       try {
@@ -138,6 +146,12 @@ async function montarEstado() {
     for (const a of artes) {
       a.marca = (cfg.artes || {})[a.nome] || null;
       a.jaSaiu = feitas.has(a.id);
+      a.legenda = (cfg.legendas || {})[a.nome] || "";
+      // Feed aceita de 4:5 a 1.91:1 — cobrar 9:16 ali daria alarme falso.
+      if (cfg.tipo === "feed" && a.dim) {
+        const razao = a.dim.w / a.dim.h;
+        a.ok = razao >= 0.79 && razao <= 1.92 && a.dim.w >= 640 && a.mb < 8;
+      }
     }
     // Fila geral = artes sem marcacao; a proxima e a primeira que ainda nao saiu.
     const geral = artes.filter((a) => !a.marca);
@@ -166,7 +180,158 @@ async function montarEstado() {
     branch = await git("rev-parse", "--abbrev-ref", "HEAD");
   } catch {}
 
-  return { pastas, pendentes, branch, hoje: hojeLocal() };
+  const geral = await lerGeral();
+  const hoje = hojeLocal();
+  const agenda = simular(pastas, estado, geral, hoje);
+
+  return {
+    pastas,
+    pendentes,
+    branch,
+    hoje,
+    agora: horaLocal(),
+    geral,
+    ...agenda,
+    historico: (estado._historico || []).slice(0, 40),
+    saude: saude(pastas, geral, agenda.dias[0]),
+  };
+}
+
+const ARQ_GERAL = path.join(DIR_STORIES, "_geral.json");
+
+/** Config que vale para todas as pastas: folgas semanais e pausas por data. */
+async function lerGeral() {
+  const vazio = { folgas: [], pausas: [], pausarAte: "" };
+  if (!existsSync(ARQ_GERAL)) return vazio;
+  try {
+    return { ...vazio, ...JSON.parse(await readFile(ARQ_GERAL, "utf8")) };
+  } catch {
+    return { ...vazio, erro: "_geral.json invalido" };
+  }
+}
+
+/**
+ * Roda o mesmo algoritmo do robo sobre uma copia do estado para saber o que sai
+ * hoje e nos proximos dias. Copia porque `escolher` avanca a fila ao decidir.
+ */
+function simular(pastas, estado, geral, hoje, quantosDias = 7) {
+  const st = JSON.parse(JSON.stringify(estado));
+  const dias = [];
+
+  for (let n = 0; n < quantosDias; n++) {
+    const dia = somarDias(hoje, n);
+    const semana = semanaDe(dia);
+    const pausa = pausaDoDia(geral, dia, semana);
+    const slots = [];
+
+    if (!pausa) {
+      const daVez = [];
+      for (const p of pastas) {
+        if (p.cfg.ativo === false || p.cfg.erro) continue;
+        if (diasDeFolga(p.cfg.folgas).has(semana)) continue;
+        for (const hora of p.cfg.horarios || []) daVez.push({ p, hora });
+      }
+      // Em ordem de horario: e assim que a fila de cada pasta avanca no dia.
+      daVez.sort((a, b) => a.hora.localeCompare(b.hora));
+
+      for (const { p, hora } of daVez) {
+        const e = st[p.nome] ?? (st[p.nome] = { voltas: 0, publicados: {} });
+        // Slot que ja saiu hoje: o estado real ja avancou a fila, entao mostramos
+        // o que o historico registrou em vez de simular por cima.
+        if (n === 0 && e.publicados?.[hora] === dia) {
+          const reg = (estado._historico || []).find(
+            (x) => x.dia === dia && x.slot === hora && x.pasta === p.nome,
+          );
+          slots.push({
+            hora,
+            pasta: p.nome,
+            arquivo: reg?.arquivo || "—",
+            tipo: reg?.tipo || "fila",
+            feed: p.cfg.tipo === "feed",
+            legenda: reg ? legendaDe(p.cfg, reg.arquivo) : "",
+            publicado: true,
+            erro: reg?.erro || "",
+          });
+          continue;
+        }
+
+        const escolha = escolher(p.cfg, e, p.artes, hora, dia);
+        if (!escolha) continue;
+        marcarPublicada(e, escolha.arte, escolha.tipo, hora, dia);
+        slots.push({
+          hora,
+          pasta: p.nome,
+          arquivo: escolha.arte.nome,
+          tipo: escolha.tipo,
+          feed: p.cfg.tipo === "feed",
+          legenda: legendaDe(p.cfg, escolha.arte.nome),
+          publicado: false,
+        });
+      }
+    }
+    dias.push({ dia, semana, pausa, slots });
+  }
+
+  return { dias };
+}
+
+function legendaDe(cfg, arquivo) {
+  return cfg.legendas?.[arquivo] ?? cfg.legenda ?? "";
+}
+
+/** Problemas que valem um alerta no painel, do mais grave para o menos. */
+function saude(pastas, geral, hoje) {
+  const itens = [];
+  const add = (nivel, texto) => itens.push({ nivel, texto });
+
+  if (geral.erro) add("erro", "_geral.json está inválido — o robô ignora as pausas até consertar.");
+
+  for (const p of pastas) {
+    if (p.cfg.erro) add("erro", `${p.nome}: _config.json inválido, a pasta inteira é ignorada.`);
+    if (p.cfg.ativo === false) continue;
+    if (!p.artes.length) add("alerta", `${p.nome} está vazia — os horários dela não publicam nada.`);
+    else if (!(p.cfg.horarios || []).length) add("alerta", `${p.nome} tem artes mas nenhum horário.`);
+    if (p.foraDePadrao) {
+      add("aviso", `${p.nome}: ${p.foraDePadrao} arquivo(s) com nome fora do padrão.`);
+    }
+    const ruins = p.artes.filter((a) => !a.ok).length;
+    if (ruins) add("alerta", `${p.nome}: ${ruins} arte(s) fora de 1080×1920 ou grandes demais.`);
+    if (p.cfg.tipo === "feed") {
+      const semLegenda = p.artes.filter((a) => !legendaDe(p.cfg, a.nome)).length;
+      if (semLegenda) add("alerta", `${p.nome}: ${semLegenda} arte(s) de feed sem legenda.`);
+    }
+    const slots = (p.cfg.horarios || []).length;
+    const diasDeFila = slots ? Math.floor(p.restantes / slots) : 0;
+    if (slots && p.artes.length && diasDeFila <= 2) {
+      add(
+        p.cfg.loop === false ? "alerta" : "aviso",
+        p.cfg.loop === false
+          ? `${p.nome} acaba em ${diasDeFila} dia(s) e não recomeça.`
+          : `${p.nome} dá a volta em ${diasDeFila} dia(s) — as artes vão repetir.`,
+      );
+    }
+  }
+
+  if (hoje?.pausa) add("aviso", `Hoje está parado: ${hoje.pausa}.`);
+  return itens;
+}
+
+function horaLocal() {
+  return new Intl.DateTimeFormat("pt-BR", {
+    timeZone: "America/Belem",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).format(new Date());
+}
+
+/** Dias 0-6 (0 = domingo), sem repetido e em ordem. */
+function diasValidos(lista) {
+  const dias = (Array.isArray(lista) ? lista : []).map(Number);
+  if (dias.some((d) => !Number.isInteger(d) || d < 0 || d > 6)) {
+    throw new Error("Dia de folga invalido: use 0 (domingo) a 6 (sabado).");
+  }
+  return [...new Set(dias)].sort();
 }
 
 function hojeLocal() {
@@ -196,19 +361,24 @@ async function renumerar(pasta, ordem) {
     await rename(path.join(dir, t), path.join(dir, t.slice(4)));
   }
 
-  // As marcas de horario seguem a arte, senao apontariam para o arquivo errado.
+  // Marcas de horario e legendas seguem a arte, senao apontariam para o arquivo errado.
   const arqCfg = path.join(dir, "_config.json");
   if (existsSync(arqCfg)) {
     const cfg = JSON.parse(await readFile(arqCfg, "utf8"));
-    if (cfg.artes) {
-      cfg.artes = Object.fromEntries(
-        Object.entries(cfg.artes)
+    const seguir = (mapa) =>
+      Object.fromEntries(
+        Object.entries(mapa)
           .filter(([nome]) => novoNome.has(nome))
-          .map(([nome, m]) => [novoNome.get(nome), m]),
+          .map(([nome, v]) => [novoNome.get(nome), v]),
       );
-      if (!Object.keys(cfg.artes).length) delete cfg.artes;
-      await writeFile(arqCfg, JSON.stringify(cfg, null, 2) + "\n");
+    let mudou = false;
+    for (const chave of ["artes", "legendas"]) {
+      if (!cfg[chave]) continue;
+      cfg[chave] = seguir(cfg[chave]);
+      if (!Object.keys(cfg[chave]).length) delete cfg[chave];
+      mudou = true;
     }
+    if (mudou) await writeFile(arqCfg, JSON.stringify(cfg, null, 2) + "\n");
   }
 }
 
@@ -245,6 +415,62 @@ const rotas = {
     cfg.horarios = [...new Set(horarios)].sort();
     cfg.loop = !!corpo.loop;
     cfg.ativo = !!corpo.ativo;
+    cfg.folgas = diasValidos(corpo.folgas);
+    await writeFile(arqCfg, JSON.stringify(cfg, null, 2) + "\n");
+    return { ok: true };
+  },
+
+  // Dias em que nenhuma pasta publica.
+  "POST /api/folgas": async ({ corpo }) => {
+    const geral = await lerGeral();
+    if (geral.erro) throw new Error("_geral.json esta invalido — conserte o arquivo antes de salvar.");
+    delete geral.erro;
+    geral.folgas = diasValidos(corpo.folgas);
+    await writeFile(ARQ_GERAL, JSON.stringify(geral, null, 2) + "\n");
+    return { ok: true };
+  },
+
+  // Datas soltas sem publicacao (feriado, viagem) e pausa continua ate um dia.
+  "POST /api/pausas": async ({ corpo }) => {
+    const geral = await lerGeral();
+    if (geral.erro) throw new Error("_geral.json esta invalido — conserte o arquivo antes de salvar.");
+    delete geral.erro;
+    const datas = (corpo.pausas || []).map((d) => String(d).trim()).filter(Boolean);
+    for (const d of datas) {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(d)) throw new Error(`Data invalida: ${d}`);
+    }
+    const ate = String(corpo.pausarAte || "").trim();
+    if (ate && !/^\d{4}-\d{2}-\d{2}$/.test(ate)) throw new Error("Data invalida em 'pausar ate'.");
+    geral.pausas = [...new Set(datas)].sort();
+    geral.pausarAte = ate;
+    await writeFile(ARQ_GERAL, JSON.stringify(geral, null, 2) + "\n");
+    return { ok: true };
+  },
+
+  // Legenda de uma arte (feed) ou da pasta inteira, quando `arquivo` vem vazio.
+  "POST /api/legenda": async ({ corpo }) => {
+    const dir = pastaSegura(corpo.pasta);
+    const arqCfg = path.join(dir, "_config.json");
+    let cfg;
+    try {
+      cfg = JSON.parse(await readFile(arqCfg, "utf8"));
+    } catch {
+      throw new Error("_config.json desta pasta esta invalido — conserte o arquivo antes de salvar.");
+    }
+    const texto = String(corpo.texto || "").trim();
+    if (texto.length > 2200) throw new Error("A legenda do Instagram vai ate 2200 caracteres.");
+
+    if (corpo.arquivo) {
+      const arquivo = path.basename(arteSegura(corpo.pasta, corpo.arquivo));
+      cfg.legendas ??= {};
+      if (texto) cfg.legendas[arquivo] = texto;
+      else delete cfg.legendas[arquivo];
+      if (!Object.keys(cfg.legendas).length) delete cfg.legendas;
+    } else if (texto) {
+      cfg.legenda = texto;
+    } else {
+      delete cfg.legenda;
+    }
     await writeFile(arqCfg, JSON.stringify(cfg, null, 2) + "\n");
     return { ok: true };
   },

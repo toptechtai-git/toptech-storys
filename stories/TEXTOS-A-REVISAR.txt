@@ -1,0 +1,245 @@
+TOPTECH — TEXTOS QUE PRECISAM DE REVISAO
+Pastas: stories/campanha (30 stories) e stories/feed-campanha (50 posts)
+Gerado em 2026-08-14
+
+Legenda dos marcadores:
+  [QUEBRADO]  a frase afirma outra coisa que nao a pretendida — reescrever
+  [AMBIGUO]   duas leituras, e a errada vem primeiro — ajuste curto
+  [TRAVADO]   sentido certo, ritmo ruim
+  [CONFLITO]  duas pecas dizem coisas diferentes entre si
+
+
+================================================================
+1. QUEBRADOS — REESCREVER
+================================================================
+
+--- "NINGUEM ESPERA FICAR DOENTE PRA IR AO MEDICO"
+    onde: campanha/18.png  +  feed-campanha/002.png
+    atual: Ninguem espera ficar doente pra ir ao medico.
+    problema: e falso. A maioria das pessoas espera exatamente isso.
+              A analogia preventiva morre na premissa.
+    sugestao: No carro voce troca o oleo antes de fundir o motor.
+              No celular, quase ninguem faz isso.
+    obs: na versao do feed, revisar tambem "sai muito mais barato que
+         consertar depois" — comparacao de preco sem numero que sustente.
+
+
+--- "NINGUEM COMPRA CELULAR PELA VITRINE"
+    onde: campanha/23.png  +  feed-campanha/034.png
+    atual: Ninguem compra celular pela vitrine.
+    problema: as pessoas compram por vitrine. A ideia era "voce nao
+              comprou o objeto, comprou o que ele faz".
+    sugestao: Voce nao comprou um celular. Comprou a camera, o backup,
+              as conversas.
+    obs: no feed, "a conversa que continua no outro aparelho" descreve
+         sincronizacao — sugere que a conversa NAO se perde, o oposto
+         do argumento. Cortar ou trocar.
+
+
+--- "O APARELHO E SO O MEIO DE CAMPO"
+    onde: campanha/30.png  +  feed-campanha/043.png
+    atual: O aparelho e so o meio de campo.
+    problema: uso errado da expressao. "Meio de campo" e posicao /
+              intermediacao, nao veiculo nem recipiente.
+    sugestao: O aparelho e so a caixa.
+
+
+--- "SEU CONTEUDO NAO E ABERTO" x PEDIR A SENHA
+    onde: campanha/24.png  +  feed-campanha/049.png
+    atual: Seu conteudo nao e aberto, nao e copiado e nao sai daqui.
+           (+ subtexto) Se precisar de senha pra testar, eu peco na sua
+           frente e testo na sua frente.
+    problema: o titulo promete que nao abre; o subtexto descreve abrir.
+              E "aberto" e o verbo que a campanha usa pra ABRIR O
+              APARELHO (01, 15, 038), o que embaralha mais ainda.
+    sugestao: Seu conteudo nao e copiado e nao sai daqui.
+
+
+--- "NAO LIGA, NAO CARREGA, NAO POE NO ARROZ"
+    onde: campanha/25.png  +  feed-campanha/015.png
+    atual: Caiu na agua? Nao liga, nao carrega, nao poe no arroz.
+    problema: os dois primeiros leem como SINTOMA (o aparelho nao liga),
+              o terceiro como ORDEM. A lista muda de registro no meio.
+    sugestao: Caiu na agua? Nao liga o aparelho, nao poe pra carregar
+              e nao poe no arroz.
+
+
+================================================================
+2. AMBIGUOS — AJUSTE CURTO
+================================================================
+
+--- "A PRIMEIRA QUASE NUNCA PASSOU POR UM MICROSCOPIO"
+    onde: campanha/07.png  +  feed-campanha/005.png
+    problema: o antecedente mais proximo e PLACA, nao OPINIAO.
+              Le-se "a primeira placa".
+    sugestao: A primeira opiniao quase nunca passou por um microscopio.
+
+
+--- "NAO LIGA NAO QUER DIZER QUE MORREU"
+    onde: campanha/26.png  +  feed-campanha/028.png
+    problema: sem marcacao, le-se como dupla negacao. "Nao liga" e
+              citacao e precisa de aspas.
+    sugestao: "Nao liga" nao quer dizer que morreu.
+
+
+--- "E ISSO NAO ENTRA NA CONTA"
+    onde: campanha/02.png  +  feed-campanha/004.png
+    problema: "conta" le primeiro como "nao e levado em consideracao".
+              So na segunda leitura vira "orcamento".
+    sugestao: E isso nao entra no orcamento.
+
+
+--- "O ENDERECO ACABA SENDO ESSE"
+    onde: campanha/16.png  +  feed-campanha/011.png
+    problema: "esse" sem referente — nenhum endereco aparece na peca,
+              so o @ e a cidade.
+    sugestao: ...o cliente acaba vindo parar aqui.
+
+
+--- "A FILA TE OLHANDO"
+    onde: campanha/22.png  +  feed-campanha/017.png
+    problema: fila de que? O contexto (caixa do mercado) so existe na
+              cabeca de quem escreveu.
+    sugestao: Fila do mercado parada te esperando, e o aparelho travado
+              na mao.
+
+
+--- "ESCREVE ISSO NO GOOGLE"
+    onde: campanha/29.png  +  feed-campanha/045.png
+    problema: le-se como BUSCAR no Google, nao avaliar. E "isso" nao
+              tem referente.
+    sugestao: ...deixa uma avaliacao no Google.
+
+
+--- "QUE VOCE VAI PAGAR SEM TER CAUSADO"
+    onde: feed-campanha/021.png
+    atual: Chave de mercado arredonda a cabeca, e o estrago vira outro
+           servico — que voce vai pagar sem ter causado.
+    problema: sujeito perdido. Lido rapido, parece que a Toptech cobra
+              pelo erro dela.
+    sugestao: ...e o estrago vira um segundo servico, que voce paga por
+              causa de quem abriu antes.
+
+
+--- "FALTA ESPECIALIZACAO, NAO SOLUCAO"
+    onde: feed-campanha/020.png
+    problema: elipse dura, o leitor precisa reconstruir o segundo "falta".
+    sugestao: ...falta especializacao, nao falta solucao.
+
+
+================================================================
+3. TRAVADOS — SENTIDO CERTO, RITMO RUIM
+================================================================
+
+--- "COMPENSA" 3x
+    onde: campanha/05.png  +  feed-campanha/009.png
+    atual: Tem caso que nao compensa. Quando nao compensa, eu digo que
+           nao compensa.
+    problema: tres vezes em duas linhas. Vira eco, nao enfase.
+    sugestao: Tem caso que nao vale a pena. Quando nao vale, eu falo.
+
+
+--- "POR FORA / POR DENTRO"
+    onde: campanha/08.png  +  feed-campanha/019.png
+    atual: Por fora, placa queimada e placa mal diagnosticada sao a
+           mesma placa. Por dentro, uma vira lixo eletronico e a outra
+           volta a funcionar.
+    problema: quebra a logica — por dentro elas TAMBEM parecem iguais.
+              O que muda e o desfecho, nao a face.
+    sugestao: No fim, uma vira lixo eletronico e a outra volta a
+              funcionar.
+
+
+--- "NAO RESPONDEM O QUE ... RESPONDEM"
+    onde: campanha/11.png  +  feed-campanha/007.png
+    problema: verbo repetido nas duas pontas, trava a leitura.
+    sugestao: Vinte minutos de bancada respondem o que tres meses de
+              gaveta nao responderam.
+    obs: no feed, "quanto mais tempo parado com oxidacao dentro"
+         pressupoe oxidacao que o post nao estabeleceu — o assunto ali
+         e gaveta, nao molhado.
+
+
+--- "APARECE INTEIRA"
+    onde: campanha/13.png  +  feed-campanha/041.png
+    problema: "inteira" pede antecedente.
+    sugestao: Aparece por inteiro.
+
+
+================================================================
+4. CONFLITOS ENTRE PECAS
+================================================================
+
+--- DIAGNOSTICO GRATIS: DUAS PROMESSAS DIFERENTES
+    campanha/03 e /04    -> analise custa R$ 0,00, sempre
+    feed/014 e /035      -> R$ 0,00, "sem taxa de bancada"
+    campanha/12          -> "Se nao tiver solucao, voce nao paga nada"
+    feed/013             -> mesma frase
+    problema: a frase de 12/013 implica que SE TIVER solucao, paga o
+              diagnostico. Duas regras comerciais na mesma campanha.
+    resolver: padronizar em R$ 0,00 sempre.
+
+
+--- "AQUI NAO E ASSISTENCIA TECNICA" x #AssistenciaTecnica
+    campanha/13 e feed/041 afirmam: "Aqui nao e assistencia tecnica.
+    E laboratorio."
+    Mas a hashtag #AssistenciaTecnica aparece em 14 legendas do feed
+    E na legenda padrao do _config.json.
+    Alem disso, a fachada na foto campanha/28.png exibe em letras
+    grandes: "ASSISTENCIA TECNICA ESPECIALIZADA EM ANDROID E APPLE".
+    resolver: ou a hashtag sai, ou a peca sai. Hoje a hashtag e a que
+              aparece mais.
+
+
+--- RODAPE / NOME DO SERVICO SEM PADRAO
+    campanha:  DIAGNOSTICO GRATUITO (06, 22, 26)
+               ANALISE GRATUITA (08)
+               LABORATORIO TECNICO (01, 30)
+               LABORATORIO TOPTECH (04, 09, 15, 20)
+    feed:      "a analise e gratuita" (8x)
+               "diagnostico gratuito" (2x)
+               "avaliamos antes de qualquer coisa" (3x)
+               "a analise nao custa nada" (1x)
+    resolver: um nome pro servico, um pra assinatura.
+
+
+--- VOZ: EU x NOS
+    A campanha e construida sobre o Kevin ser quem abre o aparelho
+    ("eu digo", "traz que eu olho", "eu peco na sua frente").
+    Mas feed/026 e feed/035 usam plural ("anotamos", "avaliamos").
+    resolver: manter tudo em primeira pessoa do singular.
+
+
+--- CTA COM 9 VARIACOES
+    "Traga o seu" / "Traz o aparelho" / "Chama agora" / "Chama no
+    direct" / "Agende uma revisao" / "Traga o seu antes de comprar
+    outro" / "Antes de desistir, traga pra uma analise" / "Traga o seu
+    antes de perder o resto" / "Obrigado a quem ja indicou"
+    resolver: escolher 2 ou 3 e rodar.
+
+
+================================================================
+5. PROBLEMAS QUE NAO SAO DE TEXTO
+================================================================
+
+--- 20 POSTS JBL SEM LEGENDA PROPRIA  [MAIS URGENTE]
+    pasta: feed-campanha
+    arquivos: 001 003 008 010 012 016 018 022 024 027 029 031 033 036
+              039 042 044 046 048 050
+    Nao tem entrada no campo "legendas" do _config.json e caem na
+    legenda padrao, que fala de microsoldagem, conserto de celular e
+    "traga o seu". Publicados assim, 20 pecas sobre caixa de som JBL
+    saem com texto de celular e #Microsoldagem.
+    O emoji 📲 tambem fica fora de contexto nessas.
+
+
+--- COLISAO DE ELEMENTOS (visual)
+    campanha/14.png — o kicker manuscrito "por isso o microscopio"
+                      colide com a cedilha de "enrolacao"
+    campanha/20.png — o kicker cruza o grifo amarelo do titulo
+
+
+--- TEXTO COLADO NO RODAPE
+    campanha/08, /22, /24, /26 — bloco de texto no rodape com o topo
+    inteiro vazio. Nos stories, a barra de resposta do Instagram come
+    exatamente essa faixa.
