@@ -40,14 +40,14 @@
       "2e09c67952bb"
     ]
   },
-  "_ultimosAvisos": "FALHOU \"produtos\" as 11:30 (054.png): Only photo or video can be accepted as media type.|FALHOU \"produtos\" as 12:00 (054.png): Only photo or video can be accepted as media type.",
+  "_ultimosAvisos": "FALHOU \"produtos\" as 11:30 (054.png): Only photo or video can be accepted as media type.|FALHOU \"produtos\" as 12:30 (055.png): Only photo or video can be accepted as media type.",
   "produtos": {
     "voltas": 0,
     "publicados": {
       "11:00": "2026-08-17",
       "21:00": "2026-08-06",
       "11:30": "2026-08-16",
-      "12:00": "2026-08-16",
+      "12:00": "2026-08-17",
       "12:30": "2026-08-16",
       "09:30": "2026-08-17"
     },
@@ -104,11 +104,12 @@
       "ab069bb61232",
       "1e53eb61e3fe",
       "f4e90d00db14",
-      "9a3578f8ee76"
+      "9a3578f8ee76",
+      "b5637852b3d6"
     ],
     "pontuais": [],
     "indicesHora": {},
-    "ultimo": "2026-08-17 11:18 produtos/053.png"
+    "ultimo": "2026-08-17 12:47 produtos/054.png"
   },
   "campanha": {
     "voltas": 0,
@@ -153,6 +154,35 @@
     "ultimo": "2026-08-15 13:13 jbl-9x16/f02.png"
   },
   "_historico": [
+    {
+      "dia": "2026-08-17",
+      "hora": "12:47",
+      "slot": "12:30",
+      "pasta": "produtos",
+      "arquivo": "055.png",
+      "tipo": "fila",
+      "feed": false,
+      "erro": "Only photo or video can be accepted as media type."
+    },
+    {
+      "dia": "2026-08-17",
+      "hora": "12:47",
+      "slot": "12:00",
+      "pasta": "produtos",
+      "arquivo": "054.png",
+      "tipo": "fila",
+      "feed": false
+    },
+    {
+      "dia": "2026-08-17",
+      "hora": "12:47",
+      "slot": "11:30",
+      "pasta": "produtos",
+      "arquivo": "054.png",
+      "tipo": "fila",
+      "feed": false,
+      "erro": "Only photo or video can be accepted as media type."
+    },
     {
       "dia": "2026-08-17",
       "hora": "12:20",
