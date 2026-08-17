@@ -131,16 +131,17 @@
   "feed-campanha": {
     "voltas": 0,
     "publicados": {
-      "13:45": "2026-08-16",
+      "13:45": "2026-08-17",
       "08:45": "2026-08-17"
     },
     "feitas": [
       "3b7af33a9957",
-      "f06b13c191a6"
+      "f06b13c191a6",
+      "01921ce2ef30"
     ],
     "pontuais": [],
     "indicesHora": {},
-    "ultimo": "2026-08-17 08:47 feed-campanha/002.png"
+    "ultimo": "2026-08-17 13:52 feed-campanha/003.png"
   },
   "jbl-9x16": {
     "voltas": 0,
@@ -156,6 +157,15 @@
     "ultimo": "2026-08-15 13:13 jbl-9x16/f02.png"
   },
   "_historico": [
+    {
+      "dia": "2026-08-17",
+      "hora": "13:52",
+      "slot": "13:45",
+      "pasta": "feed-campanha",
+      "arquivo": "003.png",
+      "tipo": "fila",
+      "feed": true
+    },
     {
       "dia": "2026-08-17",
       "hora": "13:17",
