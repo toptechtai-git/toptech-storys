@@ -40,7 +40,7 @@
       "2e09c67952bb"
     ]
   },
-  "_ultimosAvisos": "FALHOU \"produtos\" as 11:30 (054.png): Only photo or video can be accepted as media type.",
+  "_ultimosAvisos": "FALHOU \"produtos\" as 11:30 (054.png): Only photo or video can be accepted as media type.|FALHOU \"produtos\" as 12:00 (054.png): Only photo or video can be accepted as media type.",
   "produtos": {
     "voltas": 0,
     "publicados": {
@@ -153,6 +153,26 @@
     "ultimo": "2026-08-15 13:13 jbl-9x16/f02.png"
   },
   "_historico": [
+    {
+      "dia": "2026-08-17",
+      "hora": "12:17",
+      "slot": "12:00",
+      "pasta": "produtos",
+      "arquivo": "054.png",
+      "tipo": "fila",
+      "feed": false,
+      "erro": "Only photo or video can be accepted as media type."
+    },
+    {
+      "dia": "2026-08-17",
+      "hora": "12:17",
+      "slot": "11:30",
+      "pasta": "produtos",
+      "arquivo": "054.png",
+      "tipo": "fila",
+      "feed": false,
+      "erro": "Only photo or video can be accepted as media type."
+    },
     {
       "dia": "2026-08-17",
       "hora": "11:51",
