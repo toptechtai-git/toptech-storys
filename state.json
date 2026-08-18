@@ -3,7 +3,7 @@
     "voltas": 0,
     "publicados": {
       "09:00": "2026-08-03",
-      "08:50": "2026-08-17"
+      "08:50": "2026-08-18"
     },
     "feitas": [
       "3aefc30fd1e6",
@@ -19,11 +19,12 @@
       "dbafe2450dd3",
       "8a378547cb0d",
       "d3aa6ed346c4",
-      "d8907cb23cf3"
+      "d8907cb23cf3",
+      "a8c318f8a7a1"
     ],
     "pontuais": [],
     "indicesHora": {},
-    "ultimo": "2026-08-17 08:50 manha/014.png"
+    "ultimo": "2026-08-18 09:00 manha/015.png"
   },
   "tarde": {
     "voltas": 4,
@@ -159,6 +160,15 @@
     "ultimo": "2026-08-15 13:13 jbl-9x16/f02.png"
   },
   "_historico": [
+    {
+      "dia": "2026-08-18",
+      "hora": "09:00",
+      "slot": "08:50",
+      "pasta": "manha",
+      "arquivo": "015.png",
+      "tipo": "fila",
+      "feed": false
+    },
     {
       "dia": "2026-08-18",
       "hora": "08:47",
