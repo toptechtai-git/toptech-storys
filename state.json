@@ -42,23 +42,24 @@
       "2e09c67952bb"
     ]
   },
-  "_ultimosAvisos": "A fila deu a volta (1x) — voltou a publicar do inicio. Hora de renovar as artes.",
+  "_ultimosAvisos": "",
   "produtos": {
     "voltas": 1,
     "publicados": {
       "11:00": "2026-08-19",
       "21:00": "2026-08-06",
       "11:30": "2026-08-19",
-      "12:00": "2026-08-18",
+      "12:00": "2026-08-19",
       "12:30": "2026-08-18",
       "09:30": "2026-08-19"
     },
     "feitas": [
-      "a3174a2ad35a"
+      "a3174a2ad35a",
+      "48018166b054"
     ],
     "pontuais": [],
     "indicesHora": {},
-    "ultimo": "2026-08-19 11:50 produtos/001.png"
+    "ultimo": "2026-08-19 12:00 produtos/002.png"
   },
   "campanha": {
     "voltas": 0,
@@ -103,6 +104,15 @@
     "ultimo": "2026-08-15 13:13 jbl-9x16/f02.png"
   },
   "_historico": [
+    {
+      "dia": "2026-08-19",
+      "hora": "12:00",
+      "slot": "12:00",
+      "pasta": "produtos",
+      "arquivo": "002.png",
+      "tipo": "fila",
+      "feed": false
+    },
     {
       "dia": "2026-08-19",
       "hora": "11:50",
