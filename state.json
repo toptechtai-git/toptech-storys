@@ -52,29 +52,31 @@
       "11:30": "2026-08-19",
       "12:00": "2026-08-19",
       "12:30": "2026-08-19",
-      "09:30": "2026-08-19"
+      "09:30": "2026-08-20"
     },
     "feitas": [
       "a3174a2ad35a",
       "48018166b054",
-      "6003237ce254"
+      "6003237ce254",
+      "b4ae01ca7d9d"
     ],
     "pontuais": [],
     "indicesHora": {},
-    "ultimo": "2026-08-19 12:55 produtos/003.png"
+    "ultimo": "2026-08-20 10:27 produtos/004.png"
   },
   "campanha": {
     "voltas": 0,
     "publicados": {
       "16:30": "2026-08-19",
-      "10:15": "2026-08-19"
+      "10:15": "2026-08-20"
     },
     "feitas": [
-      "655c16352726"
+      "655c16352726",
+      "8aded8673423"
     ],
     "pontuais": [],
     "indicesHora": {},
-    "ultimo": "2026-08-19 16:36 campanha/001.png"
+    "ultimo": "2026-08-20 10:27 campanha/002.png"
   },
   "feed-campanha": {
     "voltas": 0,
@@ -110,6 +112,24 @@
     "ultimo": "2026-08-15 13:13 jbl-9x16/f02.png"
   },
   "_historico": [
+    {
+      "dia": "2026-08-20",
+      "hora": "10:27",
+      "slot": "09:30",
+      "pasta": "produtos",
+      "arquivo": "004.png",
+      "tipo": "fila",
+      "feed": false
+    },
+    {
+      "dia": "2026-08-20",
+      "hora": "10:27",
+      "slot": "10:15",
+      "pasta": "campanha",
+      "arquivo": "002.png",
+      "tipo": "fila",
+      "feed": false
+    },
     {
       "dia": "2026-08-20",
       "hora": "08:50",
