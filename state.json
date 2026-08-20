@@ -47,7 +47,7 @@
   "produtos": {
     "voltas": 1,
     "publicados": {
-      "11:00": "2026-08-19",
+      "11:00": "2026-08-20",
       "21:00": "2026-08-06",
       "11:30": "2026-08-19",
       "12:00": "2026-08-19",
@@ -58,11 +58,12 @@
       "a3174a2ad35a",
       "48018166b054",
       "6003237ce254",
-      "b4ae01ca7d9d"
+      "b4ae01ca7d9d",
+      "29c01ffcb98e"
     ],
     "pontuais": [],
     "indicesHora": {},
-    "ultimo": "2026-08-20 10:27 produtos/004.png"
+    "ultimo": "2026-08-20 11:07 produtos/005.png"
   },
   "campanha": {
     "voltas": 0,
@@ -112,6 +113,15 @@
     "ultimo": "2026-08-15 13:13 jbl-9x16/f02.png"
   },
   "_historico": [
+    {
+      "dia": "2026-08-20",
+      "hora": "11:07",
+      "slot": "11:00",
+      "pasta": "produtos",
+      "arquivo": "005.png",
+      "tipo": "fila",
+      "feed": false
+    },
     {
       "dia": "2026-08-20",
       "hora": "10:27",
