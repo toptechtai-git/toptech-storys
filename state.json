@@ -1,5 +1,582 @@
 {
-  "manha": {
+  "_ultimosAvisos": "",
+  "_historico": [
+    {
+      "dia": "2026-08-21",
+      "hora": "13:59",
+      "slot": "13:45",
+      "pasta": "feed/campanha",
+      "arquivo": "011.png",
+      "tipo": "fila",
+      "feed": true
+    },
+    {
+      "dia": "2026-08-21",
+      "hora": "12:46",
+      "slot": "12:30",
+      "pasta": "story/produtos",
+      "arquivo": "013.png",
+      "tipo": "fila",
+      "feed": false
+    },
+    {
+      "dia": "2026-08-21",
+      "hora": "12:00",
+      "slot": "12:00",
+      "pasta": "story/produtos",
+      "arquivo": "012.png",
+      "tipo": "fila",
+      "feed": false
+    },
+    {
+      "dia": "2026-08-21",
+      "hora": "12:00",
+      "slot": "11:30",
+      "pasta": "story/produtos",
+      "arquivo": "011.png",
+      "tipo": "fila",
+      "feed": false
+    },
+    {
+      "dia": "2026-08-21",
+      "hora": "11:17",
+      "slot": "11:00",
+      "pasta": "story/produtos",
+      "arquivo": "010.png",
+      "tipo": "fila",
+      "feed": false
+    },
+    {
+      "dia": "2026-08-21",
+      "hora": "10:38",
+      "slot": "10:15",
+      "pasta": "story/campanha",
+      "arquivo": "004.png",
+      "tipo": "fila",
+      "feed": false
+    },
+    {
+      "dia": "2026-08-21",
+      "hora": "09:53",
+      "slot": "09:30",
+      "pasta": "story/produtos",
+      "arquivo": "009.png",
+      "tipo": "fila",
+      "feed": false
+    },
+    {
+      "dia": "2026-08-21",
+      "hora": "08:51",
+      "slot": "08:50",
+      "pasta": "story/manha",
+      "arquivo": "018.png",
+      "tipo": "fila",
+      "feed": false
+    },
+    {
+      "dia": "2026-08-21",
+      "hora": "08:51",
+      "slot": "08:45",
+      "pasta": "feed/campanha",
+      "arquivo": "010.png",
+      "tipo": "fila",
+      "feed": true
+    },
+    {
+      "dia": "2026-08-20",
+      "hora": "16:53",
+      "slot": "16:30",
+      "pasta": "story/campanha",
+      "arquivo": "003.png",
+      "tipo": "fila",
+      "feed": false
+    },
+    {
+      "dia": "2026-08-20",
+      "hora": "14:00",
+      "slot": "13:45",
+      "pasta": "feed/campanha",
+      "arquivo": "009.png",
+      "tipo": "fila",
+      "feed": true
+    },
+    {
+      "dia": "2026-08-20",
+      "hora": "12:56",
+      "slot": "12:30",
+      "pasta": "story/produtos",
+      "arquivo": "008.png",
+      "tipo": "fila",
+      "feed": false
+    },
+    {
+      "dia": "2026-08-20",
+      "hora": "12:00",
+      "slot": "12:00",
+      "pasta": "story/produtos",
+      "arquivo": "007.png",
+      "tipo": "fila",
+      "feed": false
+    },
+    {
+      "dia": "2026-08-20",
+      "hora": "11:52",
+      "slot": "11:30",
+      "pasta": "story/produtos",
+      "arquivo": "006.png",
+      "tipo": "fila",
+      "feed": false
+    },
+    {
+      "dia": "2026-08-20",
+      "hora": "11:07",
+      "slot": "11:00",
+      "pasta": "story/produtos",
+      "arquivo": "005.png",
+      "tipo": "fila",
+      "feed": false
+    },
+    {
+      "dia": "2026-08-20",
+      "hora": "10:27",
+      "slot": "09:30",
+      "pasta": "story/produtos",
+      "arquivo": "004.png",
+      "tipo": "fila",
+      "feed": false
+    },
+    {
+      "dia": "2026-08-20",
+      "hora": "10:27",
+      "slot": "10:15",
+      "pasta": "story/campanha",
+      "arquivo": "002.png",
+      "tipo": "fila",
+      "feed": false
+    },
+    {
+      "dia": "2026-08-20",
+      "hora": "08:50",
+      "slot": "08:50",
+      "pasta": "story/manha",
+      "arquivo": "017.png",
+      "tipo": "fila",
+      "feed": false
+    },
+    {
+      "dia": "2026-08-20",
+      "hora": "08:50",
+      "slot": "08:45",
+      "pasta": "feed/campanha",
+      "arquivo": "008.png",
+      "tipo": "fila",
+      "feed": true
+    },
+    {
+      "dia": "2026-08-19",
+      "hora": "16:36",
+      "slot": "16:30",
+      "pasta": "story/campanha",
+      "arquivo": "001.png",
+      "tipo": "fila",
+      "feed": false
+    },
+    {
+      "dia": "2026-08-19",
+      "hora": "13:54",
+      "slot": "13:45",
+      "pasta": "feed/campanha",
+      "arquivo": "007.png",
+      "tipo": "fila",
+      "feed": true
+    },
+    {
+      "dia": "2026-08-19",
+      "hora": "12:55",
+      "slot": "12:30",
+      "pasta": "story/produtos",
+      "arquivo": "003.png",
+      "tipo": "fila",
+      "feed": false
+    },
+    {
+      "dia": "2026-08-19",
+      "hora": "12:00",
+      "slot": "12:00",
+      "pasta": "story/produtos",
+      "arquivo": "002.png",
+      "tipo": "fila",
+      "feed": false
+    },
+    {
+      "dia": "2026-08-19",
+      "hora": "11:50",
+      "slot": "11:30",
+      "pasta": "story/produtos",
+      "arquivo": "001.png",
+      "tipo": "fila",
+      "feed": false
+    },
+    {
+      "dia": "2026-08-19",
+      "hora": "11:04",
+      "slot": "11:00",
+      "pasta": "story/produtos",
+      "arquivo": "063.png",
+      "tipo": "fila",
+      "feed": false
+    },
+    {
+      "dia": "2026-08-19",
+      "hora": "10:24",
+      "slot": "09:30",
+      "pasta": "story/produtos",
+      "arquivo": "062.png",
+      "tipo": "fila",
+      "feed": false
+    },
+    {
+      "dia": "2026-08-19",
+      "hora": "10:24",
+      "slot": "10:15",
+      "pasta": "story/campanha",
+      "arquivo": "007.png",
+      "tipo": "fila",
+      "feed": false
+    },
+    {
+      "dia": "2026-08-19",
+      "hora": "08:50",
+      "slot": "08:50",
+      "pasta": "story/manha",
+      "arquivo": "016.png",
+      "tipo": "fila",
+      "feed": false
+    },
+    {
+      "dia": "2026-08-19",
+      "hora": "08:47",
+      "slot": "08:45",
+      "pasta": "feed/campanha",
+      "arquivo": "006.png",
+      "tipo": "fila",
+      "feed": true
+    },
+    {
+      "dia": "2026-08-18",
+      "hora": "16:38",
+      "slot": "16:30",
+      "pasta": "story/campanha",
+      "arquivo": "006.png",
+      "tipo": "fila",
+      "feed": false
+    },
+    {
+      "dia": "2026-08-18",
+      "hora": "13:55",
+      "slot": "13:45",
+      "pasta": "feed/campanha",
+      "arquivo": "005.png",
+      "tipo": "fila",
+      "feed": true
+    },
+    {
+      "dia": "2026-08-18",
+      "hora": "12:54",
+      "slot": "12:30",
+      "pasta": "story/produtos",
+      "arquivo": "061.png",
+      "tipo": "fila",
+      "feed": false
+    },
+    {
+      "dia": "2026-08-18",
+      "hora": "12:14",
+      "slot": "12:00",
+      "pasta": "story/produtos",
+      "arquivo": "060.png",
+      "tipo": "fila",
+      "feed": false
+    },
+    {
+      "dia": "2026-08-18",
+      "hora": "11:49",
+      "slot": "11:30",
+      "pasta": "story/produtos",
+      "arquivo": "059.png",
+      "tipo": "fila",
+      "feed": false
+    },
+    {
+      "dia": "2026-08-18",
+      "hora": "11:03",
+      "slot": "11:00",
+      "pasta": "story/produtos",
+      "arquivo": "058.png",
+      "tipo": "fila",
+      "feed": false
+    },
+    {
+      "dia": "2026-08-18",
+      "hora": "10:22",
+      "slot": "09:30",
+      "pasta": "story/produtos",
+      "arquivo": "057.png",
+      "tipo": "fila",
+      "feed": false
+    },
+    {
+      "dia": "2026-08-18",
+      "hora": "10:22",
+      "slot": "10:15",
+      "pasta": "story/campanha",
+      "arquivo": "005.png",
+      "tipo": "fila",
+      "feed": false
+    },
+    {
+      "dia": "2026-08-18",
+      "hora": "09:00",
+      "slot": "08:50",
+      "pasta": "story/manha",
+      "arquivo": "015.png",
+      "tipo": "fila",
+      "feed": false
+    },
+    {
+      "dia": "2026-08-18",
+      "hora": "08:47",
+      "slot": "08:45",
+      "pasta": "feed/campanha",
+      "arquivo": "004.png",
+      "tipo": "fila",
+      "feed": true
+    },
+    {
+      "dia": "2026-08-17",
+      "hora": "16:39",
+      "slot": "16:30",
+      "pasta": "story/campanha",
+      "arquivo": "004.png",
+      "tipo": "fila",
+      "feed": false
+    },
+    {
+      "dia": "2026-08-17",
+      "hora": "13:52",
+      "slot": "13:45",
+      "pasta": "feed/campanha",
+      "arquivo": "003.png",
+      "tipo": "fila",
+      "feed": true
+    },
+    {
+      "dia": "2026-08-17",
+      "hora": "13:17",
+      "slot": "12:30",
+      "pasta": "story/produtos",
+      "arquivo": "056.png",
+      "tipo": "fila",
+      "feed": false
+    },
+    {
+      "dia": "2026-08-17",
+      "hora": "13:17",
+      "slot": "11:30",
+      "pasta": "story/produtos",
+      "arquivo": "055.png",
+      "tipo": "fila",
+      "feed": false
+    },
+    {
+      "dia": "2026-08-17",
+      "hora": "12:47",
+      "slot": "12:30",
+      "pasta": "story/produtos",
+      "arquivo": "055.png",
+      "tipo": "fila",
+      "feed": false,
+      "erro": "Only photo or video can be accepted as media type."
+    },
+    {
+      "dia": "2026-08-17",
+      "hora": "12:47",
+      "slot": "12:00",
+      "pasta": "story/produtos",
+      "arquivo": "054.png",
+      "tipo": "fila",
+      "feed": false
+    },
+    {
+      "dia": "2026-08-17",
+      "hora": "12:47",
+      "slot": "11:30",
+      "pasta": "story/produtos",
+      "arquivo": "054.png",
+      "tipo": "fila",
+      "feed": false,
+      "erro": "Only photo or video can be accepted as media type."
+    },
+    {
+      "dia": "2026-08-17",
+      "hora": "12:20",
+      "slot": "12:00",
+      "pasta": "story/produtos",
+      "arquivo": "054.png",
+      "tipo": "fila",
+      "feed": false,
+      "erro": "Only photo or video can be accepted as media type."
+    },
+    {
+      "dia": "2026-08-17",
+      "hora": "12:20",
+      "slot": "11:30",
+      "pasta": "story/produtos",
+      "arquivo": "054.png",
+      "tipo": "fila",
+      "feed": false,
+      "erro": "Only photo or video can be accepted as media type."
+    },
+    {
+      "dia": "2026-08-17",
+      "hora": "12:17",
+      "slot": "12:00",
+      "pasta": "story/produtos",
+      "arquivo": "054.png",
+      "tipo": "fila",
+      "feed": false,
+      "erro": "Only photo or video can be accepted as media type."
+    },
+    {
+      "dia": "2026-08-17",
+      "hora": "12:17",
+      "slot": "11:30",
+      "pasta": "story/produtos",
+      "arquivo": "054.png",
+      "tipo": "fila",
+      "feed": false,
+      "erro": "Only photo or video can be accepted as media type."
+    },
+    {
+      "dia": "2026-08-17",
+      "hora": "11:51",
+      "slot": "11:30",
+      "pasta": "story/produtos",
+      "arquivo": "054.png",
+      "tipo": "fila",
+      "feed": false,
+      "erro": "Only photo or video can be accepted as media type."
+    },
+    {
+      "dia": "2026-08-17",
+      "hora": "11:18",
+      "slot": "11:00",
+      "pasta": "story/produtos",
+      "arquivo": "053.png",
+      "tipo": "fila",
+      "feed": false
+    },
+    {
+      "dia": "2026-08-17",
+      "hora": "10:53",
+      "slot": "10:15",
+      "pasta": "story/campanha",
+      "arquivo": "003.png",
+      "tipo": "fila",
+      "feed": false
+    },
+    {
+      "dia": "2026-08-17",
+      "hora": "10:14",
+      "slot": "09:30",
+      "pasta": "story/produtos",
+      "arquivo": "052.png",
+      "tipo": "fila",
+      "feed": false
+    },
+    {
+      "dia": "2026-08-17",
+      "hora": "08:50",
+      "slot": "08:50",
+      "pasta": "story/manha",
+      "arquivo": "014.png",
+      "tipo": "fila",
+      "feed": false
+    },
+    {
+      "dia": "2026-08-17",
+      "hora": "08:47",
+      "slot": "08:45",
+      "pasta": "feed/campanha",
+      "arquivo": "002.png",
+      "tipo": "fila",
+      "feed": true
+    },
+    {
+      "dia": "2026-08-16",
+      "hora": "16:34",
+      "slot": "16:30",
+      "pasta": "story/campanha",
+      "arquivo": "002.png",
+      "tipo": "fila",
+      "feed": false
+    },
+    {
+      "dia": "2026-08-16",
+      "hora": "13:47",
+      "slot": "13:45",
+      "pasta": "feed/campanha",
+      "arquivo": "001.png",
+      "tipo": "fila",
+      "feed": true
+    },
+    {
+      "dia": "2026-08-16",
+      "hora": "12:35",
+      "slot": "12:30",
+      "pasta": "story/produtos",
+      "arquivo": "051.png",
+      "tipo": "fila",
+      "feed": false
+    },
+    {
+      "dia": "2026-08-16",
+      "hora": "12:04",
+      "slot": "12:00",
+      "pasta": "story/produtos",
+      "arquivo": "050.png",
+      "tipo": "fila",
+      "feed": false
+    },
+    {
+      "dia": "2026-08-16",
+      "hora": "11:45",
+      "slot": "11:30",
+      "pasta": "story/produtos",
+      "arquivo": "049.png",
+      "tipo": "fila",
+      "feed": false
+    },
+    {
+      "dia": "2026-08-16",
+      "hora": "11:25",
+      "slot": "11:00",
+      "pasta": "story/produtos",
+      "arquivo": "048.png",
+      "tipo": "fila",
+      "feed": false
+    },
+    {
+      "dia": "2026-08-16",
+      "hora": "10:42",
+      "slot": "10:15",
+      "pasta": "story/campanha",
+      "arquivo": "001.png",
+      "tipo": "fila",
+      "feed": false
+    }
+  ],
+  "story/manha": {
     "voltas": 0,
     "publicados": {
       "09:00": "2026-08-03",
@@ -27,25 +604,16 @@
     ],
     "pontuais": [],
     "indicesHora": {},
-    "ultimo": "2026-08-21 08:51 manha/018.png"
-  },
-  "tarde": {
-    "voltas": 4,
-    "publicados": {
-      "12:00": "2026-08-14",
-      "15:00": "2026-08-13",
-      "18:00": "2026-08-13"
-    },
-    "ultimo": "2026-08-14 12:00 tarde/002.png",
-    "pontuais": [],
-    "indicesHora": {},
-    "feitas": [
-      "1516754e89d2",
-      "2e09c67952bb"
+    "ultimo": "2026-08-21 08:51 manha/018.png",
+    "nomesFeitos": [
+      "014.png",
+      "015.png",
+      "016.png",
+      "017.png",
+      "018.png"
     ]
   },
-  "_ultimosAvisos": "",
-  "produtos": {
+  "story/produtos": {
     "voltas": 1,
     "publicados": {
       "11:00": "2026-08-21",
@@ -72,9 +640,40 @@
     ],
     "pontuais": [],
     "indicesHora": {},
-    "ultimo": "2026-08-21 12:46 produtos/013.png"
+    "ultimo": "2026-08-21 12:46 produtos/013.png",
+    "nomesFeitos": [
+      "001.png",
+      "002.png",
+      "003.png",
+      "004.png",
+      "005.png",
+      "006.png",
+      "007.png",
+      "008.png",
+      "009.png",
+      "010.png",
+      "011.png",
+      "012.png",
+      "013.png",
+      "048.png",
+      "049.png",
+      "050.png",
+      "051.png",
+      "052.png",
+      "053.png",
+      "054.png",
+      "055.png",
+      "056.png",
+      "057.png",
+      "058.png",
+      "059.png",
+      "060.png",
+      "061.png",
+      "062.png",
+      "063.png"
+    ]
   },
-  "campanha": {
+  "story/campanha": {
     "voltas": 0,
     "publicados": {
       "16:30": "2026-08-20",
@@ -88,9 +687,18 @@
     ],
     "pontuais": [],
     "indicesHora": {},
-    "ultimo": "2026-08-21 10:38 campanha/004.png"
+    "ultimo": "2026-08-21 10:38 campanha/004.png",
+    "nomesFeitos": [
+      "001.png",
+      "002.png",
+      "003.png",
+      "004.png",
+      "005.png",
+      "006.png",
+      "007.png"
+    ]
   },
-  "feed-campanha": {
+  "feed/campanha": {
     "voltas": 0,
     "publicados": {
       "13:45": "2026-08-21",
@@ -111,595 +719,19 @@
     ],
     "pontuais": [],
     "indicesHora": {},
-    "ultimo": "2026-08-21 13:59 feed-campanha/011.png"
-  },
-  "jbl-9x16": {
-    "voltas": 0,
-    "publicados": {
-      "13:00": "2026-08-15"
-    },
-    "feitas": [
-      "1c3e39bc45dc",
-      "116e087240ab"
-    ],
-    "pontuais": [],
-    "indicesHora": {},
-    "ultimo": "2026-08-15 13:13 jbl-9x16/f02.png"
-  },
-  "_historico": [
-    {
-      "dia": "2026-08-21",
-      "hora": "13:59",
-      "slot": "13:45",
-      "pasta": "feed-campanha",
-      "arquivo": "011.png",
-      "tipo": "fila",
-      "feed": true
-    },
-    {
-      "dia": "2026-08-21",
-      "hora": "12:46",
-      "slot": "12:30",
-      "pasta": "produtos",
-      "arquivo": "013.png",
-      "tipo": "fila",
-      "feed": false
-    },
-    {
-      "dia": "2026-08-21",
-      "hora": "12:00",
-      "slot": "12:00",
-      "pasta": "produtos",
-      "arquivo": "012.png",
-      "tipo": "fila",
-      "feed": false
-    },
-    {
-      "dia": "2026-08-21",
-      "hora": "12:00",
-      "slot": "11:30",
-      "pasta": "produtos",
-      "arquivo": "011.png",
-      "tipo": "fila",
-      "feed": false
-    },
-    {
-      "dia": "2026-08-21",
-      "hora": "11:17",
-      "slot": "11:00",
-      "pasta": "produtos",
-      "arquivo": "010.png",
-      "tipo": "fila",
-      "feed": false
-    },
-    {
-      "dia": "2026-08-21",
-      "hora": "10:38",
-      "slot": "10:15",
-      "pasta": "campanha",
-      "arquivo": "004.png",
-      "tipo": "fila",
-      "feed": false
-    },
-    {
-      "dia": "2026-08-21",
-      "hora": "09:53",
-      "slot": "09:30",
-      "pasta": "produtos",
-      "arquivo": "009.png",
-      "tipo": "fila",
-      "feed": false
-    },
-    {
-      "dia": "2026-08-21",
-      "hora": "08:51",
-      "slot": "08:50",
-      "pasta": "manha",
-      "arquivo": "018.png",
-      "tipo": "fila",
-      "feed": false
-    },
-    {
-      "dia": "2026-08-21",
-      "hora": "08:51",
-      "slot": "08:45",
-      "pasta": "feed-campanha",
-      "arquivo": "010.png",
-      "tipo": "fila",
-      "feed": true
-    },
-    {
-      "dia": "2026-08-20",
-      "hora": "16:53",
-      "slot": "16:30",
-      "pasta": "campanha",
-      "arquivo": "003.png",
-      "tipo": "fila",
-      "feed": false
-    },
-    {
-      "dia": "2026-08-20",
-      "hora": "14:00",
-      "slot": "13:45",
-      "pasta": "feed-campanha",
-      "arquivo": "009.png",
-      "tipo": "fila",
-      "feed": true
-    },
-    {
-      "dia": "2026-08-20",
-      "hora": "12:56",
-      "slot": "12:30",
-      "pasta": "produtos",
-      "arquivo": "008.png",
-      "tipo": "fila",
-      "feed": false
-    },
-    {
-      "dia": "2026-08-20",
-      "hora": "12:00",
-      "slot": "12:00",
-      "pasta": "produtos",
-      "arquivo": "007.png",
-      "tipo": "fila",
-      "feed": false
-    },
-    {
-      "dia": "2026-08-20",
-      "hora": "11:52",
-      "slot": "11:30",
-      "pasta": "produtos",
-      "arquivo": "006.png",
-      "tipo": "fila",
-      "feed": false
-    },
-    {
-      "dia": "2026-08-20",
-      "hora": "11:07",
-      "slot": "11:00",
-      "pasta": "produtos",
-      "arquivo": "005.png",
-      "tipo": "fila",
-      "feed": false
-    },
-    {
-      "dia": "2026-08-20",
-      "hora": "10:27",
-      "slot": "09:30",
-      "pasta": "produtos",
-      "arquivo": "004.png",
-      "tipo": "fila",
-      "feed": false
-    },
-    {
-      "dia": "2026-08-20",
-      "hora": "10:27",
-      "slot": "10:15",
-      "pasta": "campanha",
-      "arquivo": "002.png",
-      "tipo": "fila",
-      "feed": false
-    },
-    {
-      "dia": "2026-08-20",
-      "hora": "08:50",
-      "slot": "08:50",
-      "pasta": "manha",
-      "arquivo": "017.png",
-      "tipo": "fila",
-      "feed": false
-    },
-    {
-      "dia": "2026-08-20",
-      "hora": "08:50",
-      "slot": "08:45",
-      "pasta": "feed-campanha",
-      "arquivo": "008.png",
-      "tipo": "fila",
-      "feed": true
-    },
-    {
-      "dia": "2026-08-19",
-      "hora": "16:36",
-      "slot": "16:30",
-      "pasta": "campanha",
-      "arquivo": "001.png",
-      "tipo": "fila",
-      "feed": false
-    },
-    {
-      "dia": "2026-08-19",
-      "hora": "13:54",
-      "slot": "13:45",
-      "pasta": "feed-campanha",
-      "arquivo": "007.png",
-      "tipo": "fila",
-      "feed": true
-    },
-    {
-      "dia": "2026-08-19",
-      "hora": "12:55",
-      "slot": "12:30",
-      "pasta": "produtos",
-      "arquivo": "003.png",
-      "tipo": "fila",
-      "feed": false
-    },
-    {
-      "dia": "2026-08-19",
-      "hora": "12:00",
-      "slot": "12:00",
-      "pasta": "produtos",
-      "arquivo": "002.png",
-      "tipo": "fila",
-      "feed": false
-    },
-    {
-      "dia": "2026-08-19",
-      "hora": "11:50",
-      "slot": "11:30",
-      "pasta": "produtos",
-      "arquivo": "001.png",
-      "tipo": "fila",
-      "feed": false
-    },
-    {
-      "dia": "2026-08-19",
-      "hora": "11:04",
-      "slot": "11:00",
-      "pasta": "produtos",
-      "arquivo": "063.png",
-      "tipo": "fila",
-      "feed": false
-    },
-    {
-      "dia": "2026-08-19",
-      "hora": "10:24",
-      "slot": "09:30",
-      "pasta": "produtos",
-      "arquivo": "062.png",
-      "tipo": "fila",
-      "feed": false
-    },
-    {
-      "dia": "2026-08-19",
-      "hora": "10:24",
-      "slot": "10:15",
-      "pasta": "campanha",
-      "arquivo": "007.png",
-      "tipo": "fila",
-      "feed": false
-    },
-    {
-      "dia": "2026-08-19",
-      "hora": "08:50",
-      "slot": "08:50",
-      "pasta": "manha",
-      "arquivo": "016.png",
-      "tipo": "fila",
-      "feed": false
-    },
-    {
-      "dia": "2026-08-19",
-      "hora": "08:47",
-      "slot": "08:45",
-      "pasta": "feed-campanha",
-      "arquivo": "006.png",
-      "tipo": "fila",
-      "feed": true
-    },
-    {
-      "dia": "2026-08-18",
-      "hora": "16:38",
-      "slot": "16:30",
-      "pasta": "campanha",
-      "arquivo": "006.png",
-      "tipo": "fila",
-      "feed": false
-    },
-    {
-      "dia": "2026-08-18",
-      "hora": "13:55",
-      "slot": "13:45",
-      "pasta": "feed-campanha",
-      "arquivo": "005.png",
-      "tipo": "fila",
-      "feed": true
-    },
-    {
-      "dia": "2026-08-18",
-      "hora": "12:54",
-      "slot": "12:30",
-      "pasta": "produtos",
-      "arquivo": "061.png",
-      "tipo": "fila",
-      "feed": false
-    },
-    {
-      "dia": "2026-08-18",
-      "hora": "12:14",
-      "slot": "12:00",
-      "pasta": "produtos",
-      "arquivo": "060.png",
-      "tipo": "fila",
-      "feed": false
-    },
-    {
-      "dia": "2026-08-18",
-      "hora": "11:49",
-      "slot": "11:30",
-      "pasta": "produtos",
-      "arquivo": "059.png",
-      "tipo": "fila",
-      "feed": false
-    },
-    {
-      "dia": "2026-08-18",
-      "hora": "11:03",
-      "slot": "11:00",
-      "pasta": "produtos",
-      "arquivo": "058.png",
-      "tipo": "fila",
-      "feed": false
-    },
-    {
-      "dia": "2026-08-18",
-      "hora": "10:22",
-      "slot": "09:30",
-      "pasta": "produtos",
-      "arquivo": "057.png",
-      "tipo": "fila",
-      "feed": false
-    },
-    {
-      "dia": "2026-08-18",
-      "hora": "10:22",
-      "slot": "10:15",
-      "pasta": "campanha",
-      "arquivo": "005.png",
-      "tipo": "fila",
-      "feed": false
-    },
-    {
-      "dia": "2026-08-18",
-      "hora": "09:00",
-      "slot": "08:50",
-      "pasta": "manha",
-      "arquivo": "015.png",
-      "tipo": "fila",
-      "feed": false
-    },
-    {
-      "dia": "2026-08-18",
-      "hora": "08:47",
-      "slot": "08:45",
-      "pasta": "feed-campanha",
-      "arquivo": "004.png",
-      "tipo": "fila",
-      "feed": true
-    },
-    {
-      "dia": "2026-08-17",
-      "hora": "16:39",
-      "slot": "16:30",
-      "pasta": "campanha",
-      "arquivo": "004.png",
-      "tipo": "fila",
-      "feed": false
-    },
-    {
-      "dia": "2026-08-17",
-      "hora": "13:52",
-      "slot": "13:45",
-      "pasta": "feed-campanha",
-      "arquivo": "003.png",
-      "tipo": "fila",
-      "feed": true
-    },
-    {
-      "dia": "2026-08-17",
-      "hora": "13:17",
-      "slot": "12:30",
-      "pasta": "produtos",
-      "arquivo": "056.png",
-      "tipo": "fila",
-      "feed": false
-    },
-    {
-      "dia": "2026-08-17",
-      "hora": "13:17",
-      "slot": "11:30",
-      "pasta": "produtos",
-      "arquivo": "055.png",
-      "tipo": "fila",
-      "feed": false
-    },
-    {
-      "dia": "2026-08-17",
-      "hora": "12:47",
-      "slot": "12:30",
-      "pasta": "produtos",
-      "arquivo": "055.png",
-      "tipo": "fila",
-      "feed": false,
-      "erro": "Only photo or video can be accepted as media type."
-    },
-    {
-      "dia": "2026-08-17",
-      "hora": "12:47",
-      "slot": "12:00",
-      "pasta": "produtos",
-      "arquivo": "054.png",
-      "tipo": "fila",
-      "feed": false
-    },
-    {
-      "dia": "2026-08-17",
-      "hora": "12:47",
-      "slot": "11:30",
-      "pasta": "produtos",
-      "arquivo": "054.png",
-      "tipo": "fila",
-      "feed": false,
-      "erro": "Only photo or video can be accepted as media type."
-    },
-    {
-      "dia": "2026-08-17",
-      "hora": "12:20",
-      "slot": "12:00",
-      "pasta": "produtos",
-      "arquivo": "054.png",
-      "tipo": "fila",
-      "feed": false,
-      "erro": "Only photo or video can be accepted as media type."
-    },
-    {
-      "dia": "2026-08-17",
-      "hora": "12:20",
-      "slot": "11:30",
-      "pasta": "produtos",
-      "arquivo": "054.png",
-      "tipo": "fila",
-      "feed": false,
-      "erro": "Only photo or video can be accepted as media type."
-    },
-    {
-      "dia": "2026-08-17",
-      "hora": "12:17",
-      "slot": "12:00",
-      "pasta": "produtos",
-      "arquivo": "054.png",
-      "tipo": "fila",
-      "feed": false,
-      "erro": "Only photo or video can be accepted as media type."
-    },
-    {
-      "dia": "2026-08-17",
-      "hora": "12:17",
-      "slot": "11:30",
-      "pasta": "produtos",
-      "arquivo": "054.png",
-      "tipo": "fila",
-      "feed": false,
-      "erro": "Only photo or video can be accepted as media type."
-    },
-    {
-      "dia": "2026-08-17",
-      "hora": "11:51",
-      "slot": "11:30",
-      "pasta": "produtos",
-      "arquivo": "054.png",
-      "tipo": "fila",
-      "feed": false,
-      "erro": "Only photo or video can be accepted as media type."
-    },
-    {
-      "dia": "2026-08-17",
-      "hora": "11:18",
-      "slot": "11:00",
-      "pasta": "produtos",
-      "arquivo": "053.png",
-      "tipo": "fila",
-      "feed": false
-    },
-    {
-      "dia": "2026-08-17",
-      "hora": "10:53",
-      "slot": "10:15",
-      "pasta": "campanha",
-      "arquivo": "003.png",
-      "tipo": "fila",
-      "feed": false
-    },
-    {
-      "dia": "2026-08-17",
-      "hora": "10:14",
-      "slot": "09:30",
-      "pasta": "produtos",
-      "arquivo": "052.png",
-      "tipo": "fila",
-      "feed": false
-    },
-    {
-      "dia": "2026-08-17",
-      "hora": "08:50",
-      "slot": "08:50",
-      "pasta": "manha",
-      "arquivo": "014.png",
-      "tipo": "fila",
-      "feed": false
-    },
-    {
-      "dia": "2026-08-17",
-      "hora": "08:47",
-      "slot": "08:45",
-      "pasta": "feed-campanha",
-      "arquivo": "002.png",
-      "tipo": "fila",
-      "feed": true
-    },
-    {
-      "dia": "2026-08-16",
-      "hora": "16:34",
-      "slot": "16:30",
-      "pasta": "campanha",
-      "arquivo": "002.png",
-      "tipo": "fila",
-      "feed": false
-    },
-    {
-      "dia": "2026-08-16",
-      "hora": "13:47",
-      "slot": "13:45",
-      "pasta": "feed-campanha",
-      "arquivo": "001.png",
-      "tipo": "fila",
-      "feed": true
-    },
-    {
-      "dia": "2026-08-16",
-      "hora": "12:35",
-      "slot": "12:30",
-      "pasta": "produtos",
-      "arquivo": "051.png",
-      "tipo": "fila",
-      "feed": false
-    },
-    {
-      "dia": "2026-08-16",
-      "hora": "12:04",
-      "slot": "12:00",
-      "pasta": "produtos",
-      "arquivo": "050.png",
-      "tipo": "fila",
-      "feed": false
-    },
-    {
-      "dia": "2026-08-16",
-      "hora": "11:45",
-      "slot": "11:30",
-      "pasta": "produtos",
-      "arquivo": "049.png",
-      "tipo": "fila",
-      "feed": false
-    },
-    {
-      "dia": "2026-08-16",
-      "hora": "11:25",
-      "slot": "11:00",
-      "pasta": "produtos",
-      "arquivo": "048.png",
-      "tipo": "fila",
-      "feed": false
-    },
-    {
-      "dia": "2026-08-16",
-      "hora": "10:42",
-      "slot": "10:15",
-      "pasta": "campanha",
-      "arquivo": "001.png",
-      "tipo": "fila",
-      "feed": false
-    }
-  ]
+    "ultimo": "2026-08-21 13:59 feed-campanha/011.png",
+    "nomesFeitos": [
+      "001.png",
+      "002.png",
+      "003.png",
+      "004.png",
+      "005.png",
+      "006.png",
+      "007.png",
+      "008.png",
+      "009.png",
+      "010.png",
+      "011.png"
+    ]
+  }
 }

@@ -8,16 +8,32 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { createHash } from "node:crypto";
 import {
+  CATEGORIAS,
   DIA_POR_EXTENSO,
+  diasDeFilaRestantes,
   diasDeFolga,
+  ehFeed,
   escolher,
   marcarPublicada,
+  normalizarEstado,
   pausaDoDia,
+  pendentesDe,
 } from "./agenda.mjs";
 
 const RAIZ = path.dirname(fileURLToPath(import.meta.url));
-const DIR_STORIES = path.join(RAIZ, "stories");
+const DIR_MIDIAS = path.join(RAIZ, "midias");
 const ARQ_ESTADO = path.join(RAIZ, "state.json");
+const ARQ_NOTIF = path.join(RAIZ, "notificacoes.json");
+
+const NOTIF_PADRAO = {
+  modo: "resumo", // "cada" | "resumo" | "nunca"
+  horaResumo: "19:00",
+  sempreQueFalhar: true,
+  avisarFilaFeed: 5, // dias de antecedencia; 0 desliga
+  assunto: "{titulo}",
+  cabecalho: "",
+  rodape: "",
+};
 
 const TOKEN = process.env.IG_TOKEN;
 const IG_ID = process.env.IG_USER_ID || "17841458291127780";
@@ -35,6 +51,18 @@ const VIDEOS = new Set([".mp4", ".mov"]);
 
 const avisos = [];
 const eventos = []; // cada tentativa de publicacao, pro relatorio por e-mail
+let notif = { ...NOTIF_PADRAO };
+
+/** Troca {titulo}, {data}, {hora}, {quantidade} e {lista} no texto do usuario. */
+function preencher(modelo, campos) {
+  return String(modelo || "").replace(/\{(\w+)\}/g, (m, k) => (k in campos ? campos[k] : m));
+}
+
+/** Minutos desde a meia-noite de um "HH:MM"; null se o formato nao bate. */
+function emMinutos(hhmm) {
+  const m = /^(\d{1,2}):(\d{2})$/.exec(String(hhmm || "").trim());
+  return m ? Number(m[1]) * 60 + Number(m[2]) : null;
+}
 const log = (...a) => console.log(...a);
 
 if (!TOKEN) {
@@ -151,8 +179,8 @@ async function publicar(urlMidia, ehVideo, ehFeed, legenda) {
   return pub.id;
 }
 
-function urlPublica(pasta, arquivo) {
-  const partes = ["stories", pasta, arquivo].map(encodeURIComponent).join("/");
+function urlPublica(chave, arquivo) {
+  const partes = ["midias", ...chave.split("/"), arquivo].map(encodeURIComponent).join("/");
   return `https://raw.githubusercontent.com/${REPO}/${BRANCH}/${partes}`;
 }
 
@@ -161,8 +189,8 @@ function urlPublica(pasta, arquivo) {
  * E o id que diz se a arte ja foi publicada — assim renomear, reordenar ou
  * reexportar pela pasta raiz nao faz o sistema perder o lugar.
  */
-async function midiasDaPasta(pasta) {
-  const dir = path.join(DIR_STORIES, pasta);
+async function midiasDaPasta(chave) {
+  const dir = path.join(DIR_MIDIAS, ...chave.split("/"));
   const itens = await readdir(dir, { withFileTypes: true });
   const nomes = itens
     .filter((d) => d.isFile() && !d.name.startsWith("."))
@@ -207,12 +235,18 @@ const ORIGEM = {
 };
 
 /** Corpo da issue — e portanto do e-mail que o Filipe recebe. Tudo em português. */
-function montarRelatorio(agora) {
-  const ok = eventos.filter((e) => e.ok);
-  const falhas = eventos.filter((e) => !e.ok);
+function montarRelatorio(agora, lista, resumoDoDia = false) {
+  const ok = lista.filter((e) => e.ok);
+  const falhas = lista.filter((e) => !e.ok);
   const L = [];
+  const data = agora.dia.split("-").reverse().join("/");
 
-  L.push(`**Execução de ${agora.dia.split("-").reverse().join("/")} às ${agora.hhmm}** (horário de Belém)\n`);
+  if (notif.cabecalho) L.push(notif.cabecalho.trim() + "\n");
+  L.push(
+    resumoDoDia
+      ? `**Resumo do dia ${data}** (horário de Belém) — fechado às ${agora.hhmm}\n`
+      : `**Execução de ${data} às ${agora.hhmm}** (horário de Belém)\n`,
+  );
 
   if (ok.length) {
     L.push(`## Publicado com sucesso (${ok.length})\n`);
@@ -254,9 +288,10 @@ function montarRelatorio(agora) {
     L.push("");
   }
 
-  if (!eventos.length && !avisos.length) return null;
+  if (!lista.length && !avisos.length) return null;
 
   L.push("---");
+  if (notif.rodape) L.push(notif.rodape.trim() + "\n");
   L.push(`Execução automática: ${urlDoRun() || "rodou fora do GitHub Actions"}`);
   return L.join("\n");
 }
@@ -278,12 +313,21 @@ async function saida(chave, valor) {
 async function main() {
   const agora = agoraLocal();
   const estado = await lerJson(ARQ_ESTADO, {});
-  const pastas = (await readdir(DIR_STORIES, { withFileTypes: true }))
-    .filter((d) => d.isDirectory())
-    .map((d) => d.name);
+  notif = { ...NOTIF_PADRAO, ...(await lerJson(ARQ_NOTIF, {})) };
+  // midias/<categoria>/<pasta>. A categoria e o caminho, nao um campo escondido
+  // no _config.json: e ela que decide se a arte pode repetir.
+  const pastas = [];
+  for (const cat of CATEGORIAS) {
+    const dir = path.join(DIR_MIDIAS, cat);
+    if (!existsSync(dir)) continue;
+    for (const d of await readdir(dir, { withFileTypes: true })) {
+      if (d.isDirectory()) pastas.push(`${cat}/${d.name}`);
+    }
+  }
+  pastas.sort();
 
   // Pausa geral: vale para todas as pastas. Cada pasta pode ter as suas folgas.
-  const geral = await lerJson(path.join(DIR_STORIES, "_geral.json"), {});
+  const geral = await lerJson(path.join(DIR_MIDIAS, "_geral.json"), {});
   const pausa = pausaDoDia(geral, agora.dia, agora.semana, avisos);
 
   let mudou = false;
@@ -295,10 +339,14 @@ async function main() {
   }
 
   for (const pasta of pastas) {
-    const cfg = await lerJson(path.join(DIR_STORIES, pasta, "_config.json"), null);
+    const cfg = await lerJson(path.join(DIR_MIDIAS, ...pasta.split("/"), "_config.json"), null);
     if (!cfg) {
       avisos.push(`Pasta "${pasta}" sem _config.json — ignorada.`);
       continue;
+    }
+    const feed = ehFeed(pasta);
+    if (feed && cfg.loop) {
+      avisos.push(`"${pasta}" tem loop ligado no _config.json — ignorado: post de feed nunca se repete.`);
     }
     if (cfg.ativo === false) continue;
     if (diasDeFolga(cfg.folgas, avisos).has(agora.semana)) {
@@ -307,16 +355,31 @@ async function main() {
     }
 
     const horarios = Array.isArray(cfg.horarios) ? cfg.horarios : [];
-    const st = (estado[pasta] ??= { voltas: 0, publicados: {} });
-    delete st.indice; // modelo antigo por posicao — agora o controle e por conteudo
+    const st = normalizarEstado((estado[pasta] ??= { voltas: 0, publicados: {} }));
+    delete st.indice; // modelo antigo por posicao
+    delete st.tipo;
 
     const artes = await midiasDaPasta(pasta);
     const porNome = new Map(artes.map((a) => [a.nome, a]));
 
-    // Arte apagada some do historico — senao o registro cresceria para sempre.
-    const existentes = new Set(artes.map((a) => a.id));
-    for (const chave of ["feitas", "pontuais"]) {
-      if (st[chave]) st[chave] = st[chave].filter((id) => existentes.has(id));
+    // Arte apagada some do registro — senao ele cresceria para sempre.
+    // Os ids sao sha1 do conteudo e mudam a cada reexportacao da arte; os nomes
+    // nao. Por isso o registro por nome e o que garante que nada se repete.
+    const idsVivos = new Set(artes.map((a) => a.id));
+    const nomesVivos = new Set(artes.map((a) => a.nome));
+    st.feitas = st.feitas.filter((id) => idsVivos.has(id));
+    st.pontuais = st.pontuais.filter((id) => idsVivos.has(id));
+    st.nomesFeitos = st.nomesFeitos.filter((n) => nomesVivos.has(n));
+
+    // Feed nao repete: avisa antes da fila secar, com a antecedencia configurada.
+    const restamDias = diasDeFilaRestantes(pasta, cfg, st, artes, geral);
+    if (notif.avisarFilaFeed > 0 && restamDias !== null && restamDias <= notif.avisarFilaFeed) {
+      const n = pendentesDe(st, artes).length;
+      avisos.push(
+        n === 0
+          ? `A fila de "${pasta}" acabou — nenhuma arte nova para publicar.`
+          : `A fila de "${pasta}" tem ${n} arte(s), cerca de ${restamDias} dia(s). Reponha antes de secar.`,
+      );
     }
 
     // Agendamento que passou da data sem sair (workflow parado, arte trocada…)
@@ -345,12 +408,12 @@ async function main() {
         continue;
       }
 
-      const escolha = escolher(cfg, st, artes, hhmm, agora.dia, avisos);
+      const escolha = escolher(pasta, cfg, st, artes, hhmm, agora.dia, avisos);
       if (!escolha) continue;
       const { arte, tipo } = escolha;
       const arquivo = arte.nome;
       const ehVideo = VIDEOS.has(path.extname(arquivo).toLowerCase());
-      const ehFeed = cfg.tipo === "feed";
+      const ehFeed = feed;
       const legenda = cfg.legendas?.[arquivo] ?? cfg.legenda ?? "";
       if (ehFeed && !legenda) {
         avisos.push(`"${pasta}/${arquivo}" vai pro feed sem legenda — nenhuma marcada em _config.json.`);
@@ -424,38 +487,84 @@ async function main() {
     mudou = true;
   }
 
+  // Caderno do dia: o resumo diario e montado com o que se acumulou aqui.
+  const diario = (estado._diario ??= { dia: agora.dia, itens: [], enviado: "" });
+  if (diario.dia !== agora.dia) {
+    diario.dia = agora.dia;
+    diario.itens = [];
+    diario.enviado = "";
+  }
+  if (eventos.length && !DRY_RUN) {
+    diario.itens.push(...eventos);
+    mudou = true;
+  }
+
+  const falhas = eventos.filter((e) => !e.ok);
+  const ok = eventos.filter((e) => e.ok);
+  if (falhas.length) process.exitCode = 1; // job vermelho: falha silenciosa passa despercebida
+
+  // Quem manda o e-mail agora, e com qual conteudo.
+  const alvoResumo = emMinutos(notif.horaResumo);
+  const fechaODia =
+    notif.modo === "resumo" &&
+    alvoResumo !== null &&
+    agora.minutos >= alvoResumo &&
+    diario.enviado !== agora.dia &&
+    diario.itens.length > 0;
+
+  let envio = null; // { lista, resumoDoDia }
+  if (falhas.length && notif.sempreQueFalhar) envio = { lista: eventos, resumoDoDia: false };
+  else if (notif.modo === "cada" && eventos.length) envio = { lista: eventos, resumoDoDia: false };
+  else if (fechaODia) envio = { lista: diario.itens, resumoDoDia: true };
+  else if (inedito && notif.modo !== "nunca") envio = { lista: [], resumoDoDia: false };
+
+  if (envio?.resumoDoDia) {
+    diario.enviado = agora.dia;
+    mudou = true;
+  }
+
   // Em simulacao nada foi publicado: gravar o estado marcaria o slot e queimaria a arte.
   if (mudou && !DRY_RUN) await writeFile(ARQ_ESTADO, JSON.stringify(estado, null, 2) + "\n");
 
   if (avisos.length) log("\nAvisos:\n" + avisos.map((a) => `- ${a}`).join("\n"));
+  if (!envio) {
+    if (eventos.length) log(`Sem e-mail agora: modo "${notif.modo}" guarda para o resumo das ${notif.horaResumo}.`);
+    return;
+  }
 
-  // Notifica sempre que algo foi publicado ou falhou. Aviso sem publicacao so
-  // notifica quando e inedito — senao viraria um e-mail a cada 15 minutos.
-  if (!eventos.length && !inedito) return;
-
-  const falhas = eventos.filter((e) => !e.ok);
-  const ok = eventos.filter((e) => e.ok);
+  const { lista, resumoDoDia } = envio;
+  const lok = lista.filter((e) => e.ok);
+  const lfalhas = lista.filter((e) => !e.ok);
   const data = agora.dia.split("-").reverse().slice(0, 2).join("/");
+  const nomes = (xs) => [...new Set(xs.map((e) => `${e.pasta}/${e.arquivo}`))].join(", ");
+
   let titulo;
-  if (falhas.length) {
-    const q = [...new Set(falhas.map((e) => `${e.pasta}/${e.arquivo}`))].join(", ");
-    titulo = `FALHA ao publicar ${q} — ${data} ${agora.hhmm}`;
-    process.exitCode = 1; // deixa o job vermelho: falha silenciosa passa despercebida
-  } else if (ok.length) {
-    const q = ok.map((e) => `${e.pasta}/${e.arquivo}`).join(", ");
-    const onde = ok.every((e) => e.ehFeed)
+  if (lfalhas.length) {
+    titulo = `FALHA ao publicar ${nomes(lfalhas)} — ${data} ${agora.hhmm}`;
+  } else if (resumoDoDia) {
+    titulo = `Resumo do dia: ${lok.length} publicação(ões) — ${data}`;
+  } else if (lok.length) {
+    const onde = lok.every((e) => e.ehFeed)
       ? "Post no feed"
-      : ok.some((e) => e.ehFeed)
+      : lok.some((e) => e.ehFeed)
         ? "Publicado"
         : "Story publicado";
-    titulo = `${onde}: ${q} — ${data} ${agora.hhmm}`;
+    titulo = `${onde}: ${nomes(lok)} — ${data} ${agora.hhmm}`;
   } else {
     titulo = `Avisos do agendador — ${data} ${agora.hhmm}`;
   }
 
-  await saida("titulo", titulo);
-  await saida("relatorio", montarRelatorio(agora) || "");
-  await saida("houve_falha", falhas.length ? "1" : "0");
+  const assunto = preencher(notif.assunto || "{titulo}", {
+    titulo,
+    data,
+    hora: agora.hhmm,
+    quantidade: String(lok.length),
+    lista: nomes(lok) || "nada",
+  });
+
+  await saida("titulo", assunto);
+  await saida("relatorio", montarRelatorio(agora, lista, resumoDoDia) || "");
+  await saida("houve_falha", lfalhas.length ? "1" : "0");
 }
 
 main()

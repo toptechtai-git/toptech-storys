@@ -1,10 +1,7 @@
 {
-  "tipo": "feed",
   "horarios": [
-    "08:45",
-    "13:45"
+    "08:45"
   ],
-  "loop": false,
   "ativo": true,
   "legenda": "Laboratório técnico em Tailândia, PA. Diagnóstico gratuito, inclusive para quem já ouviu que não tinha conserto.\n\n📲 Traga o seu. A gente avalia antes de qualquer coisa.\n\n#Toptech #Tailândia #Microsoldagem #AssistênciaTécnica",
   "legendas": {
@@ -38,5 +35,6 @@
     "045.png": "A melhor propaganda daqui é o vizinho que indicou.\n\nSe eu resolvi o seu, escreve isso no Google. Ajuda o próximo que está com medo de tentar e já ouviu não em outro lugar.\n\n📲 Obrigado a quem já indicou.\n\n#Toptech #Tailândia #Microsoldagem #AssistênciaTécnica",
     "047.png": "Microsoldagem, sem enrolação:\n\nÉ consertar o que está soldado na placa, componente por componente, em vez de trocar a placa inteira. Componente que às vezes é menor que um grão de areia — por isso o microscópio.\n\nTrocar a placa é trocar de celular por dentro. Consertar a placa é devolver o seu.\n\n📲 Traga o seu.\n\n#Toptech #Tailândia #Microsoldagem #AssistênciaTécnica",
     "049.png": "Seu conteúdo não é aberto, não é copiado e não sai daqui.\n\nSe precisar de senha pra testar, eu peço na sua frente e testo na sua frente. Foto, conversa e arquivo são seus — o serviço é na placa.\n\n📲 Traga o seu.\n\n#Toptech #Tailândia #Microsoldagem #AssistênciaTécnica"
-  }
+  },
+  "folgas": []
 }

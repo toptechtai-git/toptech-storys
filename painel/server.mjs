@@ -12,10 +12,17 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { createHash } from "node:crypto";
 import {
+  CATEGORIAS,
+  diasDeFilaRestantes,
   diasDeFolga,
+  ehFeed,
   escolher,
+  jaPublicada,
   marcarPublicada,
+  normalizarEstado,
+  partesDaPasta,
   pausaDoDia,
+  podeRepetir,
   semanaDe,
   somarDias,
 } from "../agenda.mjs";
@@ -23,8 +30,20 @@ import {
 const exec = promisify(execFile);
 const AQUI = path.dirname(fileURLToPath(import.meta.url));
 const REPO = path.dirname(AQUI);
-const DIR_STORIES = path.join(REPO, "stories");
-const PORTA = 4751;
+const DIR_MIDIAS = path.join(REPO, "midias");
+const ARQ_NOTIF = path.join(REPO, "notificacoes.json");
+const DIR_MINI = path.join(REPO, ".cache-miniaturas");
+const PORTA = Number(process.env.PORTA_PAINEL) || 4751;
+
+const NOTIF_PADRAO = {
+  modo: "resumo",
+  horaResumo: "19:00",
+  sempreQueFalhar: true,
+  avisarFilaFeed: 5,
+  assunto: "{titulo}",
+  cabecalho: "",
+  rodape: "",
+};
 
 const EXT_IMG = new Set([".png", ".jpg", ".jpeg"]);
 const EXT_VID = new Set([".mp4", ".mov"]);
@@ -41,11 +60,23 @@ const TIPOS = {
   ".mov": "video/quicktime",
 };
 
-/** Barra qualquer nome fora do padrao — impede subir de diretorio. */
-function pastaSegura(nome) {
+/**
+ * Barra qualquer nome fora do padrao — impede subir de diretorio.
+ * A chave e sempre "<categoria>/<pasta>": e a categoria que define story x feed.
+ */
+function pastaSegura(chave) {
+  const { categoria, nome } = partesDaPasta(String(chave || ""));
+  if (!CATEGORIAS.includes(categoria)) throw new Error("Categoria invalida (use story ou feed).");
   if (!RE_PASTA.test(nome)) throw new Error("Nome de pasta invalido (use a-z, 0-9 e hifen).");
-  return path.join(DIR_STORIES, nome);
+  return path.join(DIR_MIDIAS, categoria, nome);
 }
+/** "story/campanha" validado e devolvido como chave — e assim que o state.json indexa. */
+function chaveDaPasta(chave) {
+  pastaSegura(chave);
+  const { categoria, nome } = partesDaPasta(String(chave));
+  return `${categoria}/${nome}`;
+}
+
 function arteSegura(pasta, arquivo) {
   const nome = String(arquivo || "");
   if (!RE_ARTE.test(nome) || nome.startsWith(".") || nome.includes("..")) {
@@ -57,6 +88,32 @@ function arteSegura(pasta, arquivo) {
 async function git(...args) {
   const { stdout } = await exec("git", ["-C", REPO, ...args], { maxBuffer: 8 << 20 });
   return stdout.trim();
+}
+
+/**
+ * Miniatura em cache. A grade abre com dezenas de artes e cada PNG de story tem
+ * 1080x1920 — servir os originais custava ~28 MB por pasta aberta. A chave inclui
+ * tamanho e mtime, entao reexportar a arte invalida a miniatura sozinho.
+ */
+async function miniatura(arq, info) {
+  const chave =
+    createHash("sha1").update(`${arq}|${info.size}|${info.mtimeMs}`).digest("hex").slice(0, 16) + ".jpg";
+  const destino = path.join(DIR_MINI, chave);
+  if (existsSync(destino)) return destino;
+  await mkdir(DIR_MINI, { recursive: true });
+  await exec("sips", ["-s", "format", "jpeg", "-s", "formatOptions", "70", "-Z", "440", arq, "--out", destino]);
+  return destino;
+}
+
+/** Joga fora miniatura de arte que nao existe mais. Roda uma vez, ao subir. */
+async function limparMiniaturas() {
+  if (!existsSync(DIR_MINI)) return;
+  const limite = Date.now() - 30 * 86400000;
+  for (const nome of await readdir(DIR_MINI)) {
+    const arq = path.join(DIR_MINI, nome);
+    const info = await stat(arq).catch(() => null);
+    if (info && info.mtimeMs < limite) await rm(arq, { force: true });
+  }
 }
 
 async function dimensoes(arq) {
@@ -122,16 +179,23 @@ async function lerEstado() {
 }
 
 async function montarEstado() {
-  const dirs = (await readdir(DIR_STORIES, { withFileTypes: true }))
-    .filter((d) => d.isDirectory())
-    .map((d) => d.name)
-    .sort();
+  const dirs = [];
+  for (const cat of CATEGORIAS) {
+    const dir = path.join(DIR_MIDIAS, cat);
+    if (!existsSync(dir)) continue;
+    for (const d of await readdir(dir, { withFileTypes: true })) {
+      if (d.isDirectory()) dirs.push(`${cat}/${d.name}`);
+    }
+  }
+  dirs.sort();
   const estado = await lerEstado();
+  const geralCfg = await lerGeral();
 
   const pastas = [];
   for (const nome of dirs) {
+    const feed = ehFeed(nome);
     let cfg = { horarios: [], loop: true, ativo: true, folgas: [] };
-    const arqCfg = path.join(DIR_STORIES, nome, "_config.json");
+    const arqCfg = path.join(pastaSegura(nome), "_config.json");
     if (existsSync(arqCfg)) {
       try {
         cfg = { ...cfg, ...JSON.parse(await readFile(arqCfg, "utf8")) };
@@ -139,16 +203,16 @@ async function montarEstado() {
         cfg.erro = "_config.json invalido";
       }
     }
+    if (feed) cfg.loop = false; // feed nunca repete, venha o que vier no _config.json
     const artes = await artesDe(nome);
-    const st = estado[nome] || { voltas: 0, publicados: {} };
-    const feitas = new Set([...(st.feitas || []), ...(st.pontuais || [])]);
+    const st = normalizarEstado(estado[nome] || { voltas: 0, publicados: {} });
 
     for (const a of artes) {
       a.marca = (cfg.artes || {})[a.nome] || null;
-      a.jaSaiu = feitas.has(a.id);
+      a.jaSaiu = jaPublicada(st, a);
       a.legenda = (cfg.legendas || {})[a.nome] || "";
       // Feed aceita de 4:5 a 1.91:1 — cobrar 9:16 ali daria alarme falso.
-      if (cfg.tipo === "feed" && a.dim) {
+      if (feed && a.dim) {
         const razao = a.dim.w / a.dim.h;
         a.ok = razao >= 0.79 && razao <= 1.92 && a.dim.w >= 640 && a.mb < 8;
       }
@@ -160,9 +224,13 @@ async function montarEstado() {
 
     pastas.push({
       nome,
+      categoria: partesDaPasta(nome).categoria,
+      curto: partesDaPasta(nome).nome,
+      feed,
       cfg,
       artes,
       proxima,
+      diasDeFila: diasDeFilaRestantes(nome, cfg, st, artes, geralCfg),
       naFila: geral.length,
       restantes: pendentes.length,
       // Nome solto nao quebra mais nada: afeta so a ordem em que as artes saem.
@@ -175,12 +243,14 @@ async function montarEstado() {
 
   let pendentes = [];
   let branch = "";
+  let atras = 0; // commits que o robo ja escreveu e esta copia ainda nao tem
   try {
     pendentes = (await git("status", "--porcelain")).split("\n").filter(Boolean);
     branch = await git("rev-parse", "--abbrev-ref", "HEAD");
+    atras = Number(await git("rev-list", "--count", `HEAD..origin/${branch}`)) || 0;
   } catch {}
 
-  const geral = await lerGeral();
+  const geral = geralCfg;
   const hoje = hojeLocal();
   const agenda = simular(pastas, estado, geral, hoje);
 
@@ -188,16 +258,28 @@ async function montarEstado() {
     pastas,
     pendentes,
     branch,
+    atras,
     hoje,
     agora: horaLocal(),
     geral,
+    notif: await lerNotif(),
     ...agenda,
     historico: (estado._historico || []).slice(0, 40),
-    saude: saude(pastas, geral, agenda.dias[0]),
+    saude: saude(pastas, geral, agenda.dias[0], (await lerNotif()).avisarFilaFeed || 5),
   };
 }
 
-const ARQ_GERAL = path.join(DIR_STORIES, "_geral.json");
+/** Preferencias de e-mail. Ficam num arquivo proprio para o robo ler igual. */
+async function lerNotif() {
+  if (!existsSync(ARQ_NOTIF)) return { ...NOTIF_PADRAO };
+  try {
+    return { ...NOTIF_PADRAO, ...JSON.parse(await readFile(ARQ_NOTIF, "utf8")) };
+  } catch {
+    return { ...NOTIF_PADRAO, erro: "notificacoes.json invalido" };
+  }
+}
+
+const ARQ_GERAL = path.join(DIR_MIDIAS, "_geral.json");
 
 /** Config que vale para todas as pastas: folgas semanais e pausas por data. */
 async function lerGeral() {
@@ -247,7 +329,7 @@ function simular(pastas, estado, geral, hoje, quantosDias = 7) {
             pasta: p.nome,
             arquivo: reg?.arquivo || "—",
             tipo: reg?.tipo || "fila",
-            feed: p.cfg.tipo === "feed",
+            feed: p.feed,
             legenda: reg ? legendaDe(p.cfg, reg.arquivo) : "",
             publicado: true,
             erro: reg?.erro || "",
@@ -255,7 +337,7 @@ function simular(pastas, estado, geral, hoje, quantosDias = 7) {
           continue;
         }
 
-        const escolha = escolher(p.cfg, e, p.artes, hora, dia);
+        const escolha = escolher(p.nome, p.cfg, e, p.artes, hora, dia);
         if (!escolha) continue;
         marcarPublicada(e, escolha.arte, escolha.tipo, hora, dia);
         slots.push({
@@ -263,7 +345,7 @@ function simular(pastas, estado, geral, hoje, quantosDias = 7) {
           pasta: p.nome,
           arquivo: escolha.arte.nome,
           tipo: escolha.tipo,
-          feed: p.cfg.tipo === "feed",
+          feed: p.feed,
           legenda: legendaDe(p.cfg, escolha.arte.nome),
           publicado: false,
         });
@@ -280,7 +362,7 @@ function legendaDe(cfg, arquivo) {
 }
 
 /** Problemas que valem um alerta no painel, do mais grave para o menos. */
-function saude(pastas, geral, hoje) {
+function saude(pastas, geral, hoje, limiteAviso = 5) {
   const itens = [];
   const add = (nivel, texto) => itens.push({ nivel, texto });
 
@@ -296,19 +378,23 @@ function saude(pastas, geral, hoje) {
     }
     const ruins = p.artes.filter((a) => !a.ok).length;
     if (ruins) add("alerta", `${p.nome}: ${ruins} arte(s) fora de 1080×1920 ou grandes demais.`);
-    if (p.cfg.tipo === "feed") {
+    if (p.feed) {
       const semLegenda = p.artes.filter((a) => !legendaDe(p.cfg, a.nome)).length;
       if (semLegenda) add("alerta", `${p.nome}: ${semLegenda} arte(s) de feed sem legenda.`);
     }
     const slots = (p.cfg.horarios || []).length;
-    const diasDeFila = slots ? Math.floor(p.restantes / slots) : 0;
-    if (slots && p.artes.length && diasDeFila <= 2) {
-      add(
-        p.cfg.loop === false ? "alerta" : "aviso",
-        p.cfg.loop === false
-          ? `${p.nome} acaba em ${diasDeFila} dia(s) e não recomeça.`
-          : `${p.nome} dá a volta em ${diasDeFila} dia(s) — as artes vão repetir.`,
-      );
+    if (slots && p.artes.length) {
+      // Feed nao repete: quando a fila seca, ele simplesmente para de publicar.
+      if (p.diasDeFila !== null && p.diasDeFila <= limiteAviso) {
+        add(
+          p.diasDeFila <= 2 ? "erro" : "alerta",
+          p.restantes === 0
+            ? `${p.nome} está sem arte nova — não publica mais nada até você repor.`
+            : `${p.nome} tem ${p.restantes} arte(s), cerca de ${p.diasDeFila} dia(s), e não recomeça.`,
+        );
+      } else if (p.diasDeFila === null && Math.floor(p.restantes / slots) <= 2) {
+        add("aviso", `${p.nome} dá a volta em ${Math.floor(p.restantes / slots)} dia(s) — as artes vão repetir.`);
+      }
     }
   }
 
@@ -361,6 +447,20 @@ async function renumerar(pasta, ordem) {
     await rename(path.join(dir, t), path.join(dir, t.slice(4)));
   }
 
+  // O registro de publicadas e por nome de arquivo. Se ele nao acompanhar a
+  // renumeracao, a arte 007 que ja saiu vira 006 e o robo publica 007 de novo —
+  // no feed isso quebraria a unica garantia que importa ali.
+  const arqEstado = path.join(REPO, "state.json");
+  const estado = await lerEstado();
+  const st = estado[chaveDaPasta(pasta)];
+  if (st?.nomesFeitos?.length) {
+    st.nomesFeitos = st.nomesFeitos
+      .filter((n) => novoNome.has(n))
+      .map((n) => novoNome.get(n))
+      .sort();
+    await writeFile(arqEstado, JSON.stringify(estado, null, 2) + "\n");
+  }
+
   // Marcas de horario e legendas seguem a arte, senao apontariam para o arquivo errado.
   const arqCfg = path.join(dir, "_config.json");
   if (existsSync(arqCfg)) {
@@ -386,12 +486,17 @@ const rotas = {
   "GET /api/estado": () => montarEstado(),
 
   "POST /api/pasta": async ({ corpo }) => {
-    const dir = pastaSegura(String(corpo.nome || "").trim());
-    if (existsSync(dir)) throw new Error("Ja existe uma pasta com esse nome.");
+    const categoria = String(corpo.categoria || "story").trim();
+    const chave = `${categoria}/${String(corpo.nome || "").trim()}`;
+    const dir = pastaSegura(chave);
+    if (existsSync(dir)) throw new Error("Ja existe uma pasta com esse nome nesta categoria.");
     await mkdir(dir, { recursive: true });
-    await writeFile(path.join(dir, "_config.json"), JSON.stringify({ horarios: ["09:00"], loop: true, ativo: true }, null, 2) + "\n");
+    const cfg = { horarios: ["09:00"], ativo: true };
+    if (categoria === "story") cfg.loop = true; // feed nunca repete: nem oferece a opcao
+    else cfg.legenda = "";
+    await writeFile(path.join(dir, "_config.json"), JSON.stringify(cfg, null, 2) + "\n");
     await writeFile(path.join(dir, ".gitkeep"), "");
-    return { ok: true };
+    return { ok: true, pasta: chave };
   },
 
   "POST /api/config": async ({ corpo }) => {
@@ -413,7 +518,9 @@ const rotas = {
       }
     }
     cfg.horarios = [...new Set(horarios)].sort();
-    cfg.loop = !!corpo.loop;
+    if (ehFeed(corpo.pasta)) delete cfg.loop; // feed nunca repete — o campo nao existe
+    else cfg.loop = !!corpo.loop;
+    delete cfg.tipo; // a categoria e o caminho, nao um campo
     cfg.ativo = !!corpo.ativo;
     cfg.folgas = diasValidos(corpo.folgas);
     await writeFile(arqCfg, JSON.stringify(cfg, null, 2) + "\n");
@@ -518,17 +625,54 @@ const rotas = {
 
   // Volta a fila para o comeco. Preserva "publicados" para nao repetir o story de hoje.
   "POST /api/fila/reiniciar": async ({ corpo }) => {
-    const pasta = path.basename(pastaSegura(corpo.pasta));
+    const pasta = chaveDaPasta(corpo.pasta);
     const arq = path.join(REPO, "state.json");
     const estado = await lerEstado();
     const st = (estado[pasta] ??= { voltas: 0, publicados: {} });
     delete st.indice;
     st.feitas = [];
+    st.nomesFeitos = [];
     st.voltas = 0;
     st.pontuais = [];
     st.indicesHora = {};
     await writeFile(arq, JSON.stringify(estado, null, 2) + "\n");
     return { ok: true };
+  },
+
+  "POST /api/notificacoes": async ({ corpo }) => {
+    const modos = ["cada", "resumo", "nunca"];
+    const n = { ...NOTIF_PADRAO, ...(await lerNotif()) };
+    delete n.erro;
+    if (corpo.modo !== undefined) {
+      if (!modos.includes(corpo.modo)) throw new Error("Modo invalido.");
+      n.modo = corpo.modo;
+    }
+    if (corpo.horaResumo !== undefined) {
+      const h = String(corpo.horaResumo).trim();
+      if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(h)) throw new Error("Hora do resumo invalida.");
+      n.horaResumo = h;
+    }
+    if (corpo.sempreQueFalhar !== undefined) n.sempreQueFalhar = !!corpo.sempreQueFalhar;
+    if (corpo.avisarFilaFeed !== undefined) {
+      const d = Number(corpo.avisarFilaFeed);
+      if (!Number.isInteger(d) || d < 0 || d > 60) throw new Error("Antecedencia invalida (0 a 60 dias).");
+      n.avisarFilaFeed = d;
+    }
+    for (const campo of ["assunto", "cabecalho", "rodape"]) {
+      if (corpo[campo] !== undefined) n[campo] = String(corpo[campo]).slice(0, 4000);
+    }
+    await writeFile(ARQ_NOTIF, JSON.stringify(n, null, 2) + "\n");
+    return { ok: true, notif: n };
+  },
+
+  // Puxa o que o robo escreveu no GitHub. So leitura: nada sai daqui.
+  "POST /api/sincronizar": async () => {
+    await git("fetch", "origin");
+    const branch = await git("rev-parse", "--abbrev-ref", "HEAD");
+    const atras = Number(await git("rev-list", "--count", `HEAD..origin/${branch}`)) || 0;
+    if (!atras) return { ok: true, msg: "", atras: 0 };
+    await git("pull", "--rebase", "--autostash");
+    return { ok: true, msg: `${atras} atualização(ões) do robô baixadas.`, atras };
   },
 
   "POST /api/publicar": async () => {
@@ -556,13 +700,17 @@ async function receberUpload(req, pasta) {
   const dados = Buffer.concat(pedacos);
   if (dados.length > 120 * 1048576) throw new Error("Arquivo grande demais.");
 
-  const proximo = (await artesDe(pasta)).length + 1;
+  // Numera pelo maior existente, nunca pela contagem: reaproveitar um numero ja
+  // publicado faria a arte nova nascer marcada como "ja saiu" — fatal no feed,
+  // onde o registro de publicadas e por nome e nunca se apaga.
+  const atuais = (await artesDe(pasta)).map((a) => Number(a.nome.slice(0, 3))).filter(Number.isFinite);
+  const proximo = (atuais.length ? Math.max(...atuais) : 0) + 1;
   const nome = `${String(proximo).padStart(3, "0")}${ext}`;
   const destino = path.join(dir, nome);
   await writeFile(destino, dados);
 
-  // Reamostra so quando a arte ja esta em 9:16 — nunca distorce proporcao diferente.
-  if (EXT_IMG.has(ext)) {
+  // Story e sempre 9:16; feed aceita varias proporcoes, entao nao se mexe nele.
+  if (EXT_IMG.has(ext) && !ehFeed(pasta)) {
     const d = await dimensoes(destino);
     if (d && (d.w !== 1080 || d.h !== 1920) && Math.abs(d.w / d.h - 1080 / 1920) < 0.02) {
       await exec("sips", ["-z", "1920", "1080", destino]);
@@ -585,7 +733,17 @@ const servidor = createServer(async (req, res) => {
 
     if (url.pathname === "/midia") {
       const arq = arteSegura(url.searchParams.get("pasta"), url.searchParams.get("arquivo"));
-      return responder(200, await readFile(arq), TIPOS[path.extname(arq).toLowerCase()] || "application/octet-stream");
+      const ext = path.extname(arq).toLowerCase();
+      // ?mini=1 devolve a versao leve; sem ele vai o original, para o preview grande.
+      if (url.searchParams.get("mini") && EXT_IMG.has(ext)) {
+        try {
+          const pequena = await miniatura(arq, await stat(arq));
+          return responder(200, await readFile(pequena), "image/jpeg");
+        } catch {
+          /* sips indisponivel ou arquivo estranho: cai no original */
+        }
+      }
+      return responder(200, await readFile(arq), TIPOS[ext] || "application/octet-stream");
     }
 
     if (url.pathname === "/api/upload" && req.method === "POST") {
@@ -609,6 +767,8 @@ const servidor = createServer(async (req, res) => {
     responder(400, { erro: e.message });
   }
 });
+
+limparMiniaturas().catch(() => {});
 
 servidor.listen(PORTA, "127.0.0.1", () => {
   console.log(`Painel de stories: http://127.0.0.1:${PORTA}`);

@@ -1,116 +1,132 @@
 # Stories Toptech — agendador automático
 
-Publica stories no @toptech_pa em horários fixos, todo dia, sem abrir o Business Suite.
+Publica no @toptech_pa em horários fixos, todo dia, sem abrir o Business Suite.
 
-## Como usar no dia a dia
+Abra o painel com **Abrir painel.command** (duplo clique). Ele é a forma normal de
+mexer em tudo que está documentado aqui; os arquivos abaixo existem para você
+entender o que o painel escreve.
 
-Só isso: jogue as artes dentro de uma pasta de `stories/` e faça push.
+## Duas categorias, e a diferença importa
 
 ```
-stories/
-  manha/          08:50                        story
-  produtos/       09:30 11:00 11:30 12:00 12:30  story
-  tarde/          12:00 15:00 18:00            story
-  campanha/       10:15 13:30 16:30            story  (campanha diagnóstico, 1080x1920)
-  feed-campanha/  17:30                        FEED   (mesma campanha, 1080x1350)
+midias/
+  story/          repete: quando a fila acaba, volta ao primeiro
+    manha/          08:50
+    produtos/       09:30 11:00 11:30 12:00 12:30
+    campanha/       10:15 16:30
+  feed/           NUNCA repete: quando a fila acaba, para de publicar
+    campanha/       08:45
 ```
 
-Todos os horários ficam dentro do comercial (nada depois das 18:00).
+A categoria é o **caminho da pasta**, não um campo de configuração. `midias/story/x`
+sai como story de 24h; `midias/feed/x` sai como post no feed, com legenda.
 
-- A ordem é **alfabética/numérica pelo nome do arquivo**. Use `001`, `002`, `003`.
-- Cada horário consome **um** arquivo e avança pro próximo.
-- Quando a fila acaba, volta ao primeiro (loop) e **abre uma issue avisando** que é hora de renovar as artes.
-- Criar uma pasta nova (ex: `stories/noite/`) com um `_config.json` já basta — não precisa mexer no workflow.
+**Feed não se repete em nenhuma hipótese.** Um post repetido no feed fica visível
+para sempre no perfil; um story some em 24h. Por isso o robô guarda, por nome de
+arquivo e para sempre, tudo que já foi ao feed — e `loop` nem existe nessas pastas.
+Quando a fila do feed está acabando, você recebe um e-mail avisando com a
+antecedência configurada no painel.
 
-### `_config.json`
+## Como uma arte é escolhida
+
+Ordem de prioridade em cada horário:
+
+1. **agendada** — arte marcada com data + hora exatas. Sai uma vez só.
+2. **fixa** — arte marcada só com hora. Reveza entre as marcadas naquela hora. Só em story.
+3. **fila** — o resto, na ordem alfabética do nome do arquivo (`001`, `002`, `003`…).
+
+Cada horário consome **um** arquivo. A ordem se muda no painel, com as setas.
+
+### Como o robô sabe o que já saiu
+
+Ele guarda duas coisas de cada arte publicada: o **sha1 do conteúdo** e o **nome do
+arquivo**. Basta uma das duas bater para a arte contar como publicada.
+
+Isso existe por causa de um acidente real: em 19/08/2026 as artes foram
+reexportadas, todos os sha1 mudaram, e o robô achou que nenhuma tinha saído —
+voltou a publicar da primeira. Só o sha1 não sobrevive a uma reexportação; só o
+nome não sobrevive a uma renumeração. Os dois juntos sobrevivem aos dois casos.
+
+O botão **Recomeçar fila** apaga esse registro de propósito. Numa pasta de feed
+ele é o único jeito de republicar algo — e o painel avisa disso antes.
+
+## Arquivos de configuração
+
+### `midias/<categoria>/<pasta>/_config.json`
 
 ```json
 { "horarios": ["09:00", "19:30"], "loop": true, "ativo": true }
 ```
 
-- `horarios`: hora local (America/Belem), formato `HH:MM`. Vários por pasta.
-- `loop: false`: para quando a fila acabar em vez de recomeçar.
+- `horarios`: hora local (America/Belem), `HH:MM`. Vários por pasta.
 - `ativo: false`: pausa a pasta sem apagar nada.
-- `tipo: "feed"`: publica no feed em vez de story. Sem esse campo, é story.
-- `folgas: [0]`: dias da semana em que esta pasta não publica. `0` = domingo … `6` = sábado (também aceita `"dom"`, `"seg"`…).
+- `loop: false`: para quando a fila acabar. **Só em story** — no feed é ignorado.
+- `folgas: [0]`: dias da semana em que esta pasta não publica (`0` = domingo … `6` = sábado).
+- `legenda` / `legendas`: `legenda` vale para a pasta inteira, `legendas: { "001.png": "…" }`
+  sobrescreve por arte. Obrigatória no feed.
+- `artes`: marcações de hora/data por arquivo. O painel escreve, você não precisa editar.
 
-- `legenda` / `legendas`: texto que acompanha a publicação — `legenda` vale para a pasta inteira, `legendas: { "001.png": "…" }` sobrescreve por arte. Editável no painel.
-
-### Dias sem publicar (vale para todas as pastas)
-
-`stories/_geral.json`:
+### `midias/_geral.json` — dias sem publicar, para todas as pastas
 
 ```json
-{ "folgas": [0], "pausas": ["2026-12-25"], "pausarAte": "2026-08-20" }
+{ "folgas": [0], "pausas": ["2026-12-25"], "pausarAte": "" }
 ```
 
-- `folgas`: dias da semana, toda semana.
-- `pausas`: datas soltas (feriado, viagem).
-- `pausarAte`: para tudo até essa data, inclusive.
+Em dia parado o robô encerra sem publicar e sem mandar e-mail. A folga da pasta
+**soma** com esta. Slot perdido não é recuperado: a fila só anda quando publica.
 
-Em dia parado o robô encerra a execução sem publicar nada e sem mandar e-mail. A folga da pasta **soma** com esta — não substitui. Tudo isso se edita no painel, no bloco "Sem publicar".
-
-Slot perdido não é recuperado: se domingo é folga, o story de domingo não sai na segunda — a fila só anda quando publica.
-
-### Pasta de feed
+### `notificacoes.json` — quando o e-mail chega
 
 ```json
 {
-  "tipo": "feed",
-  "horarios": ["17:30"],
-  "loop": false,
-  "legenda": "texto usado quando a arte não tem legenda própria",
-  "legendas": { "01.png": "legenda desta arte" }
+  "modo": "resumo",
+  "horaResumo": "19:00",
+  "sempreQueFalhar": true,
+  "avisarFilaFeed": 5,
+  "assunto": "{titulo}",
+  "cabecalho": "",
+  "rodape": ""
 }
 ```
 
-- **Use `loop: false` no feed.** Story some em 24h, post de feed fica — republicar a mesma arte polui o perfil.
-- `legendas` é por nome de arquivo; `legenda` é o texto de reserva. Sem nenhum dos dois, o post sai sem legenda e uma issue avisa.
-- Formato do feed: 1080x1350 (4:5), 1080x1080 ou 1080x566. Vídeo de feed vira Reels.
-- No painel, o botão **leg** de cada arte (ou "Legenda padrão" na pasta) escreve esses campos.
+- `modo`: `resumo` (um e-mail por dia), `cada` (um por publicação) ou `nunca`.
+- `horaResumo`: quando o resumo do dia fecha e sai.
+- `sempreQueFalhar`: falha manda e-mail na hora, fora do resumo.
+- `avisarFilaFeed`: avisa quando a fila do feed tiver esse tanto de dias ou menos. `0` desliga.
+- `assunto`, `cabecalho`, `rodape`: seu texto. No assunto valem `{titulo}`, `{data}`,
+  `{hora}`, `{quantidade}` e `{lista}`.
 
-### Painel local
+Cada relatório vira uma issue no repositório, e o GitHub manda o e-mail para quem
+segue o repo. Sucesso vira issue já fechada — o e-mail chega igual, sem encher a lista.
 
-`Abrir painel.command` → <http://127.0.0.1:4751>. Ele mostra:
+## O painel e o atraso do Git
 
-- **Hoje**: a régua do dia, com a arte prevista em cada horário e a linha do "agora". A previsão roda o mesmo algoritmo do robô (`agenda.mjs`), então bate com o que vai sair.
-- **Atenção**: pasta vazia, arte fora de formato, feed sem legenda, fila prestes a dar a volta.
-- **Sem publicar**: dias da semana, datas soltas e "parar até".
-- **Já saiu**: últimas 80 publicações, gravadas em `state.json` por `_historico`.
-- **Pastas**: horários, folga da pasta, legendas, ordem das artes e upload por arrastar.
+O painel roda **nesta máquina**; o robô roda no GitHub e escreve o `state.json` lá.
+Sem puxar, o painel mostra a fila de dois dias atrás.
 
-### Formatos
+- **Buscar do robô** faz `git pull --rebase`. O painel também faz isso sozinho ao
+  abrir e a cada 2 minutos. É só leitura.
+- **Enviar** faz `add`, `commit` e `push`. Continua sendo um clique seu, de propósito:
+  é o que coloca a arte no ar.
 
-`.jpg .jpeg .png` e `.mp4 .mov`. Story = **1080x1920**, imagem até 8 MB, vídeo até 60s.
-Redimensionar antes: `sips --resampleHeightWidthMax 1920 arquivo.jpg`
+O selo no topo diz em qual dos três estados você está.
 
-## Setup (uma vez)
+## Estrutura do repositório
 
-1. Criar o repositório **público** no GitHub (o Instagram precisa baixar a mídia por URL pública).
-2. `Settings → Secrets and variables → Actions`:
-   - Secret `IG_TOKEN` — token do Usuário de Sistema (Business Manager → Usuários do sistema → gerar token com `instagram_content_publish` + `instagram_basic`, sem expiração).
-   - Variable `IG_USER_ID` — `17841458291127780` (opcional, é o default).
-3. `Settings → Actions → General → Workflow permissions` → **Read and write**.
-4. Testar: aba Actions → "Stories Toptech" → Run workflow → marcar **dry_run** → conferir o log.
+| Arquivo | O que faz |
+|---|---|
+| `publish.mjs` | O robô. Roda no GitHub Actions a cada 15 min e decide o que publicar. |
+| `agenda.mjs` | As regras de escolha, compartilhadas pelo robô e pelo painel. |
+| `state.json` | O que já saiu. Escrito pelo robô, versionado. Não edite na mão. |
+| `notificacoes.json` | Preferências de e-mail. |
+| `painel/` | Servidor local (`server.mjs`) e interface (`index.html`). |
+| `.github/workflows/stories.yml` | O cron e o envio do relatório. |
 
-## Por que o token não vaza num repo público
+## Requisitos que quebram tudo se mudarem
 
-- **Secret não é código.** `IG_TOKEN` fica no cofre do GitHub, fora do repositório. Quem clona o repo não recebe nada — só vê `${{ secrets.IG_TOKEN }}` no YAML.
-- **O log do Actions é público, o valor não.** O GitHub mascara qualquer ocorrência do secret na saída como `***`, mesmo se um erro tentasse imprimi-lo.
-- **O script nunca coloca o token na URL** — vai no header `Authorization`. URL aparece em mensagem de erro de rede; header não.
-- **Fork não alcança secret.** Workflow disparado por PR de fork roda sem acesso ao cofre. E `workflow_dispatch` só quem tem permissão de escrita consegue acionar.
-- Regra que continua valendo: se a token for colada em qualquer arquivo por engano, **revogar e gerar outra** — apagar a linha depois do push não desfaz nada.
-
-O que fica público de verdade: as artes em `stories/`, os `_config.json` (horários) e o `state.json`. Nada disso é sensível.
-
-## Avisos importantes
-
-- Não coloque em `stories/` nada de cliente ou material interno — é conteúdo que vai pro ar mesmo.
-- **Nunca ative Git LFS neste repo.** A `raw.githubusercontent` passaria a devolver um ponteiro de texto no lugar da imagem e a publicação falharia.
-- O cron do GitHub Actions pode atrasar 5–15 min. O script aceita até 59 min de atraso e ainda publica; passou disso, pula o slot daquele dia.
-- Se a publicação falhar (token expirada, mídia fora de padrão), o índice **não avança** — ele tenta de novo na próxima rodada de 15 min e abre uma issue.
-- `state.json` é escrito pelo bot. Não edite à mão sem necessidade (dá conflito no push).
-
-## Limitação que não dá pra contornar
-
-A API do Instagram não tem agendamento de story — só publicação imediata. O "Programar" do Business Suite é feature do painel, não da API. Por isso existe este cron: ele chama a API na hora certa.
+- **O repositório precisa ser público.** A Meta baixa a arte por `raw.githubusercontent.com`.
+- **Nunca ative o Git LFS.** A raw devolveria o ponteiro de texto no lugar da imagem.
+- `IG_TOKEN` é Secret do repositório; `IG_USER_ID` é variable. O token vai sempre
+  no header, nunca na URL — o log do Actions é público aqui.
+- A API do Instagram **não agenda** story: a publicação acontece na hora em que o
+  cron roda. Por isso a tolerância de 2h — o cron do GitHub atrasa.

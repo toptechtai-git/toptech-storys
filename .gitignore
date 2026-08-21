@@ -4,3 +4,6 @@ node_modules/
 
 # O painel roda so na sua maquina; nao precisa ir pro GitHub.
 painel/node_modules/
+
+# Miniaturas do painel: gerada sob demanda, nao versionada.
+.cache-miniaturas/
