@@ -3,7 +3,7 @@
     "voltas": 0,
     "publicados": {
       "09:00": "2026-08-03",
-      "08:50": "2026-08-20"
+      "08:50": "2026-08-21"
     },
     "feitas": [
       "3aefc30fd1e6",
@@ -22,11 +22,12 @@
       "d8907cb23cf3",
       "a8c318f8a7a1",
       "4f138ae805a4",
-      "6766be331438"
+      "6766be331438",
+      "c115c964a6a6"
     ],
     "pontuais": [],
     "indicesHora": {},
-    "ultimo": "2026-08-20 08:50 manha/017.png"
+    "ultimo": "2026-08-21 08:51 manha/018.png"
   },
   "tarde": {
     "voltas": 4,
@@ -87,7 +88,7 @@
     "voltas": 0,
     "publicados": {
       "13:45": "2026-08-20",
-      "08:45": "2026-08-20"
+      "08:45": "2026-08-21"
     },
     "feitas": [
       "3b7af33a9957",
@@ -98,11 +99,12 @@
       "b2549472250d",
       "09f1dd86c826",
       "c3308139aa0f",
-      "798918f0d11e"
+      "798918f0d11e",
+      "a6eef3f8b1bb"
     ],
     "pontuais": [],
     "indicesHora": {},
-    "ultimo": "2026-08-20 14:00 feed-campanha/009.png"
+    "ultimo": "2026-08-21 08:51 feed-campanha/010.png"
   },
   "jbl-9x16": {
     "voltas": 0,
@@ -118,6 +120,24 @@
     "ultimo": "2026-08-15 13:13 jbl-9x16/f02.png"
   },
   "_historico": [
+    {
+      "dia": "2026-08-21",
+      "hora": "08:51",
+      "slot": "08:50",
+      "pasta": "manha",
+      "arquivo": "018.png",
+      "tipo": "fila",
+      "feed": false
+    },
+    {
+      "dia": "2026-08-21",
+      "hora": "08:51",
+      "slot": "08:45",
+      "pasta": "feed-campanha",
+      "arquivo": "010.png",
+      "tipo": "fila",
+      "feed": true
+    },
     {
       "dia": "2026-08-20",
       "hora": "16:53",
