@@ -53,7 +53,7 @@
       "11:30": "2026-08-20",
       "12:00": "2026-08-20",
       "12:30": "2026-08-20",
-      "09:30": "2026-08-20"
+      "09:30": "2026-08-21"
     },
     "feitas": [
       "a3174a2ad35a",
@@ -63,11 +63,12 @@
       "29c01ffcb98e",
       "0814bfd6a36e",
       "0ccca1bb536f",
-      "4ade667184ff"
+      "4ade667184ff",
+      "9307d8eaaf3e"
     ],
     "pontuais": [],
     "indicesHora": {},
-    "ultimo": "2026-08-20 12:56 produtos/008.png"
+    "ultimo": "2026-08-21 09:53 produtos/009.png"
   },
   "campanha": {
     "voltas": 0,
@@ -120,6 +121,15 @@
     "ultimo": "2026-08-15 13:13 jbl-9x16/f02.png"
   },
   "_historico": [
+    {
+      "dia": "2026-08-21",
+      "hora": "09:53",
+      "slot": "09:30",
+      "pasta": "produtos",
+      "arquivo": "009.png",
+      "tipo": "fila",
+      "feed": false
+    },
     {
       "dia": "2026-08-21",
       "hora": "08:51",
