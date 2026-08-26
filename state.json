@@ -3,6 +3,15 @@
   "_historico": [
     {
       "dia": "2026-08-26",
+      "hora": "17:23",
+      "slot": "16:30",
+      "pasta": "story/campanha",
+      "arquivo": "016.png",
+      "tipo": "fila",
+      "feed": false
+    },
+    {
+      "dia": "2026-08-26",
       "hora": "13:33",
       "slot": "12:30",
       "pasta": "story/produtos",
@@ -711,16 +720,6 @@
       "arquivo": "055.png",
       "tipo": "fila",
       "feed": false
-    },
-    {
-      "dia": "2026-08-17",
-      "hora": "12:47",
-      "slot": "12:30",
-      "pasta": "story/produtos",
-      "arquivo": "055.png",
-      "tipo": "fila",
-      "feed": false,
-      "erro": "Only photo or video can be accepted as media type."
     }
   ],
   "story/manha": {
@@ -871,7 +870,7 @@
   "story/campanha": {
     "voltas": 0,
     "publicados": {
-      "16:30": "2026-08-25",
+      "16:30": "2026-08-26",
       "10:15": "2026-08-26"
     },
     "feitas": [
@@ -886,11 +885,12 @@
       "c0e48e3eab20",
       "56e0856e104d",
       "1a07bd756153",
-      "8dce689c787a"
+      "8dce689c787a",
+      "84a6154d947c"
     ],
     "pontuais": [],
     "indicesHora": {},
-    "ultimo": "2026-08-26 11:04 story/campanha/015.png",
+    "ultimo": "2026-08-26 17:23 story/campanha/016.png",
     "nomesFeitos": [
       "001.png",
       "002.png",
@@ -906,7 +906,8 @@
       "012.png",
       "013.png",
       "014.png",
-      "015.png"
+      "015.png",
+      "016.png"
     ]
   },
   "feed/campanha": {
@@ -1074,6 +1075,21 @@
         "mediaId": "17870783988635482",
         "ok": true,
         "fim": "13:33:47",
+        "segundos": 16
+      },
+      {
+        "pasta": "story/campanha",
+        "arquivo": "016.png",
+        "hhmm": "16:30",
+        "tipo": "fila",
+        "url": "https://raw.githubusercontent.com/toptechtai-git/toptech-storys/main/midias/story/campanha/016.png",
+        "ehVideo": false,
+        "ehFeed": false,
+        "atraso": 53,
+        "inicio": "17:23:27",
+        "mediaId": "17924788590177110",
+        "ok": true,
+        "fim": "17:23:43",
         "segundos": 16
       }
     ],
