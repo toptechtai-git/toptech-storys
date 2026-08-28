@@ -3,6 +3,15 @@
   "_historico": [
     {
       "dia": "2026-08-28",
+      "hora": "18:00",
+      "slot": "16:30",
+      "pasta": "story/campanha",
+      "arquivo": "020.png",
+      "tipo": "fila",
+      "feed": false
+    },
+    {
+      "dia": "2026-08-28",
       "hora": "12:00",
       "slot": "12:00",
       "pasta": "story/produtos",
@@ -711,15 +720,6 @@
       "arquivo": "007.png",
       "tipo": "fila",
       "feed": false
-    },
-    {
-      "dia": "2026-08-19",
-      "hora": "08:50",
-      "slot": "08:50",
-      "pasta": "story/manha",
-      "arquivo": "016.png",
-      "tipo": "fila",
-      "feed": false
     }
   ],
   "story/manha": {
@@ -890,7 +890,7 @@
   "story/campanha": {
     "voltas": 0,
     "publicados": {
-      "16:30": "2026-08-27",
+      "16:30": "2026-08-28",
       "10:15": "2026-08-28"
     },
     "feitas": [
@@ -909,11 +909,12 @@
       "84a6154d947c",
       "46cfbea9eaf8",
       "5c31412301f3",
-      "bb0c72b63ade"
+      "bb0c72b63ade",
+      "7013032c00d8"
     ],
     "pontuais": [],
     "indicesHora": {},
-    "ultimo": "2026-08-28 12:00 story/campanha/019.png",
+    "ultimo": "2026-08-28 18:00 story/campanha/020.png",
     "nomesFeitos": [
       "001.png",
       "002.png",
@@ -933,7 +934,8 @@
       "016.png",
       "017.png",
       "018.png",
-      "019.png"
+      "019.png",
+      "020.png"
     ]
   },
   "feed/campanha": {
@@ -1091,6 +1093,21 @@
         "ok": true,
         "fim": "12:01:23",
         "segundos": 17
+      },
+      {
+        "pasta": "story/campanha",
+        "arquivo": "020.png",
+        "hhmm": "16:30",
+        "tipo": "fila",
+        "url": "https://raw.githubusercontent.com/toptechtai-git/toptech-storys/main/midias/story/campanha/020.png",
+        "ehVideo": false,
+        "ehFeed": false,
+        "atraso": 90,
+        "inicio": "18:00:23",
+        "mediaId": "18073956290436445",
+        "ok": true,
+        "fim": "18:00:38",
+        "segundos": 15
       }
     ],
     "enviado": ""
