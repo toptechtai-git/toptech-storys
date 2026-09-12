@@ -1,6 +1,25 @@
 {
-  "_ultimosAvisos": "",
+  "_ultimosAvisos": "FALHOU \"story/produtos\" as 11:30 (050.png): Only photo or video can be accepted as media type.",
   "_historico": [
+    {
+      "dia": "2026-09-12",
+      "hora": "12:00",
+      "slot": "12:00",
+      "pasta": "story/produtos",
+      "arquivo": "050.png",
+      "tipo": "fila",
+      "feed": false
+    },
+    {
+      "dia": "2026-09-12",
+      "hora": "12:00",
+      "slot": "11:30",
+      "pasta": "story/produtos",
+      "arquivo": "050.png",
+      "tipo": "fila",
+      "feed": false,
+      "erro": "Only photo or video can be accepted as media type."
+    },
     {
       "dia": "2026-09-12",
       "hora": "11:21",
@@ -702,24 +721,6 @@
       "arquivo": "027.png",
       "tipo": "fila",
       "feed": false
-    },
-    {
-      "dia": "2026-09-02",
-      "hora": "10:08",
-      "slot": "09:30",
-      "pasta": "story/produtos",
-      "arquivo": "008.png",
-      "tipo": "fila",
-      "feed": false
-    },
-    {
-      "dia": "2026-09-02",
-      "hora": "08:50",
-      "slot": "08:50",
-      "pasta": "story/manha",
-      "arquivo": "002.png",
-      "tipo": "fila",
-      "feed": false
     }
   ],
   "story/manha": {
@@ -764,7 +765,7 @@
       "11:00": "2026-09-12",
       "21:00": "2026-08-06",
       "11:30": "2026-09-11",
-      "12:00": "2026-09-11",
+      "12:00": "2026-09-12",
       "12:30": "2026-09-11",
       "09:30": "2026-09-12"
     },
@@ -817,11 +818,12 @@
       "e01d3bdf57e2",
       "cb847753595d",
       "91dd560a7234",
-      "4f61459731fa"
+      "4f61459731fa",
+      "ab069bb61232"
     ],
     "pontuais": [],
     "indicesHora": {},
-    "ultimo": "2026-09-12 11:21 story/produtos/049.png",
+    "ultimo": "2026-09-12 12:00 story/produtos/050.png",
     "nomesFeitos": [
       "001.png",
       "002.png",
@@ -871,7 +873,8 @@
       "046.png",
       "047.png",
       "048.png",
-      "049.png"
+      "049.png",
+      "050.png"
     ]
   },
   "story/campanha": {
@@ -1126,6 +1129,37 @@
         "ok": true,
         "fim": "11:22:22",
         "segundos": 14
+      },
+      {
+        "pasta": "story/produtos",
+        "arquivo": "050.png",
+        "hhmm": "11:30",
+        "tipo": "fila",
+        "url": "https://raw.githubusercontent.com/toptechtai-git/toptech-storys/main/midias/story/produtos/050.png",
+        "ehVideo": false,
+        "ehFeed": false,
+        "atraso": 30,
+        "inicio": "12:00:17",
+        "ok": false,
+        "erro": "Only photo or video can be accepted as media type.",
+        "dica": "A Meta não conseguiu baixar a arte pela URL do GitHub. Confira se o arquivo está commitado, se o repositório continua público e se o Git LFS não foi ativado.",
+        "fim": "12:00:18",
+        "segundos": 1
+      },
+      {
+        "pasta": "story/produtos",
+        "arquivo": "050.png",
+        "hhmm": "12:00",
+        "tipo": "fila",
+        "url": "https://raw.githubusercontent.com/toptechtai-git/toptech-storys/main/midias/story/produtos/050.png",
+        "ehVideo": false,
+        "ehFeed": false,
+        "atraso": 0,
+        "inicio": "12:00:18",
+        "mediaId": "18101523920251309",
+        "ok": true,
+        "fim": "12:00:33",
+        "segundos": 16
       }
     ],
     "enviado": ""
