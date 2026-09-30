@@ -2,6 +2,24 @@
   "_ultimosAvisos": "A fila de \"feed/campanha\" tem 5 arte(s), cerca de 5 dia(s). Reponha antes de secar.",
   "_historico": [
     {
+      "dia": "2026-09-30",
+      "hora": "08:50",
+      "slot": "08:50",
+      "pasta": "story/manha",
+      "arquivo": "026.png",
+      "tipo": "fila",
+      "feed": false
+    },
+    {
+      "dia": "2026-09-30",
+      "hora": "08:50",
+      "slot": "08:45",
+      "pasta": "feed/campanha",
+      "arquivo": "046.png",
+      "tipo": "fila",
+      "feed": true
+    },
+    {
       "dia": "2026-09-29",
       "hora": "17:20",
       "slot": "16:30",
@@ -703,31 +721,13 @@
       "arquivo": "006.png",
       "tipo": "fila",
       "feed": false
-    },
-    {
-      "dia": "2026-09-18",
-      "hora": "12:07",
-      "slot": "10:15",
-      "pasta": "story/campanha",
-      "arquivo": "006.png",
-      "tipo": "fila",
-      "feed": false
-    },
-    {
-      "dia": "2026-09-18",
-      "hora": "08:51",
-      "slot": "08:50",
-      "pasta": "story/manha",
-      "arquivo": "016.png",
-      "tipo": "fila",
-      "feed": false
     }
   ],
   "story/manha": {
     "voltas": 1,
     "publicados": {
       "09:00": "2026-08-03",
-      "08:50": "2026-09-29"
+      "08:50": "2026-09-30"
     },
     "feitas": [
       "3aefc30fd1e6",
@@ -754,11 +754,12 @@
       "1c780b5fff53",
       "cac0872577c7",
       "252e71d9bfe3",
-      "46fbde3a46e2"
+      "46fbde3a46e2",
+      "4ddcad6c1353"
     ],
     "pontuais": [],
     "indicesHora": {},
-    "ultimo": "2026-09-29 08:50 story/manha/025.png",
+    "ultimo": "2026-09-30 08:50 story/manha/026.png",
     "nomesFeitos": [
       "001.png",
       "002.png",
@@ -784,7 +785,8 @@
       "022.png",
       "023.png",
       "024.png",
-      "025.png"
+      "025.png",
+      "026.png"
     ]
   },
   "story/produtos": {
@@ -963,7 +965,7 @@
     "voltas": 0,
     "publicados": {
       "13:45": "2026-08-21",
-      "08:45": "2026-09-29"
+      "08:45": "2026-09-30"
     },
     "feitas": [
       "3b7af33a9957",
@@ -1009,11 +1011,12 @@
       "3e2e03d7b3ab",
       "9b18f8ce1ba5",
       "5b9c787e89ca",
-      "2bb747b129df"
+      "2bb747b129df",
+      "e4bfabeb68ad"
     ],
     "pontuais": [],
     "indicesHora": {},
-    "ultimo": "2026-09-29 08:50 feed/campanha/045.png",
+    "ultimo": "2026-09-30 08:50 feed/campanha/046.png",
     "nomesFeitos": [
       "001.png",
       "002.png",
@@ -1058,149 +1061,44 @@
       "042.png",
       "043.png",
       "044.png",
-      "045.png"
+      "045.png",
+      "046.png"
     ]
   },
   "_diario": {
-    "dia": "2026-09-29",
+    "dia": "2026-09-30",
     "itens": [
       {
         "pasta": "feed/campanha",
-        "arquivo": "045.png",
+        "arquivo": "046.png",
         "hhmm": "08:45",
         "tipo": "fila",
-        "url": "https://raw.githubusercontent.com/toptechtai-git/toptech-storys/main/midias/feed/campanha/045.png",
+        "url": "https://raw.githubusercontent.com/toptechtai-git/toptech-storys/main/midias/feed/campanha/046.png",
         "ehVideo": false,
         "ehFeed": true,
         "atraso": 5,
-        "inicio": "08:50:20",
-        "mediaId": "18465128005189497",
+        "inicio": "08:50:15",
+        "mediaId": "18068362331597060",
         "ok": true,
-        "fim": "08:50:37",
-        "segundos": 18
+        "fim": "08:50:31",
+        "segundos": 16
       },
       {
         "pasta": "story/manha",
-        "arquivo": "025.png",
+        "arquivo": "026.png",
         "hhmm": "08:50",
         "tipo": "fila",
-        "url": "https://raw.githubusercontent.com/toptechtai-git/toptech-storys/main/midias/story/manha/025.png",
+        "url": "https://raw.githubusercontent.com/toptechtai-git/toptech-storys/main/midias/story/manha/026.png",
         "ehVideo": false,
         "ehFeed": false,
         "atraso": 0,
-        "inicio": "08:50:37",
-        "mediaId": "18121965592919928",
+        "inicio": "08:50:31",
+        "mediaId": "17949407625314655",
         "ok": true,
-        "fim": "08:50:54",
-        "segundos": 17
-      },
-      {
-        "pasta": "story/campanha",
-        "arquivo": "024.png",
-        "hhmm": "10:15",
-        "tipo": "fila",
-        "url": "https://raw.githubusercontent.com/toptechtai-git/toptech-storys/main/midias/story/campanha/024.png",
-        "ehVideo": false,
-        "ehFeed": false,
-        "atraso": 105,
-        "inicio": "12:00:22",
-        "mediaId": "18117139000771216",
-        "ok": true,
-        "fim": "12:00:37",
-        "segundos": 15
-      },
-      {
-        "pasta": "story/produtos",
-        "arquivo": "042.png",
-        "hhmm": "11:00",
-        "tipo": "fila",
-        "url": "https://raw.githubusercontent.com/toptechtai-git/toptech-storys/main/midias/story/produtos/042.png",
-        "ehVideo": false,
-        "ehFeed": false,
-        "atraso": 60,
-        "inicio": "12:00:37",
-        "mediaId": "17867469039659570",
-        "ok": true,
-        "fim": "12:00:52",
-        "segundos": 15
-      },
-      {
-        "pasta": "story/produtos",
-        "arquivo": "043.png",
-        "hhmm": "11:30",
-        "tipo": "fila",
-        "url": "https://raw.githubusercontent.com/toptechtai-git/toptech-storys/main/midias/story/produtos/043.png",
-        "ehVideo": false,
-        "ehFeed": false,
-        "atraso": 30,
-        "inicio": "12:00:52",
-        "mediaId": "17971153689157932",
-        "ok": true,
-        "fim": "12:01:06",
-        "segundos": 14
-      },
-      {
-        "pasta": "story/produtos",
-        "arquivo": "044.png",
-        "hhmm": "12:00",
-        "tipo": "fila",
-        "url": "https://raw.githubusercontent.com/toptechtai-git/toptech-storys/main/midias/story/produtos/044.png",
-        "ehVideo": false,
-        "ehFeed": false,
-        "atraso": 0,
-        "inicio": "12:01:06",
-        "ok": false,
-        "erro": "Only photo or video can be accepted as media type.",
-        "dica": "A Meta não conseguiu baixar a arte pela URL do GitHub. Confira se o arquivo está commitado, se o repositório continua público e se o Git LFS não foi ativado.",
-        "fim": "12:01:07",
-        "segundos": 1
-      },
-      {
-        "pasta": "story/produtos",
-        "arquivo": "044.png",
-        "hhmm": "12:00",
-        "tipo": "fila",
-        "url": "https://raw.githubusercontent.com/toptechtai-git/toptech-storys/main/midias/story/produtos/044.png",
-        "ehVideo": false,
-        "ehFeed": false,
-        "atraso": 20,
-        "inicio": "12:20:20",
-        "mediaId": "18127088227691282",
-        "ok": true,
-        "fim": "12:20:39",
-        "segundos": 19
-      },
-      {
-        "pasta": "story/produtos",
-        "arquivo": "045.png",
-        "hhmm": "12:30",
-        "tipo": "fila",
-        "url": "https://raw.githubusercontent.com/toptechtai-git/toptech-storys/main/midias/story/produtos/045.png",
-        "ehVideo": false,
-        "ehFeed": false,
-        "atraso": 16,
-        "inicio": "12:46:26",
-        "mediaId": "18028745351881122",
-        "ok": true,
-        "fim": "12:46:44",
-        "segundos": 18
-      },
-      {
-        "pasta": "story/campanha",
-        "arquivo": "025.png",
-        "hhmm": "16:30",
-        "tipo": "fila",
-        "url": "https://raw.githubusercontent.com/toptechtai-git/toptech-storys/main/midias/story/campanha/025.png",
-        "ehVideo": false,
-        "ehFeed": false,
-        "atraso": 50,
-        "inicio": "17:20:39",
-        "mediaId": "18021342707866725",
-        "ok": true,
-        "fim": "17:20:55",
+        "fim": "08:50:46",
         "segundos": 16
       }
     ],
-    "enviado": "2026-09-29"
+    "enviado": ""
   }
 }
