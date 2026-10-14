@@ -1,6 +1,15 @@
 {
-  "_ultimosAvisos": "A fila de \"feed/campanha\" acabou — nenhuma arte nova para publicar.|A fila do feed \"feed/campanha\" acabou. Post de feed nunca se repete — publique artes novas para voltar a sair.",
+  "_ultimosAvisos": "A fila de \"feed/campanha\" acabou — nenhuma arte nova para publicar.",
   "_historico": [
+    {
+      "dia": "2026-10-14",
+      "hora": "14:24",
+      "slot": "12:30",
+      "pasta": "story/produtos",
+      "arquivo": "011.png",
+      "tipo": "fila",
+      "feed": false
+    },
     {
       "dia": "2026-10-14",
       "hora": "09:22",
@@ -712,15 +721,6 @@
       "arquivo": "043.png",
       "tipo": "fila",
       "feed": true
-    },
-    {
-      "dia": "2026-09-25",
-      "hora": "17:27",
-      "slot": "16:30",
-      "pasta": "story/campanha",
-      "arquivo": "019.png",
-      "tipo": "fila",
-      "feed": false
     }
   ],
   "story/manha": {
@@ -756,7 +756,7 @@
       "21:00": "2026-08-06",
       "11:30": "2026-10-10",
       "12:00": "2026-10-07",
-      "12:30": "2026-10-12",
+      "12:30": "2026-10-14",
       "09:30": "2026-10-09"
     },
     "feitas": [
@@ -769,11 +769,12 @@
       "0ccca1bb536f",
       "4ade667184ff",
       "9307d8eaaf3e",
-      "2b6ca561d06d"
+      "2b6ca561d06d",
+      "09cba4d18fb1"
     ],
     "pontuais": [],
     "indicesHora": {},
-    "ultimo": "2026-10-12 14:24 story/produtos/010.png",
+    "ultimo": "2026-10-14 14:24 story/produtos/011.png",
     "nomesFeitos": [
       "001.png",
       "002.png",
@@ -784,7 +785,8 @@
       "007.png",
       "008.png",
       "009.png",
-      "010.png"
+      "010.png",
+      "011.png"
     ]
   },
   "story/campanha": {
@@ -1010,6 +1012,21 @@
         "ok": true,
         "fim": "09:23:09",
         "segundos": 17
+      },
+      {
+        "pasta": "story/produtos",
+        "arquivo": "011.png",
+        "hhmm": "12:30",
+        "tipo": "fila",
+        "url": "https://raw.githubusercontent.com/toptechtai-git/toptech-storys/main/midias/story/produtos/011.png",
+        "ehVideo": false,
+        "ehFeed": false,
+        "atraso": 114,
+        "inicio": "14:24:44",
+        "mediaId": "18024600500923265",
+        "ok": true,
+        "fim": "14:24:59",
+        "segundos": 16
       }
     ],
     "enviado": ""
