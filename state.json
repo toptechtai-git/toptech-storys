@@ -1,6 +1,24 @@
 {
-  "_ultimosAvisos": "A fila de \"feed/campanha\" acabou — nenhuma arte nova para publicar.",
+  "_ultimosAvisos": "A fila de \"feed/campanha\" acabou — nenhuma arte nova para publicar.|A fila do feed \"feed/campanha\" acabou. Post de feed nunca se repete — publique artes novas para voltar a sair.",
   "_historico": [
+    {
+      "dia": "2026-10-19",
+      "hora": "10:11",
+      "slot": "09:30",
+      "pasta": "story/produtos",
+      "arquivo": "020.png",
+      "tipo": "fila",
+      "feed": false
+    },
+    {
+      "dia": "2026-10-19",
+      "hora": "10:11",
+      "slot": "08:50",
+      "pasta": "story/manha",
+      "arquivo": "009.png",
+      "tipo": "fila",
+      "feed": false
+    },
     {
       "dia": "2026-10-17",
       "hora": "17:32",
@@ -703,31 +721,13 @@
       "arquivo": "045.png",
       "tipo": "fila",
       "feed": true
-    },
-    {
-      "dia": "2026-09-28",
-      "hora": "18:05",
-      "slot": "16:30",
-      "pasta": "story/campanha",
-      "arquivo": "023.png",
-      "tipo": "fila",
-      "feed": false
-    },
-    {
-      "dia": "2026-09-28",
-      "hora": "12:02",
-      "slot": "12:00",
-      "pasta": "story/produtos",
-      "arquivo": "041.png",
-      "tipo": "fila",
-      "feed": false
     }
   ],
   "story/manha": {
     "voltas": 2,
     "publicados": {
       "09:00": "2026-08-03",
-      "08:50": "2026-10-17"
+      "08:50": "2026-10-19"
     },
     "feitas": [
       "3aefc30fd1e6",
@@ -737,11 +737,12 @@
       "f0c34707493c",
       "122d09e69b13",
       "52e467e79b06",
-      "f261fa51006e"
+      "f261fa51006e",
+      "eb6a5fdf5a55"
     ],
     "pontuais": [],
     "indicesHora": {},
-    "ultimo": "2026-10-17 09:24 story/manha/008.png",
+    "ultimo": "2026-10-19 10:11 story/manha/009.png",
     "nomesFeitos": [
       "001.png",
       "002.png",
@@ -750,7 +751,8 @@
       "005.png",
       "006.png",
       "007.png",
-      "008.png"
+      "008.png",
+      "009.png"
     ]
   },
   "story/produtos": {
@@ -761,7 +763,7 @@
       "11:30": "2026-10-17",
       "12:00": "2026-10-17",
       "12:30": "2026-10-17",
-      "09:30": "2026-10-09"
+      "09:30": "2026-10-19"
     },
     "feitas": [
       "a3174a2ad35a",
@@ -782,11 +784,12 @@
       "1e8ff601d2be",
       "5e493e8c1517",
       "de7b33b28a63",
-      "be2a58a53fe9"
+      "be2a58a53fe9",
+      "77f4eb672fa0"
     ],
     "pontuais": [],
     "indicesHora": {},
-    "ultimo": "2026-10-17 12:46 story/produtos/019.png",
+    "ultimo": "2026-10-19 10:11 story/produtos/020.png",
     "nomesFeitos": [
       "001.png",
       "002.png",
@@ -806,7 +809,8 @@
       "016.png",
       "017.png",
       "018.png",
-      "019.png"
+      "019.png",
+      "020.png"
     ]
   },
   "story/campanha": {
@@ -1022,99 +1026,39 @@
     ]
   },
   "_diario": {
-    "dia": "2026-10-17",
+    "dia": "2026-10-19",
     "itens": [
       {
         "pasta": "story/manha",
-        "arquivo": "008.png",
+        "arquivo": "009.png",
         "hhmm": "08:50",
         "tipo": "fila",
-        "url": "https://raw.githubusercontent.com/toptechtai-git/toptech-storys/main/midias/story/manha/008.png",
+        "url": "https://raw.githubusercontent.com/toptechtai-git/toptech-storys/main/midias/story/manha/009.png",
         "ehVideo": false,
         "ehFeed": false,
-        "atraso": 34,
-        "inicio": "09:24:43",
-        "mediaId": "18110028020178220",
+        "atraso": 81,
+        "inicio": "10:11:45",
+        "mediaId": "17875755018585564",
         "ok": true,
-        "fim": "09:24:58",
-        "segundos": 15
-      },
-      {
-        "pasta": "story/produtos",
-        "arquivo": "016.png",
-        "hhmm": "11:00",
-        "tipo": "fila",
-        "url": "https://raw.githubusercontent.com/toptechtai-git/toptech-storys/main/midias/story/produtos/016.png",
-        "ehVideo": false,
-        "ehFeed": false,
-        "atraso": 106,
-        "inicio": "12:46:28",
-        "mediaId": "18111701693464033",
-        "ok": true,
-        "fim": "12:46:41",
+        "fim": "10:12:00",
         "segundos": 14
       },
       {
         "pasta": "story/produtos",
-        "arquivo": "017.png",
-        "hhmm": "11:30",
+        "arquivo": "020.png",
+        "hhmm": "09:30",
         "tipo": "fila",
-        "url": "https://raw.githubusercontent.com/toptechtai-git/toptech-storys/main/midias/story/produtos/017.png",
+        "url": "https://raw.githubusercontent.com/toptechtai-git/toptech-storys/main/midias/story/produtos/020.png",
         "ehVideo": false,
         "ehFeed": false,
-        "atraso": 76,
-        "inicio": "12:46:41",
-        "mediaId": "18341360974274220",
+        "atraso": 41,
+        "inicio": "10:12:00",
+        "mediaId": "18164367652427981",
         "ok": true,
-        "fim": "12:46:55",
-        "segundos": 14
-      },
-      {
-        "pasta": "story/produtos",
-        "arquivo": "018.png",
-        "hhmm": "12:00",
-        "tipo": "fila",
-        "url": "https://raw.githubusercontent.com/toptechtai-git/toptech-storys/main/midias/story/produtos/018.png",
-        "ehVideo": false,
-        "ehFeed": false,
-        "atraso": 46,
-        "inicio": "12:46:55",
-        "mediaId": "17963745615218747",
-        "ok": true,
-        "fim": "12:47:07",
-        "segundos": 12
-      },
-      {
-        "pasta": "story/produtos",
-        "arquivo": "019.png",
-        "hhmm": "12:30",
-        "tipo": "fila",
-        "url": "https://raw.githubusercontent.com/toptechtai-git/toptech-storys/main/midias/story/produtos/019.png",
-        "ehVideo": false,
-        "ehFeed": false,
-        "atraso": 16,
-        "inicio": "12:47:07",
-        "mediaId": "18161081344497998",
-        "ok": true,
-        "fim": "12:47:20",
-        "segundos": 13
-      },
-      {
-        "pasta": "story/campanha",
-        "arquivo": "043.png",
-        "hhmm": "16:30",
-        "tipo": "fila",
-        "url": "https://raw.githubusercontent.com/toptechtai-git/toptech-storys/main/midias/story/campanha/043.png",
-        "ehVideo": false,
-        "ehFeed": false,
-        "atraso": 62,
-        "inicio": "17:32:14",
-        "mediaId": "17898576237403134",
-        "ok": true,
-        "fim": "17:32:33",
-        "segundos": 19
+        "fim": "10:12:16",
+        "segundos": 16
       }
     ],
-    "enviado": "2026-10-17"
+    "enviado": ""
   }
 }
