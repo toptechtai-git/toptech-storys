@@ -1,5 +1,5 @@
 {
-  "_ultimosAvisos": "A fila de \"feed/campanha\" acabou — nenhuma arte nova para publicar.|A fila de \"story/campanha\" deu a volta (2x) — voltou a publicar do início. Hora de renovar as artes.",
+  "_ultimosAvisos": "A fila de \"feed/campanha\" acabou — nenhuma arte nova para publicar.",
   "_historico": [
     {
       "dia": "2026-10-26",
@@ -1034,6 +1034,6 @@
         "segundos": 15
       }
     ],
-    "enviado": ""
+    "enviado": "2026-10-26"
   }
 }
