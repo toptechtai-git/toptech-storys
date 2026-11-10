@@ -1,5 +1,5 @@
 {
-  "_ultimosAvisos": "A fila de \"feed/campanha\" acabou — nenhuma arte nova para publicar.",
+  "_ultimosAvisos": "A fila de \"feed/campanha\" acabou — nenhuma arte nova para publicar.|A fila do feed \"feed/campanha\" acabou. Post de feed nunca se repete — publique artes novas para voltar a sair.",
   "_historico": [
     {
       "dia": "2026-11-09",
@@ -1031,24 +1031,8 @@
     ]
   },
   "_diario": {
-    "dia": "2026-11-09",
-    "itens": [
-      {
-        "pasta": "story/campanha",
-        "arquivo": "009.png",
-        "hhmm": "16:30",
-        "tipo": "fila",
-        "url": "https://raw.githubusercontent.com/toptechtai-git/toptech-storys/main/midias/story/campanha/009.png",
-        "ehVideo": false,
-        "ehFeed": false,
-        "atraso": 94,
-        "inicio": "18:04:32",
-        "mediaId": "17919465993532794",
-        "ok": true,
-        "fim": "18:04:47",
-        "segundos": 15
-      }
-    ],
+    "dia": "2026-11-10",
+    "itens": [],
     "enviado": ""
   }
 }
